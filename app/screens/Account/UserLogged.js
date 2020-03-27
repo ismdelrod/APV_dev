@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Button } from "react-native-elements";
-import firebase from "firebase/app";
+import * as firebase from "firebase/app";
 
 export default UserLogged = () => {
   return (

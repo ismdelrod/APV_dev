@@ -1,68 +1,57 @@
-import React, { useState } from "react";
+import React, { useState } from "react"; // { useState } es un Hook
 import { View, StyleSheet } from "react-native";
 import { Input, Icon, Button } from "react-native-elements";
 import { withNavigation } from "@react-navigation/compat";
-import {
-  validateEmail,
-  validatePassword,
-  validatePasswordConfirmationIsOK
-} from "../../utils/Validation";
+import { validateEmail, validatePassword } from "../../utils/Validation";
 import * as firebase from "firebase/app";
 import Loading from "../Loading";
 
-RegisterForm = props => {
-  //mensajes de Info/Error y navegación con restructuring
+
+
+LoginForm = props => {
+  //mensajes de Info/Error y navegación por props con restructuring
   const { toastRef, navigation } = props;
 
-  //sets de Inputs
+  debugger;
+  var x = navigation;
+
+  //Sets de Inputs
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordConfirmation, setPasswordConfirmation] = useState("");
 
   //funcionalidad a los Icons
   const [hidePassword, setHidePassword] = useState(true);
-  const [hidePasswordConfirmation, setHidePasswordConfirmation] = useState(
-    true
-  );
   //visualización de componente
   const [isVisibleLoading, setIsVisibleLoading] = useState(false);
 
   //Eventos botones
   // TO DO: Añadir validación para email ya registrado y habilitar deshabilitar campos según se complete el anterior
-  const btnRegisterOnPress = async () => {
+  const btnLoginOnPress = async () => {
     const resultEmailValidation = validateEmail(email);
     const resultPasswordValidation = validatePassword(password);
-    const resultPasswordConfirmationIsOKValidation = validatePasswordConfirmationIsOK(
-      password,
-      passwordConfirmation
-    );
 
     setIsVisibleLoading(true);
 
-    if (!email || !password || !passwordConfirmation) {
+    if (!email || !password) {
       toastRef.current.show("Todos los campos son obligatorios");
     } else {
       if (!validateEmail(email)) {
         toastRef.current.show("Email Incorrecto");
       } else {
-        if (!validatePasswordConfirmationIsOK(password, passwordConfirmation)) {
-          toastRef.current.show("Las contraseñas no son iguales");
-        } else {
-          await firebase
-            .auth()
-            .createUserWithEmailAndPassword(email, password)
-            .then(() => {
-              navigation.navigate("Account");
-            })
-            .catch(() => {
-              toastRef.current.show(
-                "Error al crear la cuenta. Inténtelo más tarde"
-              );
-            });
-        }
+          debugger;
+        await firebase
+          .auth()
+          .createUserWithEmailAndPassword(email, password)
+          .then(() => {
+            navigation.navigate("Account");
+          })
+          .catch(() => {
+            toastRef.current.show(
+              "Error al iniciar Sesión. Inténtelo más tarde"
+            );
+          });
       }
     }
-
     setIsVisibleLoading(false);
   };
 
@@ -82,9 +71,9 @@ RegisterForm = props => {
       />
       <Input
         placeholder="Contraseña"
+        containerStyle={styles.inputForm}
         passwordRules={true}
         secureTextEntry={hidePassword}
-        containerStyle={styles.inputForm}
         onChange={e => setPassword(e.nativeEvent.text)}
         rightIcon={
           <Icon
@@ -95,35 +84,20 @@ RegisterForm = props => {
           />
         }
       />
-      <Input
-        placeholder="Repetir Contraseña"
-        passwordRules={true}
-        secureTextEntry={hidePasswordConfirmation}
-        containerStyle={styles.inputForm}
-        onChange={e => setPasswordConfirmation(e.nativeEvent.text)}
-        rightIcon={
-          <Icon
-            type="material-community"
-            name={hidePasswordConfirmation ? "eye-outline" : "eye-off-outline"}
-            iconStyle={styles.iconRight}
-            onPress={() =>
-              setHidePasswordConfirmation(!hidePasswordConfirmation)
-            }
-          />
-        }
-      />
+
       <Button
-        title="Unirse"
-        containerStyle={styles.btnContainerRegister}
-        buttonStyle={styles.btnRegister}
-        onPress={btnRegisterOnPress}
+        title="Iniciar Sesión"
+        containerStyle={styles.btnContainerLogin}
+        buttonStyle={styles.btnLogin}
+        onPress={btnLoginOnPress}
       />
-      <Loading isVisible={isVisibleLoading} text="Creando Cuenta" />
+
+      <Loading isVisible={isVisibleLoading} text="Iniciando Sesión" />
     </View>
   );
 };
 
-export default withNavigation(RegisterForm);
+export default withNavigation(LoginForm);
 
 const styles = StyleSheet.create({
   formContainer: {
@@ -139,11 +113,11 @@ const styles = StyleSheet.create({
   iconRight: {
     color: "#c1c1c1"
   },
-  btnContainerRegister: {
+  btnContainerLogin: {
     marginTop: 20,
     width: "95%"
   },
-  btnRegister: {
+  btnLogin: {
     backgroundColor: "#00a680"
   }
 });

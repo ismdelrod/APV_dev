@@ -1,9 +1,15 @@
-import React from "react";
+import React, { useRef }  from "react";
 import { StyleSheet, view, ScrollView, Text, Image, View } from "react-native";
 import { Divider } from "react-native-elements";
+import LoginForm from "../../components/Account/LoginForm";
+import LoginFacebook from "../../components/Account/LoginFacebook";
+import Toast from "react-native-easy-toast";
 
-export default Login = (props) => {
+export default Login = props => {
+  //navegación por props con restructuring
   const { navigation } = props;
+  //inicialización de los toast
+  const toastRef = useRef();
   return (
     <ScrollView>
       <Image
@@ -12,22 +18,20 @@ export default Login = (props) => {
         resizeMode="contain"
       />
       <View style={styles.viewContainer}>
-        <Text>Form Login...</Text>
-
-        <CreateAccount navigation = {navigation}/>
+        <LoginForm toastRef={toastRef} />
+        <CreateAccount navigation={navigation} />
       </View>
       <Divider style={styles.divider} />
       <View style={styles.viewContainer}>
-        <Text>Botón Facebook Login...</Text>
+        <LoginFacebook/>
       </View>
+      <Toast ref={toastRef} position="top" opacity={0.5} />
     </ScrollView>
   );
 };
 
-
-
 CreateAccount = props => {
-  const {navigation} = props;
+  const { navigation } = props;
   return (
     <Text style={styles.textRegister}>
       ¿Aún no tienes una cuenta?{" "}

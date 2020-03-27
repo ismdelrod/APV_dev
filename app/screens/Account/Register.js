@@ -5,12 +5,14 @@ import RegisterForm from "../../components/Account/RegisterForm";
 import Toast from "react-native-easy-toast";
 
 export default Register = () => {
+  //inicialización de los toast
   const toastRef = useRef();
   return (
     <KeyboardAwareScrollView>
       <Image
         source={require("../../../assets/img/APV_logo.jpg")}
         style={styles.logo}
+        resizeMode="contain"
       />
 
       <View style={styles.viewForm}>

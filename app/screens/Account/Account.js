@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
-import firebase from "firebase";
+import * as firebase from "firebase";
 import Loading from "../../components/Loading";
 import UserGuest from "./UserGuest";
 import UserLogged from "./UserLogged";
 
+
+// TO DO ¿tiene que ser async por la autentificación con firebase?
 export default Account = () => {
   const [login, setLogin] = useState(null);
 

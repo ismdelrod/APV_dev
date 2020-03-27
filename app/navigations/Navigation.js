@@ -32,7 +32,6 @@ TopVapeStoresStack = () => {
 };
 
 AccountStack = () => {
-  debugger;
   return (
     <Stack.Navigator>
       <Stack.Screen name="Account" component={AccountScreen} />
