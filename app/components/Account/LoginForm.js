@@ -12,9 +12,6 @@ LoginForm = props => {
   //mensajes de Info/Error y navegación por props con restructuring
   const { toastRef, navigation } = props;
 
-  debugger;
-  var x = navigation;
-
   //Sets de Inputs
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,7 +35,6 @@ LoginForm = props => {
       if (!validateEmail(email)) {
         toastRef.current.show("Email Incorrecto");
       } else {
-          debugger;
         await firebase
           .auth()
           .signInWithEmailAndPassword(email, password)
