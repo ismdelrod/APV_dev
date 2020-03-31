@@ -10,7 +10,7 @@ export default LoginFacebook = () => {
     const {
       type,
       token
-    } = await Facebook.logInWithReadPermissionsAsync(
+    } = await Facebook.logInWithReadPermissionsAsync( //initializeAsync
       FacebookApi.application_id,
       { permissions: FacebookApi.permissions }
     );

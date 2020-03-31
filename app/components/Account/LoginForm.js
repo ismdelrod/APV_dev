@@ -41,7 +41,7 @@ LoginForm = props => {
           debugger;
         await firebase
           .auth()
-          .createUserWithEmailAndPassword(email, password)
+          .signInWithEmailAndPassword(email, password)
           .then(() => {
             navigation.navigate("Account");
           })
