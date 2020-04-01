@@ -1,4 +1,4 @@
-import React, { useState } from "react"; // { useState } es un Hook
+import React from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { Avatar } from "react-native-elements";
 import * as firebase from "firebase/app";
@@ -7,7 +7,11 @@ import * as ImagePicker from "expo-image-picker";
 
 export default InfoUser = props => {
   const {
-    userInfo: { uid, displayName, email, photoURL }
+    userInfo: { uid, displayName, email, photoURL },
+    setReloadData,
+    toastRef,
+    setIsLoading,
+    setTextLoading
   } = props;
 
   const changeAvatar = async () => {
@@ -18,7 +22,7 @@ export default InfoUser = props => {
       resultPermission.permissions.cameraRoll.status;
 
     if (resultPermissionCamera === "denied") {
-      console.log("Es necesario aceptar los permisos de la galería");
+      toastRef.current.show("Es necesario aceptar los permisos de la galería");
     } else {
       const result = await ImagePicker.launchImageLibraryAsync({
         allowsEditing: true,
@@ -26,16 +30,18 @@ export default InfoUser = props => {
       });
 
       if (result.cancelled) {
-        console.log("Has cerrado la galería de imagenes");
+        toastRef.current.show("Has cerrado la galería sin seleccionar imagenes");
       } else {
-        uploadImage(result.uri, uid).then(()=>{
-            console.log("Subida OK")
+        uploadImage(result.uri, uid).then(() => {
+          updatePhotoUrl(uid);
         });
       }
     }
   };
 
   const uploadImage = async (uri, nameImage) => {
+    setTextLoading("Actualizando Avatar");
+    setIsLoading(true);
     const response = await fetch(uri);
     const blob = await response.blob();
     const ref = firebase
@@ -43,6 +49,24 @@ export default InfoUser = props => {
       .ref()
       .child(`avatar/${nameImage}`);
     return ref.put(blob);
+  };
+
+  const updatePhotoUrl = uid => {
+    firebase
+      .storage()
+      .ref(`avatar/${uid}`)
+      .getDownloadURL()
+      .then(async result => {
+        const update = {
+          photoURL: result
+        };
+        await firebase.auth().currentUser.updateProfile(update);
+        setReloadData(true);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        toastRef.current.show("Error al recuperar el avatar del servidor");
+      });
   };
   return (
     <View style={styles.viewUserIfo}>
