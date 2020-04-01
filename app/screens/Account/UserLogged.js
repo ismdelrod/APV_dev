@@ -31,11 +31,15 @@ export default UserLogged = () => {
         setIsLoading={setIsLoading}
         setTextLoading={setTextLoading}
       />
-      <AccountOptions />
+      <AccountOptions
+        userInfo={userInfo}
+        setReloadData={setReloadData}
+        toastRef={toastRef}
+      />
       <Button
         title="Cerrar Sesión"
         buttonStyle={styles.btnCloseSession}
-        titleStyle = {styles.btnCloseSessionText}
+        titleStyle={styles.btnCloseSessionText}
         onPress={() => firebase.auth().signOut()}
 
         // containerStyle={styles.btnCloseSessionContainer}
@@ -64,10 +68,9 @@ const styles = StyleSheet.create({
   },
 
   btnCloseSessionText: {
-    color:"#00a680"
+    color: "#00a680"
   }
-  
-  
+
   // ,
   // btnCloseSessionContainer: {
   //   width: "100%",

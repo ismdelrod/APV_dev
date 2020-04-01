@@ -1,8 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { ListItem } from "react-native-elements";
+import Modal from "../Modal";
+import ChangeDisplayNameForm from "./ChangeDisplayNameForm";
+import ChangeEmailForm from "./ChangeEmailForm";
+import ChangePasswordForm from "./ChangePasswordForm";
 
-export default AccountOptions = () => {
+export default AccountOptions = props => {
+  const { userInfo, setReloadData, toastRef } = props;
+  const [isVisibleModal, setIsVisibleModal] = useState(false);
+  const [renderComponent, setRenderComponent] = useState(null);
+
   const menuOptions = [
     {
       title: "Cambiar Nombre y Apellidos",
@@ -11,27 +19,54 @@ export default AccountOptions = () => {
       iconColorLeft: "#ccc",
       iconNameRight: "chevron-right",
       iconColorRight: "#ccc",
-      onPress: () => console.log("Change display Name")
+      onPress: () => selectedComponent("displayModalChangeName")
     },
     {
-        title: "Cambiar Email",
-        iconType: "material-community",
-        iconNameLeft: "at",
-        iconColorLeft: "#ccc",
-        iconNameRight: "chevron-right",
-        iconColorRight: "#ccc",
-        onPress: () => console.log("Change Email")
-      },
-      {
-        title: "Cambiar Password",
-        iconType: "material-community",
-        iconNameLeft: "lock-reset",
-        iconColorLeft: "#ccc",
-        iconNameRight: "chevron-right",
-        iconColorRight: "#ccc",
-        onPress: () => console.log("Change Password")
-      }
+      title: "Cambiar Email",
+      iconType: "material-community",
+      iconNameLeft: "at",
+      iconColorLeft: "#ccc",
+      iconNameRight: "chevron-right",
+      iconColorRight: "#ccc",
+      onPress: () => selectedComponent("displayModalChangeEmail")
+    },
+    {
+      title: "Cambiar Password",
+      iconType: "material-community",
+      iconNameLeft: "lock-reset",
+      iconColorLeft: "#ccc",
+      iconNameRight: "chevron-right",
+      iconColorRight: "#ccc",
+      onPress: () => selectedComponent("displayModalChangePassword")
+    }
   ];
+
+  const selectedComponent = key => {
+    switch (key) {
+      case "displayModalChangeName":
+        setRenderComponent(
+          <ChangeDisplayNameForm
+            displayName={userInfo.displayName}
+            setIsVisibleModal={setIsVisibleModal}
+            setReloadData = {setReloadData}
+            toastRef = {toastRef}
+          />
+        );
+        setIsVisibleModal(true);
+        break;
+      case "displayModalChangeEmail":
+        setRenderComponent(<ChangeEmailForm />);
+        setIsVisibleModal(true);
+        break;
+      case "displayModalChangePassword":
+        setRenderComponent(<ChangePasswordForm />);
+        setIsVisibleModal(true);
+        break;
+      default:
+        break;
+    }
+    //   setIsVisibleModal(true);
+  };
   return (
     <View>
       {menuOptions.map((menu, index) => (
@@ -52,13 +87,19 @@ export default AccountOptions = () => {
           containerStyle={styles.menuItem}
         />
       ))}
+
+      {renderComponent && (
+        <Modal isVisible={isVisibleModal} setIsVisible={setIsVisibleModal}>
+          {renderComponent}
+        </Modal>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   menuItem: {
-      borderBottomWidth:1,
-      borderBottomColor:"#e3e3e3"
+    borderBottomWidth: 1,
+    borderBottomColor: "#e3e3e3"
   }
 });
