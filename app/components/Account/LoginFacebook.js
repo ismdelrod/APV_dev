@@ -24,9 +24,7 @@ export default LoginFacebook = props => {
       if (type === "success") {
         setIsLoading(true);
         // const credentialsFetch = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
-        const credentials = firebase.auth.FacebookAuthProvider.credential(
-          token
-        );
+        const credentials = firebase.auth.FacebookAuthProvider.credential( token );
         //TO DO: No funciona LogIn con facebook, falla autentificación con firebase
         await firebase
           .auth()
