@@ -48,14 +48,21 @@ export default AccountOptions = props => {
           <ChangeDisplayNameForm
             displayName={userInfo.displayName}
             setIsVisibleModal={setIsVisibleModal}
-            setReloadData = {setReloadData}
-            toastRef = {toastRef}
+            setReloadData={setReloadData}
+            toastRef={toastRef}
           />
         );
         setIsVisibleModal(true);
         break;
       case "displayModalChangeEmail":
-        setRenderComponent(<ChangeEmailForm />);
+        setRenderComponent(
+          <ChangeEmailForm
+            email={userInfo.email}
+            setIsVisibleModal={setIsVisibleModal}
+            setReloadData={setReloadData}
+            toastRef={toastRef}
+          />
+        );
         setIsVisibleModal(true);
         break;
       case "displayModalChangePassword":
@@ -65,7 +72,6 @@ export default AccountOptions = props => {
       default:
         break;
     }
-    //   setIsVisibleModal(true);
   };
   return (
     <View>

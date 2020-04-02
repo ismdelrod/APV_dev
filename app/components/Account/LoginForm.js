@@ -6,8 +6,6 @@ import { validateEmail, validatePassword } from "../../utils/Validation";
 import * as firebase from "firebase/app";
 import Loading from "../Loading";
 
-
-
 LoginForm = props => {
   //mensajes de Info/Error y navegación por props con restructuring
   const { toastRef, navigation } = props;
@@ -22,7 +20,7 @@ LoginForm = props => {
   const [isVisibleLoading, setIsVisibleLoading] = useState(false);
 
   //Eventos botones
-  // TO DO: Añadir validación para email ya registrado y habilitar deshabilitar campos según se complete el anterior
+  // TO DO: Añadir validación para email ya registrado y validar la seguridad del password
   const btnLoginOnPress = async () => {
     const resultEmailValidation = validateEmail(email);
     const resultPasswordValidation = validatePassword(password);
@@ -33,7 +31,9 @@ LoginForm = props => {
       toastRef.current.show("Todos los campos son obligatorios");
     } else {
       if (!validateEmail(email)) {
-        toastRef.current.show("Email Incorrecto");
+        toastRef.current.show(
+          "El Email introducido no tiene un formato válido"
+        );
       } else {
         await firebase
           .auth()

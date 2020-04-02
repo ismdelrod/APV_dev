@@ -5,7 +5,7 @@ import * as firebase from "firebase";
 
 export default ChangeDisplayNameForm = props => {
   const { displayName, setIsVisibleModal, setReloadData, toastRef } = props;
-  const [newDisplayName, setNewDisplayName] = useState(null);
+  const [newDisplayName, setNewDisplayName] = useState("");
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
