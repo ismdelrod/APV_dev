@@ -33,7 +33,7 @@ export default ChangeDisplayNameForm = props => {
   return (
     <View style={styles.viewStyle}>
       <Input
-        placeholder="Nombre"
+        placeholder="Nuevo Nombre"
         containerStyle={styles.inputContainerStyle}
         defaultValue={displayName && displayName}
         onChange={e => setNewDisplayName(e.nativeEvent.text)}

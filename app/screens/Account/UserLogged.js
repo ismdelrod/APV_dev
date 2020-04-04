@@ -41,8 +41,6 @@ export default UserLogged = () => {
         buttonStyle={styles.btnCloseSession}
         titleStyle={styles.btnCloseSessionText}
         onPress={() => firebase.auth().signOut()}
-
-        // containerStyle={styles.btnCloseSessionContainer}
       />
       <Toast ref={toastRef} position="center" opacity={0.5} />
       <Loading text={textLoading} isVisible={isLoading} />
@@ -70,11 +68,4 @@ const styles = StyleSheet.create({
   btnCloseSessionText: {
     color: "#00a680"
   }
-
-  // ,
-  // btnCloseSessionContainer: {
-  //   width: "100%",
-  //   height: 30,
-  //   alignItems:"center"
-  // }
 });

@@ -13,7 +13,7 @@ export default AccountOptions = props => {
 
   const menuOptions = [
     {
-      title: "Cambiar Nombre y Apellidos",
+      title: "Cambiar Nombre de Usuario",
       iconType: "material-community",
       iconNameLeft: "account-circle",
       iconColorLeft: "#ccc",
@@ -31,7 +31,7 @@ export default AccountOptions = props => {
       onPress: () => selectedComponent("displayModalChangeEmail")
     },
     {
-      title: "Cambiar Password",
+      title: "Cambiar Contraseña",
       iconType: "material-community",
       iconNameLeft: "lock-reset",
       iconColorLeft: "#ccc",
@@ -66,7 +66,14 @@ export default AccountOptions = props => {
         setIsVisibleModal(true);
         break;
       case "displayModalChangePassword":
-        setRenderComponent(<ChangePasswordForm />);
+        setRenderComponent(
+          <ChangePasswordForm
+            password={userInfo.password}
+            setIsVisibleModal={setIsVisibleModal}
+            setReloadData={setReloadData}
+            toastRef={toastRef}
+          />
+        );
         setIsVisibleModal(true);
         break;
       default:

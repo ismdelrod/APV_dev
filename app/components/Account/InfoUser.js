@@ -84,10 +84,9 @@ export default InfoUser = props => {
       />
       <View>
         <Text style={styles.displayName}>
-          {displayName ? displayName : "Anónimo"}{" "}
+          {displayName ? displayName : "Anónimo"}
         </Text>
-      </View>
-      <View>
+      
         <Text>{email ? email : "Social Login"} </Text>
       </View>
     </View>

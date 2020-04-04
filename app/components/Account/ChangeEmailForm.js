@@ -56,7 +56,7 @@ export default ChangeEmailForm = props => {
   return (
     <View style={styles.viewStyle}>
       <Input
-        placeholder="Email"
+        placeholder="Nuevo Email"
         containerStyle={styles.inputContainerStyle}
         defaultValue={email && email}
         onChange={e => setNewEmail(e.nativeEvent.text)}

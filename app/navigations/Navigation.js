@@ -12,6 +12,8 @@ import SearchScreen from "../screens/Search";
 import LoginScreen from "../screens/Account/Login";
 import RegisterScreen from "../screens/Account/Register";
 
+import AddVapeStoreScreen from "../screens/VapeStores/AddVapeStore";
+
 const BottomTab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -19,6 +21,7 @@ VapeStoresStack = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Vape Stores" component={VapeStoresScreen} />
+      <Stack.Screen name="Nueva Vape Store" component={AddVapeStoreScreen} />
     </Stack.Navigator>
   );
 };
