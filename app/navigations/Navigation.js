@@ -21,7 +21,7 @@ VapeStoresStack = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Vape Stores" component={VapeStoresScreen} />
-      <Stack.Screen name="Nueva Vape Store" component={AddVapeStoreScreen} />
+      <Stack.Screen name="AddVapeStore" component={AddVapeStoreScreen} />
     </Stack.Navigator>
   );
 };

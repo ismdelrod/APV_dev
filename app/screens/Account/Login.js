@@ -1,5 +1,5 @@
 import React, { useRef }  from "react";
-import { StyleSheet, view, ScrollView, Text, Image, View } from "react-native";
+import { StyleSheet, ScrollView, Text, Image, View } from "react-native";
 import { Divider } from "react-native-elements";
 import LoginForm from "../../components/Account/LoginForm";
 import LoginFacebook from "../../components/Account/LoginFacebook";
