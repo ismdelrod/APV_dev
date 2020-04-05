@@ -1,14 +1,24 @@
 import React, { useState, useEffect, useRef } from "react"; // useState, useEffect son Hooks
-import { StyleSheet, View, ScrollView, Alert, Dimensions } from "react-native";
-import { Icon, Avatar, Image, Button } from "react-native-elements";
+import { StyleSheet, View, ScrollView, Alert } from "react-native";
+import { Icon, Avatar, Input } from "react-native-elements";
 import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
+import MainImage from "../MainImage";
 
 export default AddVapeStoreForm = (props) => {
   const { navigation, toastRef, setIsLoading } = props;
   const [imagesSelected, setImageSelected] = useState([]);
+  const [storeName, setStoreName] = useState("");
+  const [storeAddress, setStoreAddress] = useState("");
+  const [storeDescription, setStoreDescription] = useState("");
   return (
     <ScrollView>
+      <MainImage image={imagesSelected[0]} />
+      <FormAdd
+        setStoreName={setStoreName}
+        setStoreAddress={setStoreAddress}
+        setStoreDescription={setStoreDescription}
+      />
       <UploadImage
         imagesSelected={imagesSelected}
         setImageSelected={setImageSelected}
@@ -50,7 +60,7 @@ UploadImage = (props) => {
     }
   };
 
-  const removeImage = img => {
+  const removeImage = (img) => {
     const arrayImages = imagesSelected;
 
     Alert.alert(
@@ -87,12 +97,41 @@ UploadImage = (props) => {
       {imagesSelected.map((image, index) => (
         <Avatar
           key={index}
-          onPress={()=>removeImage(image)}
+          onPress={() => removeImage(image)}
           style={styles.miniatureStyle}
           source={{ uri: image }}
         />
       ))}
+    </View>
+  );
+};
 
+FormAdd = (props) => {
+  const{setStoreName, setStoreAddress, setStoreDescription} = props;
+  return (
+    <View style={styles.viewFormStyle}>
+      <Input
+        placeholder="Nombre de la Tienda"
+        containerStyle={styles.inputStyle}
+        onChange={(e)=>setStoreName(e.nativeEvent.text)}
+      />
+      <Input
+        placeholder="Dirección"
+        containerStyle={styles.inputStyle}
+        rightIcon={{
+          type: "material-community",
+          name: "google-maps",
+          color: "#c2c2c2",
+          // onPress={()=>}
+        }}
+        onChange={(e)=>setStoreAddress(e.nativeEvent.text)}
+      />
+      <Input
+        placeholder="Descripción"
+        multiline={true}
+        inputContainerStyle={styles.textAreaStyle}
+        onChange={(e)=>setStoreDescription(e.nativeEvent.text)}
+      />
     </View>
   );
 };
@@ -116,5 +155,18 @@ const styles = StyleSheet.create({
     marginRight: 10,
     height: 70,
     width: 70,
+  },
+  viewFormStyle: {
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  inputStyle: {
+    marginBottom: 10,
+  },
+  textAreaStyle: {
+    height: 100,
+    width: "100%",
+    padding: 0,
+    margin: 0,
   },
 });
