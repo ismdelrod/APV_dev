@@ -6,11 +6,11 @@ import * as Permissions from "expo-permissions";
 
 export default AddVapeStoreForm = (props) => {
   const { navigation, toastRef, setIsLoading } = props;
-  const [imageSelected, setImageSelected] = useState([]);
+  const [imagesSelected, setImageSelected] = useState([]);
   return (
     <ScrollView>
       <UploadImage
-        imageSelected={imageSelected}
+        imagesSelected={imagesSelected}
         setImageSelected={setImageSelected}
         toastRef={toastRef}
       />
@@ -19,49 +19,80 @@ export default AddVapeStoreForm = (props) => {
 };
 
 UploadImage = (props) => {
-  const { imageSelected, setImageSelected, toastRef } = props;
+  const { imagesSelected, setImageSelected, toastRef } = props;
 
-  const AddImageSelected = async () => {
-    debugger;
+  const addImageSelected = async () => {
     const resultPermission = await Permissions.askAsync(
       Permissions.CAMERA_ROLL
     );
-    debugger;
+
     const resultPermissionCamera =
       resultPermission.permissions.cameraRoll.status;
-      debugger;
     if (resultPermissionCamera === "denied") {
       toastRef.current.show(
-        "Es necesario aceptar los permisos de la Galería, si los rechazaste debes activarlos de forma manual desde los Ajustes del dispositivo.", 5000
+        "Es necesario aceptar los permisos de la Galería, si los rechazaste debes activarlos de forma manual desde los Ajustes del dispositivo.",
+        5000
       );
     } else {
       const result = await ImagePicker.launchImageLibraryAsync({
-        allowsEditing:true,
-        aspect:[4, 3]
-      })
+        allowsEditing: true,
+        aspect: [4, 3],
+      });
 
-      if(result.cancelled){
-        toastRef.current.show("Has cerrado la galería sin seleccionar ninguna imagen.", 3000);
-      }
-      else{
-        setImageSelected([...imageSelected, result.uri]);//imageSelected += result.uri
+      if (result.cancelled) {
+        toastRef.current.show(
+          "Has cerrado la galería sin seleccionar ninguna imagen.",
+          3000
+        );
+      } else {
+        setImageSelected([...imagesSelected, result.uri]); //imagesSelected += result.uri
       }
     }
   };
+
+  const removeImage = img => {
+    const arrayImages = imagesSelected;
+
+    Alert.alert(
+      "Eliminar Imagen",
+      "¿Estás seguro de querer eliminar esta imagen?",
+      [
+        {
+          text: "cancel",
+          style: "cancel",
+        },
+        {
+          text: "Eliminar",
+          onPress: () =>
+            setImageSelected(arrayImages.filter((imgUrl) => imgUrl !== img)),
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  console.log(imagesSelected);
   return (
     <View style={styles.viewImageStyle}>
-      <Icon
-        type="material-community"
-        name="camera"
-        color="#7a7a7a"
-        containerStyle={styles.containerIconCStyle}
-        onPress={AddImageSelected}
-      />
-      <Avatar
-        // onPress={()=> }
-        style={styles.miniatureStyle}
-        // source={{}}
-      />
+      {imagesSelected.length < 5 && (
+        <Icon
+          type="material-community"
+          name="camera"
+          color="#7a7a7a"
+          containerStyle={styles.containerIconCStyle}
+          onPress={addImageSelected}
+        />
+      )}
+
+      {imagesSelected.map((image, index) => (
+        <Avatar
+          key={index}
+          onPress={()=>removeImage(image)}
+          style={styles.miniatureStyle}
+          source={{ uri: image }}
+        />
+      ))}
+
     </View>
   );
 };
