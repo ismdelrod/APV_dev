@@ -1,9 +1,12 @@
-import React, { useState, useEffect, useRef } from "react"; // useState, useEffect son Hooks
+import React, { useState, useEffect } from "react"; // useState, useEffect son Hooks
 import { StyleSheet, View, ScrollView, Alert } from "react-native";
-import { Icon, Avatar, Input } from "react-native-elements";
+import { Icon, Avatar, Input, Button } from "react-native-elements";
 import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
 import MainImage from "../MainImage";
+import MapView from "react-native-maps";
+import Modal from "../Modal";
+import * as Location from "expo-location";
 
 export default AddVapeStoreForm = (props) => {
   const { navigation, toastRef, setIsLoading } = props;
@@ -11,6 +14,8 @@ export default AddVapeStoreForm = (props) => {
   const [storeName, setStoreName] = useState("");
   const [storeAddress, setStoreAddress] = useState("");
   const [storeDescription, setStoreDescription] = useState("");
+  const [isVisibleMap, setIsVisibleMap] = useState(false);
+  const [locationStore, setLocationStore] = useState(null);
   return (
     <ScrollView>
       <MainImage image={imagesSelected[0]} />
@@ -18,17 +23,26 @@ export default AddVapeStoreForm = (props) => {
         setStoreName={setStoreName}
         setStoreAddress={setStoreAddress}
         setStoreDescription={setStoreDescription}
+        setIsVisibleMap={setIsVisibleMap}
+        locationStore={locationStore}
       />
       <UploadImage
         imagesSelected={imagesSelected}
         setImageSelected={setImageSelected}
         toastRef={toastRef}
       />
+
+      <GoogleMap
+        isVisibleMap={isVisibleMap}
+        setIsVisibleMap={setIsVisibleMap}
+        setLocationStore={setLocationStore}
+        toastRef={toastRef}
+      />
     </ScrollView>
   );
 };
 
-UploadImage = (props) => {
+const UploadImage = (props) => {
   const { imagesSelected, setImageSelected, toastRef } = props;
 
   const addImageSelected = async () => {
@@ -81,7 +95,6 @@ UploadImage = (props) => {
     );
   };
 
-  console.log(imagesSelected);
   return (
     <View style={styles.viewImageStyle}>
       {imagesSelected.length < 5 && (
@@ -106,14 +119,20 @@ UploadImage = (props) => {
   );
 };
 
-FormAdd = (props) => {
-  const{setStoreName, setStoreAddress, setStoreDescription} = props;
+const FormAdd = (props) => {
+  const {
+    setStoreName,
+    setStoreAddress,
+    setStoreDescription,
+    setIsVisibleMap,
+    locationStore,
+  } = props;
   return (
     <View style={styles.viewFormStyle}>
       <Input
         placeholder="Nombre de la Tienda"
         containerStyle={styles.inputStyle}
-        onChange={(e)=>setStoreName(e.nativeEvent.text)}
+        onChange={(e) => setStoreName(e.nativeEvent.text)}
       />
       <Input
         placeholder="Dirección"
@@ -121,18 +140,90 @@ FormAdd = (props) => {
         rightIcon={{
           type: "material-community",
           name: "google-maps",
-          color: "#c2c2c2",
-          // onPress={()=>}
+          color: locationStore ? "#00a680" : "#c2c2c2",
+          onPress: () => setIsVisibleMap(true),
         }}
-        onChange={(e)=>setStoreAddress(e.nativeEvent.text)}
+        onChange={(e) => setStoreAddress(e.nativeEvent.text)}
       />
       <Input
         placeholder="Descripción"
         multiline={true}
         inputContainerStyle={styles.textAreaStyle}
-        onChange={(e)=>setStoreDescription(e.nativeEvent.text)}
+        onChange={(e) => setStoreDescription(e.nativeEvent.text)}
       />
     </View>
+  );
+};
+
+const GoogleMap = (props) => {
+  const { isVisibleMap, setIsVisibleMap, setLocationStore, toastRef } = props;
+  const [location, setLocation] = useState(null);
+
+  console.log(location);
+  
+  
+  useEffect(() => {
+    (async () => {
+      const resultPermissions = await Permissions.askAsync(
+        Permissions.LOCATION
+      );
+      const statusPermission = resultPermissions.permissions.location.status;
+
+      if (statusPermission !== "granted") {
+        toastRef.current.show(
+          "Es necesario aceptar los permisos de Localización, si los rechazaste debes activarlos de forma manual desde los Ajustes del dispositivo.",
+          5000
+        );
+      } else {
+        const loc = await Location.getCurrentPositionAsync({});
+        console.log(loc);
+        setLocation({
+          latitude: loc.coords.latitude,
+          latitudeDelta: 0.001,
+          longitude: loc.coords.longitude,
+          longitudeDelta: 0.001,
+        });
+      }
+    })();
+  }, []);
+
+  
+  return (
+    <Modal isVisible={isVisibleMap} setIsVisible={setIsVisibleMap}>
+      <View>
+        {location && (
+          <MapView
+            style={styles.mapStyle}
+            initialRegion={location}
+            showsUserLocation={true}
+            onRegionChange={region => setLocation(region)}
+          >
+            <MapView.Marker
+              coordinate={{
+                latitude: location.latitude,
+                longitude: location.longitude,
+              }}
+              draggable
+            />
+          </MapView>
+        )}
+
+        <View style={styles.viewMapBtnStyle}>
+          <Button
+            title="Guardar"
+            // onPress={()=> }
+            containerStyle={styles.btnSaveMapContainerStyle}
+            buttonStyle={styles.btnSaveMapBtnStyle}
+          />
+          <Button
+            title="Cancelar"
+            onPress={() => setIsVisibleMap(false)}
+            containerStyle={styles.btnCancelMapContainerStyle}
+            buttonStyle={styles.btnCancelMapBtnStyle}
+          />
+        </View>
+      </View>
+    </Modal>
   );
 };
 
@@ -168,5 +259,26 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: 0,
     margin: 0,
+  },
+  mapStyle: {
+    width: "100%",
+    height: 550,
+  },
+  viewMapBtnStyle: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 10,
+  },
+  btnSaveMapContainerStyle: {
+    paddingRight: 10,
+  },
+  btnSaveMapBtnStyle: {
+    backgroundColor: "#00a680",
+  },
+  btnCancelMapContainerStyle: {
+    paddingLeft: 10,
+  },
+  btnCancelMapBtnStyle: {
+    backgroundColor: "#a60d0d",
   },
 });
