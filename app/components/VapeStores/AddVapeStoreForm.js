@@ -159,8 +159,6 @@ const GoogleMap = (props) => {
   const { isVisibleMap, setIsVisibleMap, setLocationStore, toastRef } = props;
   const [location, setLocation] = useState(null);
 
-  console.log(location);
-  
   
   useEffect(() => {
     (async () => {
@@ -175,8 +173,7 @@ const GoogleMap = (props) => {
           5000
         );
       } else {
-        const loc = await Location.getCurrentPositionAsync({});
-        console.log(loc);
+        const loc = await Location.getCurrentPositionAsync({enableHighAccurracy:true});
         setLocation({
           latitude: loc.coords.latitude,
           latitudeDelta: 0.001,
