@@ -8,6 +8,25 @@ import MapView from "react-native-maps";
 import Modal from "../Modal";
 import * as Location from "expo-location";
 
+// Para Evitar los Warnings sobre el componente ActionButton
+import { YellowBox } from "react-native";
+import _ from "lodash";
+YellowBox.ignoreWarnings(["Setting a timer"]);
+const _console = _.clone(console);
+console.warn = (message) => {
+  if (message.indexOf("Setting a timer") <= -1) {
+    _console.warn(message);
+  }
+};
+//********************************************************** */
+
+
+//Configuración de Firebase con Firestore
+import firebase from "../../utils/Firebase";
+const db = firebase.firestore(firebase);
+
+import uuid from "random-uuid-v4/uuidv4";
+
 export default AddVapeStoreForm = (props) => {
   const { navigation, toastRef, setIsLoading } = props;
   const [imagesSelected, setImageSelected] = useState([]);
@@ -16,6 +35,61 @@ export default AddVapeStoreForm = (props) => {
   const [storeDescription, setStoreDescription] = useState("");
   const [isVisibleMap, setIsVisibleMap] = useState(false);
   const [locationStore, setLocationStore] = useState(null);
+ 
+  const addStore = () => {
+    if (!storeName || !storeAddress || !storeDescription) {
+      toastRef.current.show("Todos los campos del formulario son obligatorios");
+    } else if (imagesSelected.length === 0) {
+      toastRef.current.show("Hay que añadir mínimo una imagen");
+    } else if (!locationStore) {
+      toastRef.current.show("Tienes que ubicar la dirección en el mapa");
+    } else {
+      setIsLoading(true);
+      uploadImageStorage(imagesSelected).then((arrayImages) => {
+        db.collection("stores")
+          .add({
+            name: storeName,
+            address: storeAddress,
+            description: storeDescription,
+            location: locationStore,
+            images: arrayImages,
+            rating: 0,
+            ratingTotal: 0,
+            quantityVoting: 0,
+            createAt: new Date(),
+            createBy: firebase.auth().currentUser.uid,
+            isActive: false,
+          })
+          .then(() => {
+            setIsLoading(false);
+            navigation.navigate("VapeStores");
+          })
+          .catch(() => {
+            setIsLoading(false);
+            toastRef.current.show(
+              "Error al añadir el nuevo registro, inténtelo más tarde"
+            );
+          });
+      });
+    }
+  };
+
+  const uploadImageStorage = async (imagesArray) => {
+    const arrayImages = [];
+    await Promise.all(
+      imagesArray.map(async (image) => {
+        const response = await fetch(image);
+        const blob = await response.blob();
+        const ref = firebase.storage().ref("stores-images").child(uuid());
+
+        await ref.put(blob).then((result) => {
+          arrayImages.push(result.metadata.name);
+        });
+      })
+    );
+    return arrayImages;
+  };
+
   return (
     <ScrollView>
       <MainImage image={imagesSelected[0]} />
@@ -32,6 +106,11 @@ export default AddVapeStoreForm = (props) => {
         toastRef={toastRef}
       />
 
+      <Button
+        title="Añadir"
+        onPress={addStore}
+        buttonStyle={styles.btnAddStoreStyle}
+      />
       <GoogleMap
         isVisibleMap={isVisibleMap}
         setIsVisibleMap={setIsVisibleMap}
@@ -159,7 +238,6 @@ const GoogleMap = (props) => {
   const { isVisibleMap, setIsVisibleMap, setLocationStore, toastRef } = props;
   const [location, setLocation] = useState(null);
 
-  
   useEffect(() => {
     (async () => {
       const resultPermissions = await Permissions.askAsync(
@@ -173,7 +251,9 @@ const GoogleMap = (props) => {
           5000
         );
       } else {
-        const loc = await Location.getCurrentPositionAsync({enableHighAccurracy:true});
+        const loc = await Location.getCurrentPositionAsync({
+          enableHighAccurracy: true,
+        });
         setLocation({
           latitude: loc.coords.latitude,
           latitudeDelta: 0.001,
@@ -184,7 +264,12 @@ const GoogleMap = (props) => {
     })();
   }, []);
 
-  
+  const confirmLocation = () => {
+    setLocationStore(location);
+    toastRef.current.show("Se ha guardado la localización");
+    setIsVisibleMap(false);
+  };
+
   return (
     <Modal isVisible={isVisibleMap} setIsVisible={setIsVisibleMap}>
       <View>
@@ -193,7 +278,7 @@ const GoogleMap = (props) => {
             style={styles.mapStyle}
             initialRegion={location}
             showsUserLocation={true}
-            onRegionChange={region => setLocation(region)}
+            onRegionChange={(region) => setLocation(region)}
           >
             <MapView.Marker
               coordinate={{
@@ -208,7 +293,7 @@ const GoogleMap = (props) => {
         <View style={styles.viewMapBtnStyle}>
           <Button
             title="Guardar"
-            // onPress={()=> }
+            onPress={confirmLocation}
             containerStyle={styles.btnSaveMapContainerStyle}
             buttonStyle={styles.btnSaveMapBtnStyle}
           />
@@ -277,5 +362,9 @@ const styles = StyleSheet.create({
   },
   btnCancelMapBtnStyle: {
     backgroundColor: "#a60d0d",
+  },
+  btnAddStoreStyle: {
+    backgroundColor: "#00a680",
+    margin: 20,
   },
 });

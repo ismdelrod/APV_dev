@@ -20,7 +20,7 @@ const Stack = createStackNavigator();
 VapeStoresStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Vape Stores" component={VapeStoresScreen} />
+      <Stack.Screen name="VapeStores" component={VapeStoresScreen} />
       <Stack.Screen name="AddVapeStore" component={AddVapeStoreScreen} />
     </Stack.Navigator>
   );
@@ -33,7 +33,7 @@ TopVapeStoresStack = () => {
     </Stack.Navigator>
   );
 };
-
+ 
 AccountStack = () => {
   return (
     <Stack.Navigator>

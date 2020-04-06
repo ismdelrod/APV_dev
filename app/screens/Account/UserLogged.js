@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react"; // useState, useEffect son Hooks
 import { View, StyleSheet } from "react-native";
 import { Button } from "react-native-elements";
-import * as firebase from "firebase/app";
+import * as firebase from "firebase";
 import InfoUser from "../../components/Account/InfoUser";
 import Toast from "react-native-easy-toast";
 import Loading from "../../components/Loading";

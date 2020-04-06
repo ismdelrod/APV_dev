@@ -7,7 +7,6 @@ const widthScreen = Dimensions.get("window").width;
 export default MainImage = (props) => {
     const { image } = props;
   
-    debugger;
     return (
       <View style={styles.viewMainImageStyle}>
         {image ? (

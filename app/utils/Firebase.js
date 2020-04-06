@@ -1,14 +1,41 @@
-import * as firebase from "firebase/app";
+import * as firebase from 'firebase';
+import firestore from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBkLsjN1_dQ8TRY6nMJEFLXiqP27cWzfgg",
-  authDomain: "rn-apv.firebaseapp.com",
-  databaseURL: "https://rn-apv.firebaseio.com",
-  projectId: "rn-apv",
-  storageBucket: "rn-apv.appspot.com",
-  messagingSenderId: "37255937115",
-  appId: "1:37255937115:web:ccbbfee142783c47e3d37e",
-  measurementId: "G-9EEC6D9733"
+  apiKey: "AIzaSyDlpQgm9rWMA38jsW5kvXCic2GW7i2HCr0",
+  authDomain: "apv-app-rn.firebaseapp.com",
+  databaseURL: "https://apv-app-rn.firebaseio.com",
+  projectId: "apv-app-rn",
+  storageBucket: "apv-app-rn.appspot.com",
+  messagingSenderId: "446356113991",
+  appId: "1:446356113991:web:fbfe1982c811d39ed7ff62",
 };
+firebase.initializeApp(firebaseConfig);
+firebase.firestore();
 
-export const firebaseApp = [firebase.initializeApp(firebaseConfig)] ;
+export default firebase;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//TO DO Crear variables de entorno (dotenv)
+
+// import {
+//   API_KEY,
+//   AUTH_DOMAIN,
+//   DATABASE_URL,
+//   PROJECT_ID,
+//   STORAGE_BUCKET,
+//   MESSAGING_SENDER_ID,
+//   APP_ID,
+// } from "react-native-dotenv";

@@ -7,7 +7,7 @@ import {
   validatePassword,
   validatePasswordConfirmationIsOK
 } from "../../utils/Validation";
-import * as firebase from "firebase/app";
+import * as firebase from "firebase";
 import Loading from "../Loading";
 
 RegisterForm = props => {
