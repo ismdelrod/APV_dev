@@ -7,8 +7,12 @@ import MainImage from "../MainImage";
 import MapView from "react-native-maps";
 import Modal from "../Modal";
 import * as Location from "expo-location";
+import firebase from "../../utils/Firebase";
+const db = firebase.firestore(firebase);
 
-// Para Evitar los Warnings sobre el componente ActionButton
+import uuid from "random-uuid-v4/uuidv4";
+
+// TO DO:  Para Evitar los Warnings sobre el componente ActionButton
 import { YellowBox } from "react-native";
 import _ from "lodash";
 YellowBox.ignoreWarnings(["Setting a timer"]);
@@ -20,12 +24,6 @@ console.warn = (message) => {
 };
 //********************************************************** */
 
-
-//Configuración de Firebase con Firestore
-import firebase from "../../utils/Firebase";
-const db = firebase.firestore(firebase);
-
-import uuid from "random-uuid-v4/uuidv4";
 
 export default AddVapeStoreForm = (props) => {
   const { navigation, toastRef, setIsLoading } = props;
