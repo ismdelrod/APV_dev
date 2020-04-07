@@ -2,17 +2,19 @@ import React from "react";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createStackNavigator } from "@react-navigation/stack";
+import { createStackNavigator, HeaderTitle } from "@react-navigation/stack";
 import{MaterialCommunityIcons} from "@expo/vector-icons";
 
 import VapeStoresScreen from "../screens/VapeStores";
+import VapeStoreScreen from "../screens/VapeStores/VapeStore";
+import AddVapeStoreScreen from "../screens/VapeStores/AddVapeStore";
+
 import TopVapeStoresScreen from "../screens/TopVapeStores";
 import AccountScreen from "../screens/Account/Account";
 import SearchScreen from "../screens/Search";
 import LoginScreen from "../screens/Account/Login";
 import RegisterScreen from "../screens/Account/Register";
 
-import AddVapeStoreScreen from "../screens/VapeStores/AddVapeStore";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -20,8 +22,9 @@ const Stack = createStackNavigator();
 VapeStoresStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="VapeStores" component={VapeStoresScreen} />
-      <Stack.Screen name="AddVapeStore" component={AddVapeStoreScreen} />
+      <Stack.Screen name="VapeStores" options = { {title: 'Tiendas' }} component={VapeStoresScreen} />
+      <Stack.Screen name="AddVapeStore" options = { {title: 'Añadir Nueva Tienda' }} component={AddVapeStoreScreen} />
+      <Stack.Screen name="VapeStore" options = { ({ route }) => ({ title: route.params.store.item.store.name })} component={VapeStoreScreen} />
     </Stack.Navigator>
   );
 };
@@ -81,8 +84,8 @@ export default Navigation = () => {
       >
         <BottomTab.Screen name="Stores" component={VapeStoresStack} />
         <BottomTab.Screen name="Top 5" component={TopVapeStoresStack} />
-        <BottomTab.Screen name="Account" component={AccountStack} />
         <BottomTab.Screen name="Search" component={SearchStack} />
+        <BottomTab.Screen name="Account" component={AccountStack} />
       </BottomTab.Navigator>
     </NavigationContainer>
   );

@@ -26,7 +26,7 @@ console.warn = (message) => {
 
 
 export default AddVapeStoreForm = (props) => {
-  const { navigation, toastRef, setIsLoading } = props;
+  const { navigation, toastRef, setIsLoading, setIsReloadStores } = props;
   const [imagesSelected, setImageSelected] = useState([]);
   const [storeName, setStoreName] = useState("");
   const [storeAddress, setStoreAddress] = useState("");
@@ -60,6 +60,7 @@ export default AddVapeStoreForm = (props) => {
           })
           .then(() => {
             setIsLoading(false);
+            setIsReloadStores(true);
             navigation.navigate("VapeStores");
           })
           .catch(() => {

@@ -25,8 +25,8 @@ export default VapeStores = (props) => {
   const [startStores, setStartStores] = useState(null);
   const [isLoading, setIsLoading] = useState(null);
   const [totalStores, setTotalStores] = useState(0);
+  const [isReloadStores, setIsReloadStores] = useState(false);
   const limitStores = 8;
-
 
   //useEffectInfoUsuario
   useEffect(() => {
@@ -62,21 +62,54 @@ export default VapeStores = (props) => {
         setStores(resultStores);
       });
     })();
-  }, []);
+    setIsReloadStores(false);
+  }, [isReloadStores]);
+
+  const handleLoadMore = async () => {
+    const resultStores = [];
+    stores.legth < totalStores && setIsLoading(true);
+
+    const storesDB = db
+      .collection("stores")
+      .orderBy("createAt", "desc")
+      .startAfter(startStores.data().createAt)
+      .limit(limitStores);
+
+    await storesDB.get().then((response) => {
+      if (response.docs.length > 0) {
+        setStartStores(response.docs[response.docs.length - 1]);
+      } else {
+        setIsLoading(false);
+      }
+
+      response.forEach((doc) => {
+        let store = doc.data();
+        store.id = doc.id;
+        resultStores.push({ store });
+      });
+
+      setStores([...stores, ...resultStores]);
+    });
+  };
   return (
     <View style={styles.viewBodyStyle}>
-      <ListStores stores={stores} isLoading={isLoading}/>
-      {user && <AddVapeStoreButton navigation={navigation} />}
+      <ListStores
+        stores={stores}
+        isLoading={isLoading}
+        handleLoadMore={handleLoadMore}
+        navigation={navigation}
+      />
+      {user && <AddVapeStoreButton navigation={navigation} setIsReloadStores={setIsReloadStores} />}
     </View>
   );
 };
 
 AddVapeStoreButton = (props) => {
-  const { navigation } = props;
+  const { navigation, setIsReloadStores } = props;
   return (
     <ActionButton
       buttonColor="#00a680"
-      onPress={() => navigation.navigate("AddVapeStore")}
+      onPress={() => navigation.navigate("AddVapeStore",{setIsReloadStores})}
     />
   );
 };
