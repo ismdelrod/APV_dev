@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Dimensions, StyleSheet, ScrollView } from "react-native";
-import { Rating } from "react-native-elements";
+import StarRating from "react-native-star-rating";
 import CarouselImages from "../../components/CarouselImages";
 import * as firebase from "firebase";
 
@@ -52,11 +52,22 @@ const TitleStore = (props) => {
     <View style={styles.viewStoreTitleStyle}>
       <View style={styles.viewStoreTitleRowStyle}>
         <Text style={styles.nameStoreStyle}>{name}</Text>
-        <Rating
-          style={styles.ratingStyle}
-          imageSize={20}
-          readonly
-          startingValue={parseFloat(rating)}
+        <StarRating
+          starSize={20}
+          disabled={true}
+          emptyStar={"ios-star-outline"}
+          fullStar={"ios-star"}
+          halfStar={"ios-star-half"}
+          iconSet={"Ionicons"}
+          maxStars={5}
+          rating={parseFloat(rating)}
+          fullStarColor={
+            parseFloat(rating) <= 2
+              ? "#C80000"
+              : parseFloat(rating) > 2 && parseFloat(rating) < 4
+              ? "#FFBD00"
+              : "#03B900"
+          } 
         />
       </View>
       <Text style={styles.descriptionStoreStyle}>{description}</Text>
@@ -73,17 +84,15 @@ const styles = StyleSheet.create({
   },
   viewStoreTitleRowStyle: {
     flexDirection: "row",
+    width: "100%",
   },
   nameStoreStyle: {
     fontSize: 20,
     fontWeight: "bold",
+    width: "70%",
   },
-  ratingStyle: {
-    position: "absolute",
-    right: 0,
+  descriptionStoreStyle: {
+    marginTop: 5,
+    color: "grey",
   },
-  descriptionStoreStyle:{
-    marginTop:5,
-    color:"grey"
-  }
 });
