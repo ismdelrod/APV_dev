@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import ActionButton from "react-native-action-button";
-import ListStores from "../../components/VapeStores/ListStores";
-
-import firebase from "../../utils/Firebase";
-const db = firebase.firestore(firebase);
-
+// TO DO: Soluciona problema al cargar imagenes en ciertas versiones de firebase
+import {decode, encode} from 'base-64'
+if (!global.btoa) {
+    global.btoa = encode;
+}
+if (!global.atob) {
+    global.atob = decode;
+}
+//****************************************************************************** */
 // TO DO: Para Evitar los Warnings sobre el componente ActionButton
 import { YellowBox } from "react-native";
 import _ from "lodash";
@@ -17,6 +18,13 @@ console.warn = (message) => {
   }
 };
 //********************************************************** */
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet } from "react-native";
+import ActionButton from "react-native-action-button";
+import ListStores from "../../components/VapeStores/ListStores";
+import firebase from "../../utils/Firebase";
+const db = firebase.firestore(firebase);
+
 
 export default VapeStores = (props) => {
   const { navigation } = props;
