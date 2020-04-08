@@ -8,6 +8,7 @@ import{MaterialCommunityIcons} from "@expo/vector-icons";
 import VapeStoresScreen from "../screens/VapeStores";
 import VapeStoreScreen from "../screens/VapeStores/VapeStore";
 import AddVapeStoreScreen from "../screens/VapeStores/AddVapeStore";
+import AddReviewVapeStoreScreen from "../screens/VapeStores/AddReviewVapeStore";
 
 import TopVapeStoresScreen from "../screens/TopVapeStores";
 import AccountScreen from "../screens/Account/Account";
@@ -25,6 +26,7 @@ VapeStoresStack = () => {
       <Stack.Screen name="VapeStores" options = { {title: 'Tiendas' }} component={VapeStoresScreen} />
       <Stack.Screen name="AddVapeStore" options = { {title: 'Añadir Nueva Tienda' }} component={AddVapeStoreScreen} />
       <Stack.Screen name="VapeStore" options = { ({ route }) => ({ title: route.params.store.item.store.name })} component={VapeStoreScreen} />
+      <Stack.Screen name="AddReviewVapeStore" options = { {title: 'Añadir Opinión' }} component={AddReviewVapeStoreScreen} />
     </Stack.Navigator>
   );
 };

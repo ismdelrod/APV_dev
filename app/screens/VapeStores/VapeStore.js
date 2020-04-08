@@ -1,15 +1,29 @@
+//****************************************************************************** */
+// TO DO: Para Evitar los Warnings
+import { YellowBox } from "react-native";
+import _ from "lodash";
+YellowBox.ignoreWarnings(['componentWillMount']);
+const _console = _.clone(console);
+console.warn = (message) => {
+  if (message.indexOf("componentWillMount") <= -1) {
+    _console.warn(message);
+  }
+};
+//********************************************************** */
+
 import React, { useState, useEffect } from "react";
 import { View, Text, Dimensions, StyleSheet, ScrollView } from "react-native";
 import { ListItem } from "react-native-elements";
 import StarRating from "react-native-star-rating";
 import CarouselImages from "../../components/CarouselImages";
 import GoogleMap from "../../components/GoogleMap";
+import ListReviews from "../../components/VapeStores/ListReviews";
 import * as firebase from "firebase";
 
 const screesWidth = Dimensions.get("window").width;
 
 export default VapeStore = (props) => {
-  const { route } = props;
+  const {navigation, route } = props;
   const { store } = route.params.store.item; //Function pasada por parámetros a través de navigation.
   const [imagesStore, setImagesStore] = useState([]);
 
@@ -49,6 +63,8 @@ export default VapeStore = (props) => {
         name={store.name}
         address={store.address}
       />
+
+      <ListReviews navigation={navigation} idStore={store.id} />
     </ScrollView>
   );
 };
@@ -100,11 +116,11 @@ const StoreInfo = (props) => {
       action: null,
     },
     {
-      text: "añadir email al form" ,
+      text: "añadir email al form",
       iconName: "at",
       iconType: "material-community",
       action: null,
-    }
+    },
   ];
   return (
     <View style={styles.viewInfoStoreStyle}>

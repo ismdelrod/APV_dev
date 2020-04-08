@@ -1,10 +1,4 @@
-import React, { useState, useRef } from "react"; // useState, useEffect son Hooks
-import { StyleSheet, View, Text } from "react-native";
-import Toast from "react-native-easy-toast";
-import Loading from "../../components/Loading";
-import AddVapeStoreForm from "../../components/VapeStores/AddVapeStoreForm";
-
-// TO DO: Para Evitar los Warnings sobre el componente ActionButton
+// TO DO: Para Evitar los Warnings
 import { YellowBox } from "react-native";
 import _ from "lodash";
 YellowBox.ignoreWarnings([
@@ -21,6 +15,12 @@ console.warn = (message) => {
   }
 };
 //********************************************************** */
+
+import React, { useState, useRef } from "react"; // useState, useEffect son Hooks
+import { View } from "react-native";
+import Toast from "react-native-easy-toast";
+import Loading from "../../components/Loading";
+import AddVapeStoreForm from "../../components/VapeStores/AddVapeStoreForm";
 
 export default AddVapeStore = (props) => {
   const { navigation, route } = props;

@@ -18,8 +18,9 @@ console.warn = (message) => {
   }
 };
 //********************************************************** */
+
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import ActionButton from "react-native-action-button";
 import ListStores from "../../components/VapeStores/ListStores";
 import firebase from "../../utils/Firebase";
