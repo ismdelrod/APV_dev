@@ -30,10 +30,6 @@ export default LoginFacebook = props => {
           .auth()
           .signInWithCredential(credentials)
           .then(() => {
-            toastRef.current.show(
-              "Logged in!",
-              `Hi ${credentials.json().name}!`
-            );
             navigation.navigate("Account");
           })
           .catch(() => {

@@ -107,7 +107,7 @@ const Review = (props) => {
           rounded
           containerStyle={styles.imageAvatarUserStyle}
           source={{
-            url: avatarUser
+            uri: avatarUser
               ? avatarUser
               : "https://api.adorable.io/avatars/50/abott@adorable.png",
           }}
