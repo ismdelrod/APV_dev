@@ -1,3 +1,15 @@
+// TO DO:  Para Evitar los Warnings sobre el componente ActionButton
+import { YellowBox } from "react-native";
+import _ from "lodash";
+YellowBox.ignoreWarnings(["Setting a timer"]);
+const _console = _.clone(console);
+console.warn = (message) => {
+  if (message.indexOf("Setting a timer") <= -1) {
+    _console.warn(message);
+  }
+};
+//********************************************************** */
+
 import React, { useState, useEffect } from "react"; // useState, useEffect son Hooks
 import { StyleSheet, View, ScrollView, Alert } from "react-native";
 import { Icon, Avatar, Input, Button } from "react-native-elements";
@@ -11,19 +23,6 @@ import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
 
 import uuid from "random-uuid-v4/uuidv4";
-
-// TO DO:  Para Evitar los Warnings sobre el componente ActionButton
-import { YellowBox } from "react-native";
-import _ from "lodash";
-YellowBox.ignoreWarnings(["Setting a timer"]);
-const _console = _.clone(console);
-console.warn = (message) => {
-  if (message.indexOf("Setting a timer") <= -1) {
-    _console.warn(message);
-  }
-};
-//********************************************************** */
-
 
 export default AddVapeStoreForm = (props) => {
   const { navigation, toastRef, setIsLoading, setIsReloadStores } = props;
