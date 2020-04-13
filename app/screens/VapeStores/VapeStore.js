@@ -25,7 +25,7 @@ import { ListItem, Icon } from "react-native-elements";
 import StarRating from "react-native-star-rating";
 import CarouselImages from "../../components/CarouselImages";
 import GoogleMap from "../../components/GoogleMap";
-import ListReviews from "../../components/VapeStores/ListReviews";
+import ListVapeStoreReviews from "../../components/VapeStores/ListVapeStoreReviews";
 import { GeneralTypeEnum } from "../../utils/Enumerations";
 import Toast from "react-native-easy-toast";
 
@@ -36,33 +36,17 @@ const screesWidth = Dimensions.get("window").width;
 
 export default VapeStore = (props) => {
   const { navigation, route } = props;
-  const { store } = route.params.store.item; //Function pasada por parámetros a través de navigation.
+  const { store } = route.params; //Function pasada por parámetros a través de navigation.
   const [imagesStore, setImagesStore] = useState([]);
   const [isFavorite, setIsFavorite] = useState(false);
-  const toastRef = useRef();
+  const [userLogged, setUserLogged] = useState(false);
   const [rating, setRating] = useState(store.rating);
 
-  const addFavorite = () => {
-    const payload = {
-      idUser: firebase.auth().currentUser.uid,
-      idStore: store.id,
-      type: GeneralTypeEnum.store,
-    };
+  const toastRef = useRef();
 
-    db.collection("fovorites")
-      .add(payload)
-      .then(() => {
-        toastRef.current.show("Añadido a Favoritos");
-        setIsFavorite(true);
-      })
-      .catch(() => {
-        toastRef.current.show("Error al intentar añadir a Favoritos");
-      });
-  };
-
-  const removeFavorite = () => {
-    setIsFavorite(false);
-  };
+  firebase.auth().onAuthStateChanged((user) => {
+    user ? setUserLogged(true) : setUserLogged(false);
+  });
 
   useEffect(() => {
     const arrayImagesUrls = [];
@@ -81,6 +65,68 @@ export default VapeStore = (props) => {
       setImagesStore(arrayImagesUrls);
     })();
   }, []);
+
+  useEffect(() => {
+    if (userLogged) {
+      db.collection("favorites")
+        .where("idFavorite", "==", store.id)
+        .where("idUser", "==", firebase.auth().currentUser.uid)
+        .get()
+        .then((response) => {
+          if (response.docs.length === 1) {
+            setIsFavorite(true);
+          }
+        });
+    }
+  }, []);
+  const addFavorite = () => {
+    if (userLogged) {
+      const payload = {
+        idFavorite: store.id,
+        idUser: firebase.auth().currentUser.uid,
+        type: GeneralTypeEnum.store,
+      };
+  
+      db.collection("favorites")
+        .add(payload)
+        .then(() => {
+          toastRef.current.show("Añadido a Favoritos");
+          setIsFavorite(true);
+        })
+        .catch(() => {
+          toastRef.current.show("Error al intentar añadir a Favoritos");
+        });
+    }
+    else{
+      toastRef.current.show("Para usar el sistema de favoritos debes estar Logueado", 3000)
+    }
+  };
+
+  const removeFavorite = () => {
+    db.collection("favorites")
+      .where("idFavorite", "==", store.id)
+      .where("idUser", "==", firebase.auth().currentUser.uid)
+      .where("type", "==", GeneralTypeEnum.store)
+      .get()
+      .then((response) => {
+        response.forEach((doc) => {
+          const idFavorite = doc.id;
+          db.collection("favorites")
+            .doc(idFavorite)
+            .delete()
+            .then(() => {
+              setIsFavorite(false);
+              toastRef.current.show("Eliminado de Favoritos");
+            })
+            .catch(() => {
+              toastRef.current.show(
+                "No se ha podido eliminar de Favoritos, intentarlo más tarde"
+              );
+            });
+        });
+      });
+  };
+
   return (
     <ScrollView style={StyleSheet.viewBodyStyle}>
       <View style={styles.viewFavoriteStyle}>
@@ -111,7 +157,7 @@ export default VapeStore = (props) => {
         address={store.address}
       />
 
-      <ListReviews
+      <ListVapeStoreReviews
         navigation={navigation}
         idStore={store.id}
         setRating={setRating}

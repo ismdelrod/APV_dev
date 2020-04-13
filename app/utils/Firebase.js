@@ -28,7 +28,7 @@ export default firebase;
 
 
 
-//TO DO Crear variables de entorno (dotenv)
+//TO DO: Crear variables de entorno (dotenv)
 
 // import {
 //   API_KEY,

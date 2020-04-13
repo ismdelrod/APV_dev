@@ -3,9 +3,10 @@ import { View, Text, FlatList, StyleSheet  } from "react-native";
 import { Button, Avatar } from "react-native-elements";
 import firebase from "../../utils/Firebase";
 import StarRating from "react-native-star-rating";
+import { GeneralTypeEnum } from "../../utils/Enumerations";
 const db = firebase.firestore(firebase);
 
-export default ListReviews = (props) => {
+export default ListVapeStoreReviews = (props) => {
   const { navigation, idStore, setRating } = props;
   const [reviews, setReviews] = useState([]);
   const [reviewsReload, setReviewsReload] = useState(false);
@@ -21,7 +22,8 @@ export default ListReviews = (props) => {
       const arrayRatings = [];
 
       db.collection("reviews")
-        .where("idStore", "==", idStore)
+        .where("idReview", "==", idStore)
+        .where("type", "==", GeneralTypeEnum.store)
         .get()
         .then((response) => {
           response.forEach((doc) => {
@@ -87,8 +89,6 @@ export default ListReviews = (props) => {
 
       <FlatList
         data={reviews}
-        // ListHeaderComponent={(rvw) => <Review review={rvw} />}
-        // ListFooterComponent={(rvw) => <Review review={rvw} />}
         renderItem={(rvw) => <Review review={rvw} />}
         keyExtractor={(item, index) => index.toString()}
       />

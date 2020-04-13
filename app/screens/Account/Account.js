@@ -5,7 +5,7 @@ import UserGuest from "./UserGuest";
 import UserLogged from "./UserLogged";
 
 
-// TO DO ¿tiene que ser async por la autentificación con firebase?
+// TO DO: ¿tiene que ser async por la autentificación con firebase?
 export default Account = () => {
   const [login, setLogin] = useState(null);
 

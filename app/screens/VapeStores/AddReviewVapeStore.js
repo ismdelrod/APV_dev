@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { View, StyleSheet } from "react-native";
 import { AirbnbRating, Button, Input } from "react-native-elements";
 import { RatingStarsNameEnum } from "../../utils/Enumerations";
+import { GeneralTypeEnum } from "../../utils/Enumerations";
 import Toast from "react-native-easy-toast";
 import Loading from "../../components/Loading";
 import firebase from "../../utils/Firebase";
@@ -30,12 +31,13 @@ export default AddReviewVapeStore = (props) => {
       const payload = {
         idUser: user.uid,
         avatarUser: user.photoURL,
-        idStore: idStore,
+        idReview: idStore,
         title: title,
         review: review,
         rating: rating,
         createAt: new Date(),
         isActive: true,
+        type: GeneralTypeEnum.store
       };
 
       db.collection("reviews")

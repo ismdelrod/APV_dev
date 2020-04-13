@@ -54,7 +54,7 @@ const Store = (props) => {
   });
 
   return (
-    <TouchableOpacity onPress={() => navigation.navigate("VapeStore", {store})}>
+    <TouchableOpacity onPress={() => navigation.navigate("VapeStore", {store: store.item.store})}>
       <View style={styles.viewStoreStyle}>
         <View style={styles.viewStoreImageStyle}>
           <Image

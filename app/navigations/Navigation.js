@@ -16,6 +16,9 @@ import SearchScreen from "../screens/Search";
 import LoginScreen from "../screens/Account/Login";
 import RegisterScreen from "../screens/Account/Register";
 
+import FavoritesScreen from "../screens/Favorites/Favorites";
+
+
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -25,7 +28,7 @@ VapeStoresStack = () => {
     <Stack.Navigator>
       <Stack.Screen name="VapeStores" options = { {title: 'Tiendas' }} component={VapeStoresScreen} />
       <Stack.Screen name="AddVapeStore" options = { {title: 'Añadir Nueva Tienda' }} component={AddVapeStoreScreen} />
-      <Stack.Screen name="VapeStore" options = { ({ route }) => ({ title: route.params.store.item.store.name })} component={VapeStoreScreen} />
+      <Stack.Screen name="VapeStore" options = { ({ route }) => ({ title: route.params.store.name })} component={VapeStoreScreen} />
       <Stack.Screen name="AddReviewVapeStore" options = { {title: 'Añadir Opinión' }} component={AddReviewVapeStoreScreen} />
     </Stack.Navigator>
   );
@@ -57,6 +60,14 @@ SearchStack = () => {
   );
 };
 
+FavoritesStack = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Favorites" options = { {title: 'Favoritos' }} component={FavoritesScreen} />
+    </Stack.Navigator>
+  );
+};
+
 
 
 export default Navigation = () => {
@@ -69,6 +80,8 @@ export default Navigation = () => {
 
             if (route.name === "Stores") {
               iconName = focused ? "home" : "home-outline";
+            }else if (route.name === "Favorites") {
+              iconName = focused ? "heart" : "heart-outline";
             } else if (route.name === "Top 5") {
               iconName = focused ? "star" : "star-outline";
             } else if (route.name === "Account") {
@@ -85,6 +98,7 @@ export default Navigation = () => {
         }}
       >
         <BottomTab.Screen name="Stores" component={VapeStoresStack} />
+        <BottomTab.Screen name="Favorites" component={FavoritesStack} />
         <BottomTab.Screen name="Top 5" component={TopVapeStoresStack} />
         <BottomTab.Screen name="Search" component={SearchStack} />
         <BottomTab.Screen name="Account" component={AccountStack} />
