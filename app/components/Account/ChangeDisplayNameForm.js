@@ -52,6 +52,9 @@ export default ChangeDisplayNameForm = props => {
         onPress={updateDisplayName}
         loading={isLoading}
       />
+      
+      <Loading isVisible={isLoading} text="Guardando Review" />
+
     </View>
   );
 };

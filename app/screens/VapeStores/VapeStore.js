@@ -2,30 +2,67 @@
 // TO DO: Para Evitar los Warnings
 import { YellowBox } from "react-native";
 import _ from "lodash";
-YellowBox.ignoreWarnings(['componentWillMount']);
+
+YellowBox.ignoreWarnings(["componentWillMount"]);
+YellowBox.ignoreWarnings(["VirtualizedLists should never be nested"]);
 const _console = _.clone(console);
 console.warn = (message) => {
   if (message.indexOf("componentWillMount") <= -1) {
     _console.warn(message);
   }
 };
+const _console2 = _.clone(console);
+console.warn = (message) => {
+  if (message.indexOf("VirtualizedLists should never be nested") <= -1) {
+    _console2.warn(message);
+  }
+};
 //********************************************************** */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Text, Dimensions, StyleSheet, ScrollView } from "react-native";
-import { ListItem } from "react-native-elements";
+import { ListItem, Icon } from "react-native-elements";
 import StarRating from "react-native-star-rating";
 import CarouselImages from "../../components/CarouselImages";
 import GoogleMap from "../../components/GoogleMap";
 import ListReviews from "../../components/VapeStores/ListReviews";
-import * as firebase from "firebase";
+import { GeneralTypeEnum } from "../../utils/Enumerations";
+import Toast from "react-native-easy-toast";
+
+import firebase from "../../utils/Firebase";
+const db = firebase.firestore(firebase);
 
 const screesWidth = Dimensions.get("window").width;
 
 export default VapeStore = (props) => {
-  const {navigation, route } = props;
+  const { navigation, route } = props;
   const { store } = route.params.store.item; //Function pasada por parámetros a través de navigation.
   const [imagesStore, setImagesStore] = useState([]);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const toastRef = useRef();
+  const [rating, setRating] = useState(store.rating);
+
+  const addFavorite = () => {
+    const payload = {
+      idUser: firebase.auth().currentUser.uid,
+      idStore: store.id,
+      type: GeneralTypeEnum.store,
+    };
+
+    db.collection("fovorites")
+      .add(payload)
+      .then(() => {
+        toastRef.current.show("Añadido a Favoritos");
+        setIsFavorite(true);
+      })
+      .catch(() => {
+        toastRef.current.show("Error al intentar añadir a Favoritos");
+      });
+  };
+
+  const removeFavorite = () => {
+    setIsFavorite(false);
+  };
 
   useEffect(() => {
     const arrayImagesUrls = [];
@@ -46,6 +83,16 @@ export default VapeStore = (props) => {
   }, []);
   return (
     <ScrollView style={StyleSheet.viewBodyStyle}>
+      <View style={styles.viewFavoriteStyle}>
+        <Icon
+          type="material-community"
+          name={isFavorite ? "heart" : "heart-outline"}
+          onPress={isFavorite ? removeFavorite : addFavorite}
+          color={isFavorite ? "#00a680" : "#000"}
+          size={35}
+          underlayColor="transparent"
+        />
+      </View>
       <CarouselImages
         imagesStore={imagesStore}
         width={screesWidth}
@@ -55,7 +102,7 @@ export default VapeStore = (props) => {
       <TitleStore
         name={store.name}
         description={store.description}
-        rating={store.rating}
+        rating={rating}
       />
 
       <StoreInfo
@@ -64,7 +111,13 @@ export default VapeStore = (props) => {
         address={store.address}
       />
 
-      <ListReviews navigation={navigation} idStore={store.id} />
+      <ListReviews
+        navigation={navigation}
+        idStore={store.id}
+        setRating={setRating}
+      />
+
+      <Toast ref={toastRef} position="center" opacity={0.5} />
     </ScrollView>
   );
 };
@@ -145,6 +198,18 @@ const StoreInfo = (props) => {
 const styles = StyleSheet.create({
   viewBodyStyle: {
     flex: 1,
+  },
+  viewFavoriteStyle: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    zIndex: 2,
+    backgroundColor: "#fff",
+    borderBottomLeftRadius: 100,
+    paddingTop: 5,
+    paddingBottom: 15,
+    paddingLeft: 15,
+    paddingRight: 5,
   },
   viewStoreTitleStyle: {
     margin: 15,
