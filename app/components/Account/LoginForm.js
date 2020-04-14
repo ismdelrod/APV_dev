@@ -6,7 +6,7 @@ import { validateEmail, validatePassword } from "../../utils/Validation";
 import * as firebase from "firebase/app";
 import Loading from "../Loading";
 
-LoginForm = props => {
+LoginForm = (props) => {
   //mensajes de Info/Error y navegación por props con restructuring
   const { toastRef, navigation } = props;
 
@@ -56,7 +56,7 @@ LoginForm = props => {
       <Input
         style={styles.inputForm}
         placeholder="Correo electrónico"
-        onChange={e => setEmail(e.nativeEvent.text)}
+        onChange={(e) => setEmail(e.nativeEvent.text)}
         rightIcon={
           <Icon
             type="material-community"
@@ -70,7 +70,7 @@ LoginForm = props => {
         containerStyle={styles.inputForm}
         passwordRules={true}
         secureTextEntry={hidePassword}
-        onChange={e => setPassword(e.nativeEvent.text)}
+        onChange={(e) => setPassword(e.nativeEvent.text)}
         rightIcon={
           <Icon
             type="material-community"
@@ -100,20 +100,20 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 30
+    marginTop: 30,
   },
   inputForm: {
     width: "100%",
-    marginTop: 20
+    marginTop: 20,
   },
   iconRight: {
-    color: "#c1c1c1"
+    color: "#c1c1c1",
   },
   btnContainerLogin: {
     marginTop: 20,
-    width: "95%"
+    width: "95%",
   },
   btnLogin: {
-    backgroundColor: "#00a680"
-  }
+    backgroundColor: "#00a680",
+  },
 });

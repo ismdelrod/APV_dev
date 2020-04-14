@@ -170,7 +170,6 @@ export default VapeStore = (props) => {
 
 const TitleStore = (props) => {
   const { name, description, rating } = props;
-
   return (
     <View style={styles.viewStoreTitleStyle}>
       <View style={styles.viewStoreTitleRowStyle}>
