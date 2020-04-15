@@ -15,7 +15,6 @@ export default Search = (props) => {
 
   useEffect(() => {
     onSearch();
-
   }, [search]);
 
   const [onSearch] = useDebouncedCallback(() => {
@@ -33,7 +32,7 @@ export default Search = (props) => {
         placeholder="Busca tu Tienda"
         onChangeText={(e) => setSearch(e)}
         value={search}
-        containerStyle={StyleSheet.searchBarStyle}
+        containerStyle={styles.searchBarStyle}
       />
       {stores.length === 0 ? (
         <NoFoundStores />
@@ -92,13 +91,17 @@ const NoFoundStores = () => {
 const styles = StyleSheet.create({
   searchBarStyle: {
     marginBottom: 20,
+    // backgroundColor: "white",
+    borderWidth: 1,
+    borderRadius: 5,
   },
   viewNoFound: {
     flex: 1,
     alignItems: "center",
   },
   imageNoFoundStyle: {
-    width: 200,
-    height: 200,
+    width: 250,
+    height: 250,
+    marginTop: 100,
   },
 });
