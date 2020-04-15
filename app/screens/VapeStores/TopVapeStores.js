@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { View } from "react-native";
 import Toast from "react-native-easy-toast";
-import ListTopVapeStores from "../components/Ranking/ListTopVapeStores";
+import ListTopVapeStores from "../../components/Ranking/ListTopVapeStores";
 import { NavigationEvents } from "@react-navigation/compat";
-import firebase from "../utils/Firebase";
+import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
 
 export default TopVapeStores = (props) => {

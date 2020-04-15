@@ -10,7 +10,7 @@ import VapeStoreScreen from "../screens/VapeStores/VapeStore";
 import AddVapeStoreScreen from "../screens/VapeStores/AddVapeStore";
 import AddReviewVapeStoreScreen from "../screens/VapeStores/AddReviewVapeStore";
 
-import TopVapeStoresScreen from "../screens/TopVapeStores";
+import TopVapeStoresScreen from "../screens/VapeStores/TopVapeStores";
 import AccountScreen from "../screens/Account/Account";
 import SearchScreen from "../screens/Search";
 import LoginScreen from "../screens/Account/Login";
