@@ -8,7 +8,7 @@ import {
   validatePasswordConfirmationIsOK
 } from "../../utils/Validation";
 import * as firebase from "firebase";
-import Loading from "../Loading";
+import Loading from "../Global/Loading";
 
 RegisterForm = props => {
   //mensajes de Info/Error y navegación con restructuring

@@ -4,7 +4,7 @@ import { Input, Icon, Button } from "react-native-elements";
 import { withNavigation } from "@react-navigation/compat";
 import { validateEmail, validatePassword } from "../../utils/Validation";
 import * as firebase from "firebase/app";
-import Loading from "../Loading";
+import Loading from "../Global/Loading";
 
 LoginForm = (props) => {
   //mensajes de Info/Error y navegación por props con restructuring

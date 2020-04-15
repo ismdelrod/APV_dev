@@ -2,7 +2,7 @@ import React from "react";
 import MapView from "react-native-maps";
 import openMap from 'react-native-open-maps';
 
-export default GoogleMap = (props) => {
+export default MyMapView = (props) => {
   const { location, name, height } = props;
 
   const openAppMap = () =>{

@@ -13,7 +13,7 @@ export default MainImage = (props) => {
           <Image source={{ uri: image }} style={styles.mainImageStyle} />
         ) : (
           <Image
-            source={require("../../assets/img/noImage.png")}
+            source={require("../../../assets/img/noImage.png")}
             style={styles.mainImageStyle}
           />
         )}

@@ -10,7 +10,7 @@ import {
   
 } from "react-native";
 import { Image, Icon, Button } from "react-native-elements";
-import Loading from "../../components/Loading";
+import Loading from "../../components/Global/Loading";
 import Toast from "react-native-easy-toast";
 import { GeneralTypeEnum } from "../../utils/Enumerations";
 import { NavigationEvents } from "@react-navigation/compat";
@@ -18,7 +18,7 @@ import { NavigationEvents } from "@react-navigation/compat";
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
 
-export default Favorites = (props) => {
+export default FavoritesVapeStores = (props) => {
   const { navigation } = props;
 
   const [stores, setStores] = useState([]);

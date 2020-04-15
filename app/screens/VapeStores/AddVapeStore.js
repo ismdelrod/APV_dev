@@ -19,7 +19,7 @@ console.warn = (message) => {
 import React, { useState, useRef } from "react"; // useState, useEffect son Hooks
 import { View } from "react-native";
 import Toast from "react-native-easy-toast";
-import Loading from "../../components/Loading";
+import Loading from "../../components/Global/Loading";
 import AddVapeStoreForm from "../../components/VapeStores/AddVapeStoreForm";
 
 export default AddVapeStore = (props) => {

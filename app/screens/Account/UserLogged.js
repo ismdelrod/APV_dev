@@ -4,7 +4,7 @@ import { Button } from "react-native-elements";
 import * as firebase from "firebase";
 import InfoUser from "../../components/Account/InfoUser";
 import Toast from "react-native-easy-toast";
-import Loading from "../../components/Loading";
+import Loading from "../../components/Global/Loading";
 import AccountOptions from "./../../components/Account/AccountOptions";
 
 export default UserLogged = () => {

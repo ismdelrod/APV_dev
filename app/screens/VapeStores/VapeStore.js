@@ -23,8 +23,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { View, Text, Dimensions, StyleSheet, ScrollView } from "react-native";
 import { ListItem, Icon } from "react-native-elements";
 import StarRating from "react-native-star-rating";
-import CarouselImages from "../../components/CarouselImages";
-import GoogleMap from "../../components/GoogleMap";
+import CarouselImages from "../../components/Global/CarouselImages";
+import MyMapView from "../../components/Global/MyMapView";
 import ListVapeStoreReviews from "../../components/VapeStores/ListVapeStoreReviews";
 import { GeneralTypeEnum } from "../../utils/Enumerations";
 import Toast from "react-native-easy-toast";
@@ -223,7 +223,7 @@ const StoreInfo = (props) => {
   return (
     <View style={styles.viewInfoStoreStyle}>
       <Text style={styles.storeInfoTitleStyle}>Info sobre la Tienda</Text>
-      <GoogleMap location={location} name={name} height={100} />
+      <MyMapView location={location} name={name} height={100} />
       {listInfo.map((item, index) => (
         <ListItem
           key={index}

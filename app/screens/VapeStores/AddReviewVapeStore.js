@@ -4,7 +4,7 @@ import { AirbnbRating, Button, Input } from "react-native-elements";
 import { RatingStarsNameEnum } from "../../utils/Enumerations";
 import { GeneralTypeEnum } from "../../utils/Enumerations";
 import Toast from "react-native-easy-toast";
-import Loading from "../../components/Loading";
+import Loading from "../../components/Global/Loading";
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
 

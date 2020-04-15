@@ -3,7 +3,7 @@ import { SocialIcon, Alert } from "react-native-elements";
 import * as Facebook from "expo-facebook";
 import * as firebase from "firebase/app";
 import { FacebookApi } from "../../utils/Social";
-import Loading from "../Loading";
+import Loading from "../Global/Loading";
 
 export default LoginFacebook = props => {
   const { toastRef, navigation } = props;

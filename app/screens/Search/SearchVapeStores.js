@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, FlatList, Image } from "react-native";
 import { SearchBar, ListItem, Icon } from "react-native-elements";
 import { useDebouncedCallback } from "use-debounce";
-import firebase from "../utils/Firebase";
+import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
 
 import { FireSQL } from "firesql";
 const fSQL = new FireSQL(db, { includeId: "id" });
 
-export default Search = (props) => {
+export default SearchVapeStores = (props) => {
   const { navigation } = props;
   const [stores, setStores] = useState([]);
   const [search, setSearch] = useState("");
@@ -80,7 +80,7 @@ const NoFoundStores = () => {
   return (
     <View style={styles.viewNoFound}>
       <Image
-        source={require("../../assets/img/no-result-found.png")}
+        source={require("../../../assets/img/no-result-found.png")}
         resizeMode="cover"
         style={styles.imageNoFoundStyle}
       />

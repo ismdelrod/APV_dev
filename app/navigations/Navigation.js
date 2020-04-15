@@ -4,7 +4,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import Settings from "../screens/Settings";
 import Header from "../components/Navigation/Header";
 
 //VapeStores SECTION
@@ -19,11 +18,11 @@ import TopVapeStoresListComponent from "../screens/VapeStores/TopVapeStores";
 //END Ranking SECTION
 
 // Favorites SECTION
-import FavoritesVapeStoresComponent from "../screens/Favorites/Favorites";
+import FavoritesVapeStoresComponent from "../screens/Favorites/FavoritesVapeStores";
 //END Favorites SECTION
 
 // Search SECTION
-import SearchVapeStoresComponent from "../screens/Search";
+import SearchVapeStoresComponent from "../screens/Search/SearchVapeStores";
 //END Search SECTION
 
 // Account SECTION
@@ -146,14 +145,14 @@ const AccountStackScreen = () => {
 };
 
 const SearchVapeStoresStack = createStackNavigator();
-const SearchStackScreen = () => {
+const SearchVapeStoresStackScreen = () => {
   return (
     <SearchVapeStoresStack.Navigator>
       <SearchVapeStoresStack.Screen
-        name="Search"
+        name="SearchVapeStores"
         component={SearchVapeStoresComponent}
         options={{
-          title: "Search",
+          title: "Buscar",
           headerTitleAlign:"center",
           headerStyle: {},
           headerTitleStyle: {},
@@ -169,7 +168,7 @@ const FavoritesVapeStoresStackScreen = () => {
   return (
     <FavoritesVapeStoresStack.Navigator>
       <FavoritesVapeStoresStack.Screen
-        name="Favorites"
+        name="FavoritesVapeStores"
         component={FavoritesVapeStoresComponent}
         options={{
           title: "Favoritos",
@@ -192,13 +191,13 @@ const VapeStoresTabsScreen = () => (
 
         if (route.name === "Stores") {
           iconName = focused ? "home" : "home-outline";
-        } else if (route.name === "Favorites") {
+        } else if (route.name === "FavoritesVapeStores") {
           iconName = focused ? "heart" : "heart-outline";
         } else if (route.name === "Top 5") {
           iconName = focused ? "star" : "star-outline";
         } else if (route.name === "Account") {
           iconName = focused ? "account" : "account-outline";
-        } else if (route.name === "Search") {
+        } else if (route.name === "SearchVapeStores") {
           iconName = focused ? "feature-search" : "feature-search-outline";
         }
         return (
@@ -213,11 +212,11 @@ const VapeStoresTabsScreen = () => (
   >
     <VapeStoresTabs.Screen name="Stores" component={VapeStoresStackScreen} />
     <VapeStoresTabs.Screen
-      name="Favorites"
+      name="FavoritesVapeStores"
       component={FavoritesVapeStoresStackScreen}
     />
     <VapeStoresTabs.Screen name="Top 5" component={TopVapeStoresStackScreen} />
-    <VapeStoresTabs.Screen name="Search" component={SearchStackScreen} />
+    <VapeStoresTabs.Screen name="SearchVapeStores" component={SearchVapeStoresStackScreen} />
     <VapeStoresTabs.Screen name="Account" component={AccountStackScreen} />
   </VapeStoresTabs.Navigator>
 );
@@ -230,7 +229,6 @@ const AppDrawerScreen = () => (
       component={VapeStoresTabsScreen}
       options={{ drawerLabel: "Tiendas" }}
     />
-    <AppDrawer.Screen name="Settings" component={Settings} />
   </AppDrawer.Navigator>
 );
 

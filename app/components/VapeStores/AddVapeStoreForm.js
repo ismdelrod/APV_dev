@@ -15,9 +15,9 @@ import { StyleSheet, View, ScrollView, Alert } from "react-native";
 import { Icon, Avatar, Input, Button } from "react-native-elements";
 import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
-import MainImage from "../MainImage";
+import MainImage from "../Global/MainImage";
 import MapView from "react-native-maps";
-import Modal from "../Modal";
+import Modal from "../Global/Modal";
 import * as Location from "expo-location";
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
@@ -109,7 +109,7 @@ export default AddVapeStoreForm = (props) => {
         onPress={addStore}
         buttonStyle={styles.btnAddStoreStyle}
       />
-      <GoogleMap
+      <MyMap
         isVisibleMap={isVisibleMap}
         setIsVisibleMap={setIsVisibleMap}
         setLocationStore={setLocationStore}
@@ -232,7 +232,7 @@ const FormAdd = (props) => {
   );
 };
 
-const GoogleMap = (props) => {
+const MyMap = (props) => {
   const { isVisibleMap, setIsVisibleMap, setLocationStore, toastRef } = props;
   const [location, setLocation] = useState(null);
 

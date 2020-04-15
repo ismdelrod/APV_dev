@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { ListItem } from "react-native-elements";
-import Modal from "../Modal";
+import Modal from "../Global/Modal";
 import ChangeDisplayNameForm from "./ChangeDisplayNameForm";
 import ChangeEmailForm from "./ChangeEmailForm";
 import ChangePasswordForm from "./ChangePasswordForm";
