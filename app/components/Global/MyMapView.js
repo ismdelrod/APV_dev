@@ -1,18 +1,18 @@
 import React from "react";
 import MapView from "react-native-maps";
-import openMap from 'react-native-open-maps';
+import openMap from "react-native-open-maps";
 
 export default MyMapView = (props) => {
   const { location, name, height } = props;
 
-  const openAppMap = () =>{
+  const openAppMap = () => {
     openMap({
-      latitude : location.latitude,
+      latitude: location.latitude,
       longitude: location.longitude,
       zoom: 19,
-      query: name
-    })
-  }
+      query: name,
+    });
+  };
   return (
     <MapView
       style={{ height: height, width: "100%" }}

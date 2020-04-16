@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet } from "react-native";
 import { Overlay } from "react-native-elements";
 
-export default Modal = props => {
+export default ModalMapSearcher = props => {
   const { isVisible, setIsVisible, children } = props;
 
   const closeModal = () => setIsVisible(false);

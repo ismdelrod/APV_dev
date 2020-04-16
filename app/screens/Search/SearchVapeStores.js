@@ -91,7 +91,6 @@ const NoFoundStores = () => {
 const styles = StyleSheet.create({
   searchBarStyle: {
     marginBottom: 20,
-    // backgroundColor: "white",
     borderWidth: 1,
     borderRadius: 5,
   },
