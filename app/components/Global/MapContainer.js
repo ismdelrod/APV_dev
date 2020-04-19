@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { View } from "react-native";
-import MapInput from "../components/Global/MapInput";
-import MyMapViewSearcher from "../components/Global/MyMapViewSearcher";
-import { getLocation, geocodeLocationByName } from "../utils/location-service";
+import MapInput from "./MapInput";
+import MyMapViewSearcher from "./MyMapViewSearcher";
+import { getLocation, geocodeLocationByName } from "../../utils/location-service";
 
 export default MapContainer = (props) => {
   const { expoLocation } = props;
