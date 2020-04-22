@@ -10,64 +10,62 @@ import {
 import { Image } from "react-native-elements";
 import * as firebase from "firebase";
 
-// const db = firebase.firestore(firebase);
-
 export default ListEliquids = (props) => {
-  const { stores, isLoading, handleLoadMore,navigation } = props;
+  const { eliquids, isLoading, handleLoadMore,navigation } = props;
 
   return (
     <View>
-      {stores ? (
+      {eliquids ? (
         <FlatList
-          data={stores}
-          renderItem={(store) => <Store store={store} navigation={navigation}/>}
+          data={eliquids}
+          renderItem={(eliquid) => <Eliquid eliquid={eliquid} navigation={navigation}/>}
           keyExtractor={(item, index) => index.toString()}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0}
           ListFooterComponent={<FooterList isLoading={isLoading} />}
         />
       ) : (
-        <View style={styles.loaderStoreStyle}>
+        <View style={styles.loaderEliquidStyle}>
           <ActivityIndicator size="large" />
-          <Text>Cargando Stores</Text>
+          <Text>Cargando E-liquids</Text>
         </View>
       )}
     </View>
   );
 };
 
-const Store = (props) => {
-  const { store, navigation } = props;
-  const { name, address, description, images } = store.item.store;
-  const [imageStore, setImageStore] = useState(null);
+const Eliquid = (props) => {
+  const { eliquid, navigation } = props;
+  const { name, address, description, images } = eliquid.item.eliquid;
+  const [imageEliquid, setImageEliquid] = useState(null);
 
   useEffect(() => {
     const image = images[0];
 
     firebase
       .storage()
-      .ref(`stores-images/${image}`)
+      .ref(`eliquids-images/${image}`)
       .getDownloadURL()
       .then((resultUrlImage) => {
-        setImageStore(resultUrlImage);
+        setImageEliquid(resultUrlImage);
       });
   });
 
   return (
-    <TouchableOpacity onPress={() => navigation.navigate("VapeStore", {store: store.item.store})}>
-      <View style={styles.viewStoreStyle}>
-        <View style={styles.viewStoreImageStyle}>
+    <TouchableOpacity onPress={() => navigation.navigate("Eliquid", {eliquid: eliquid.item.eliquid})}>
+      <View style={styles.viewEliquidStyle}>
+        <View style={styles.viewEliquidImageStyle}>
           <Image
             resizeMode="cover"
-            source={{ uri: imageStore }}
-            style={styles.storeImageStyle}
+            source={{ uri: imageEliquid }}
+            style={styles.eliquidImageStyle}
             PlaceholderContent={<ActivityIndicator color="fff" />}
           />
         </View>
         <View>
-          <Text style={styles.storeNameStyle}>{name}</Text>
-          <Text style={styles.storeAddressStyle}>{address}</Text>
-          <Text style={styles.storeDescriptionStyle}>
+          <Text style={styles.eliquidNameStyle}>{name}</Text>
+          <Text style={styles.eliquidAddressStyle}>{address}</Text>
+          <Text style={styles.eliquidDescriptionStyle}>
             {description.substr(0, 60)}
           </Text>
         </View>
@@ -87,37 +85,37 @@ const FooterList = (props) => {
     );
   } else {
     return (
-      <View style={styles.notFoundStoresStyle}>
-        <Text>No quedan más Tiendas por cargar.</Text>
+      <View style={styles.notFoundEliquidsStyle}>
+        <Text>No quedan más E-liquids por cargar.</Text>
       </View>
     );
   }
 };
 
 const styles = StyleSheet.create({
-  loadingStoresStyle: {
+  loadingEliquidsStyle: {
     marginTop: 20,
     alignItems: "center",
   },
-  viewStoreStyle: {
+  viewEliquidStyle: {
     flexDirection: "row",
     margin: 10,
   },
-  viewStoreImageStyle: {
+  viewEliquidImageStyle: {
     marginRight: 15,
   },
-  storeImageStyle: {
+  eliquidImageStyle: {
     width: 80,
     height: 80,
   },
-  storeNameStyle: {
+  eliquidNameStyle: {
     fontWeight: "bold",
   },
-  storeAddressStyle: {
+  eliquidAddressStyle: {
     paddingTop: 2,
     color: "grey",
   },
-  storeDescriptionStyle: {
+  eliquidDescriptionStyle: {
     paddingTop: 2,
     color: "grey",
     width: 300,
@@ -126,11 +124,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
     alignItems: "center",
   },
-  loaderStoreStyle: {
+  loaderEliquidStyle: {
     marginTop: 19,
     marginBottom: 10,
   },
-  notFoundStoresStyle: {
+  notFoundEliquidsStyle: {
     marginTop: 10,
     marginBottom: 20,
     alignItems: "center",

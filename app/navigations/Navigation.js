@@ -6,43 +6,43 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Header from "../components/Navigation/Header";
 
-//VapeStores SECTION
+//VapeStores Component SECTION
 import VapeStoresListComponent from "../screens/VapeStores";
 import VapeStoreDetailComponent from "../screens/VapeStores/VapeStore";
 import AddVapeStoreFormComponent from "../screens/VapeStores/AddVapeStore";
 import AddReviewVapeStoreFormComponent from "../screens/VapeStores/AddReviewVapeStore";
-//END VapeStores SECTION
+//END VapeStores Component SECTION
 
-//E-liquid SECTION
+//E-liquid Component SECTION
 import EliquidsListComponent from "../screens/Eliquids/Eliquids";
 import EliquidDetailComponent from "../screens/Eliquids/Eliquid";
 import AddEliquidFormComponent from "../screens/Eliquids/AddEliquid";
 import AddReviewEliquidFormComponent from "../screens/Eliquids/AddReviewEliquid";
-//END E-liquid SECTION
+//END E-liquid Component SECTION
 
-// Ranking SECTION
+//Ranking Component SECTION
 import TopVapeStoresListComponent from "../screens/VapeStores/TopVapeStores";
 import TopEliquidsListComponent from "../screens/Eliquids/TopEliquids";
-//END Ranking SECTION
+//END Ranking Component SECTION
 
-// Favorites SECTION
+//Favorites Component SECTION
 import FavoritesVapeStoresComponent from "../screens/Favorites/FavoritesVapeStores";
 import FavoritesEliquidsComponent from "../screens/Favorites/FavoritesEliquids";
-//END Favorites SECTION
+//END Favorites Component SECTION
 
-// Search SECTION
+//Search Component SECTION
 import SearchVapeStoresComponent from "../screens/Search/SearchVapeStores";
 import SearchEliquidsComponent from "../screens/Search/SearchEliquids";
-//END Search SECTION
+//END Search Component SECTION
 
-// Account SECTION
+//Account Component SECTION
 import AccountInfoComponent from "../screens/Account/Account";
 import RegisterFormComponent from "../screens/Account/Register";
 import LoginFormComponent from "../screens/Account/Login";
-//END  SECTION
+//END Account Component  SECTION
 
 
-//VapeStores SECTION
+//VapeStores Stack SECTION
 const VapeStoreStack = createStackNavigator();
 
 const VapeStoresStackScreen = () => {
@@ -95,10 +95,10 @@ const VapeStoresStackScreen = () => {
     </VapeStoreStack.Navigator>
   );
 };
-//END VapeStores SECTION
+//END VapeStores Stack SECTION
 
 
-//E-liquid SECTION
+//E-liquid Stack SECTION
 const EliquidStack = createStackNavigator();
 
 const EliquidsStackScreen = () => {
@@ -151,9 +151,9 @@ const EliquidsStackScreen = () => {
     </EliquidStack.Navigator>
   );
 };
-//END E-liquid SECTION
+//END E-liquid Stack SECTION
 
-//Ranking SECTION
+//Ranking Stack SECTION
 const TopVapeStoresStack = createStackNavigator();
 const TopVapeStoresStackScreen = () => {
   return (
@@ -191,12 +191,12 @@ const TopEliquidsStackScreen = () => {
     </TopEliquidsStack.Navigator>
   );
 };
-//END Ranking SECTION
+//END Ranking Stack SECTION
 
 
 
 
-//Search SECTION
+//Search Stack SECTION
 const SearchVapeStoresStack = createStackNavigator();
 const SearchVapeStoresStackScreen = () => {
   return (
@@ -235,12 +235,12 @@ const SearchEliquidsStackScreen = () => {
     </SearchEliquidsStack.Navigator>
   );
 };
-//END Search SECTION
+//END Search Stack SECTION
 
 
 
 
-//Favorites SECTION
+//Favorites Stack SECTION
 const FavoritesVapeStoresStack = createStackNavigator();
 const FavoritesVapeStoresStackScreen = () => {
   return (
@@ -279,11 +279,11 @@ const FavoritesEliquidsStackScreen = () => {
     </FavoritesEliquidsStack.Navigator>
   );
 };
-//END Favorites SECTION
+//END Favorites Stack SECTION
 
 
 
-//Account SECTION
+//Account Stack SECTION
 const AccountStack = createStackNavigator();
 const AccountStackScreen = () => {
   return (
@@ -324,12 +324,12 @@ const AccountStackScreen = () => {
     </AccountStack.Navigator>
   );
 };
-//END Account SECTION
+//END Account Stack SECTION
 
 
 
 
-//VapeStores SECTION
+//VapeStores Tabs SECTION
 const VapeStoresTabs = createBottomTabNavigator();
 const VapeStoresTabsScreen = () => (
   <VapeStoresTabs.Navigator
@@ -337,15 +337,15 @@ const VapeStoresTabsScreen = () => (
       tabBarIcon: ({ focused, color, size }) => {
         let iconName;
 
-        if (route.name === "Stores") {
+        if (route.name === "Tiendas") {
           iconName = focused ? "home" : "home-outline";
-        } else if (route.name === "FavoritesVapeStores") {
+        } else if (route.name === "Favoritos") {
           iconName = focused ? "heart" : "heart-outline";
         } else if (route.name === "Top 5") {
           iconName = focused ? "star" : "star-outline";
-        } else if (route.name === "Account") {
+        } else if (route.name === "Perfil") {
           iconName = focused ? "account" : "account-outline";
-        } else if (route.name === "SearchVapeStores") {
+        } else if (route.name === "Buscar") {
           iconName = focused ? "feature-search" : "feature-search-outline";
         }
         return (
@@ -358,21 +358,21 @@ const VapeStoresTabsScreen = () => (
       inactiveTintColor: "#D1D1D1",
     }}
   >
-    <VapeStoresTabs.Screen name="Stores" component={VapeStoresStackScreen} />
+    <VapeStoresTabs.Screen name="Tiendas" component={VapeStoresStackScreen} />
     <VapeStoresTabs.Screen
-      name="FavoritesVapeStores"
+      name="Favoritos"
       component={FavoritesVapeStoresStackScreen}
     />
     <VapeStoresTabs.Screen name="Top 5" component={TopVapeStoresStackScreen} />
-    <VapeStoresTabs.Screen name="SearchVapeStores" component={SearchVapeStoresStackScreen} />
-    <VapeStoresTabs.Screen name="Account" component={AccountStackScreen} />
+    <VapeStoresTabs.Screen name="Buscar" component={SearchVapeStoresStackScreen} />
+    <VapeStoresTabs.Screen name="Perfil" component={AccountStackScreen} />
   </VapeStoresTabs.Navigator>
 );
 //END VapeStores SECTION
 
 
 
-//Eliquids SECTION
+//Eliquids Tabs SECTION
 const EliquidsTabs = createBottomTabNavigator();
 const EliquidsTabsScreen = () => (
   <EliquidsTabs.Navigator
@@ -382,13 +382,13 @@ const EliquidsTabsScreen = () => (
 
         if (route.name === "Eliquids") {
           iconName = focused ? "home" : "home-outline";
-        } else if (route.name === "FavoritesEliquids") {
+        } else if (route.name === "Favoritos") {
           iconName = focused ? "heart" : "heart-outline";
         } else if (route.name === "Top 5") {
           iconName = focused ? "star" : "star-outline";
-        } else if (route.name === "Account") {
+        } else if (route.name === "Perfil") {
           iconName = focused ? "account" : "account-outline";
-        } else if (route.name === "SearchEliquids") {
+        } else if (route.name === "Buscar") {
           iconName = focused ? "feature-search" : "feature-search-outline";
         }
         return (
@@ -403,12 +403,12 @@ const EliquidsTabsScreen = () => (
   >
     <EliquidsTabs.Screen name="Eliquids" component={EliquidsStackScreen} />
     <EliquidsTabs.Screen
-      name="FavoritesEliquids"
-      component={FavoritesVapeStoresStackScreen}
+      name="Favoritos"
+      component={FavoritesEliquidsStackScreen}
     />
     <EliquidsTabs.Screen name="Top 5" component={TopEliquidsStackScreen} />
-    <EliquidsTabs.Screen name="SearchEliquids" component={SearchEliquidsStackScreen} />
-    <EliquidsTabs.Screen name="Account" component={AccountStackScreen} />
+    <EliquidsTabs.Screen name="Buscar" component={SearchEliquidsStackScreen} />
+    <EliquidsTabs.Screen name="Perfil" component={AccountStackScreen} />
   </EliquidsTabs.Navigator>
 );
 //END Eliquids SECTION

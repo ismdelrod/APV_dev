@@ -101,7 +101,7 @@ export default FavoritesEliquids = (props) => {
       ) : (
         <View style={styles.loaderStoresStyle}>
           <ActivityIndicator size="large" />
-          <Text>Cargando Stores...</Text>
+          <Text>Cargando E-liquids...</Text>
         </View>
       )}
       <Toast ref={toastRef} position="center" opacity={1} />

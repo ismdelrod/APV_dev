@@ -20,24 +20,24 @@ import React, { useState, useRef } from "react"; // useState, useEffect son Hook
 import { View } from "react-native";
 import Toast from "react-native-easy-toast";
 import Loading from "../../components/Global/Loading";
-import AddVapeStoreForm from "../../components/VapeStores/AddVapeStoreForm";
+import AddEliquidForm from "../../components/Eliquids/AddEliquidForm";
 
 export default AddEliquid = (props) => {
   const { navigation, route } = props;
 
-  const { setIsReloadStores } = route.params; //Function pasada por parámetros a través de navigation.
-  const toastRef = useRef();
+  const { setIsReloadEliquids: setIsReloadEliquids } = route.params; //Function pasada por parámetros a través de navigation.
+;  const toastRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
   return (
     <View>
-      <AddVapeStoreForm
+      <AddEliquidForm
         navigation={navigation}
         toastRef={toastRef}
         setIsLoading={setIsLoading}
-        setIsReloadStores={setIsReloadStores}
+        setIsReloadEliquids={setIsReloadEliquids}
       />
       <Toast ref={toastRef} position="center" opacity={0.5} />
-      <Loading isVisible={isLoading} text="Creando Tienda" />
+      <Loading isVisible={isLoading} text="Creando Eliquid" />
     </View>
   );
 };

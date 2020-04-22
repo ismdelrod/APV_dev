@@ -10,57 +10,48 @@ console.warn = (message) => {
 };
 //********************************************************** */
 
-import React, { useState, useEffect } from "react"; // useState, useEffect son Hooks
+import React, { useState } from "react"; // useState, useEffect son Hooks
 import { StyleSheet, View, ScrollView, Alert } from "react-native";
 import { Icon, Avatar, Input, Button } from "react-native-elements";
 import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
 import MainImage from "../Global/MainImage";
-import MapView from "react-native-maps";
-import Modal from "../Global/Modal";
-import * as Location from "expo-location";
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
 
 import uuid from "random-uuid-v4/uuidv4";
 
 export default AddEliquidForm = (props) => {
-  const { navigation, toastRef, setIsLoading, setIsReloadStores } = props;
+  const { navigation, toastRef, setIsLoading, setIsReloadEliquids } = props;
   const [imagesSelected, setImageSelected] = useState([]);
-  const [storeName, setStoreName] = useState("");
-  const [storeAddress, setStoreAddress] = useState("");
-  const [storeDescription, setStoreDescription] = useState("");
-  const [isVisibleMap, setIsVisibleMap] = useState(false);
-  const [locationStore, setLocationStore] = useState(null);
+  const [eliquidName, setEliquidName] = useState("");
+  const [eliquidDescription, setEliquidDescription] = useState("");
  
-  const addStore = () => {
-    if (!storeName || !storeAddress || !storeDescription) {
+  const addEliquid = () => {
+    if (!eliquidName || !eliquidDescription) {
       toastRef.current.show("Todos los campos del formulario son obligatorios");
     } else if (imagesSelected.length === 0) {
       toastRef.current.show("Hay que añadir mínimo una imagen");
-    } else if (!locationStore) {
-      toastRef.current.show("Tienes que ubicar la dirección en el mapa");
     } else {
       setIsLoading(true);
       uploadImageStorage(imagesSelected).then((arrayImages) => {
-        db.collection("stores")
+        db.collection("eliquids")
           .add({
-            name: storeName,
-            address: storeAddress,
-            description: storeDescription,
-            location: locationStore,
+            name: eliquidName,
+            description: eliquidDescription,
             images: arrayImages,
             rating: 0,
             ratingTotal: 0,
             quantityVoting: 0,
             createAt: new Date(),
             createBy: firebase.auth().currentUser.uid,
-            isActive: false,
+            isActive: true,
           })
           .then(() => {
+            debugger;
             setIsLoading(false);
-            setIsReloadStores(true);
-            navigation.navigate("VapeStores");
+            setIsReloadEliquids(true);
+            navigation.navigate("Eliquids");
           })
           .catch(() => {
             setIsLoading(false);
@@ -78,7 +69,7 @@ export default AddEliquidForm = (props) => {
       imagesArray.map(async (image) => {
         const response = await fetch(image);
         const blob = await response.blob();
-        const ref = firebase.storage().ref("stores-images").child(uuid());
+        const ref = firebase.storage().ref("eliquids-images").child(uuid());
 
         await ref.put(blob).then((result) => {
           arrayImages.push(result.metadata.name);
@@ -92,11 +83,8 @@ export default AddEliquidForm = (props) => {
     <ScrollView>
       <MainImage image={imagesSelected[0]} />
       <FormAdd
-        setStoreName={setStoreName}
-        setStoreAddress={setStoreAddress}
-        setStoreDescription={setStoreDescription}
-        setIsVisibleMap={setIsVisibleMap}
-        locationStore={locationStore}
+        setEliquidName={setEliquidName}
+        setEliquidDescription={setEliquidDescription}
       />
       <UploadImage
         imagesSelected={imagesSelected}
@@ -106,15 +94,10 @@ export default AddEliquidForm = (props) => {
 
       <Button
         title="Añadir"
-        onPress={addStore}
-        buttonStyle={styles.btnAddStoreStyle}
+        onPress={addEliquid}
+        buttonStyle={styles.btnAddEliquidStyle}
       />
-      <MyMap
-        isVisibleMap={isVisibleMap}
-        setIsVisibleMap={setIsVisibleMap}
-        setLocationStore={setLocationStore}
-        toastRef={toastRef}
-      />
+
     </ScrollView>
   );
 };
@@ -198,114 +181,27 @@ const UploadImage = (props) => {
 
 const FormAdd = (props) => {
   const {
-    setStoreName,
-    setStoreAddress,
-    setStoreDescription,
-    setIsVisibleMap,
-    locationStore,
+    setEliquidName,
+    setEliquidDescription,
   } = props;
   return (
     <View style={styles.viewFormStyle}>
       <Input
-        placeholder="Nombre de la Tienda"
+        placeholder="Nombre del E-liquid"
         containerStyle={styles.inputStyle}
-        onChange={(e) => setStoreName(e.nativeEvent.text)}
-      />
-      <Input
-        placeholder="Dirección"
-        containerStyle={styles.inputStyle}
-        rightIcon={{
-          type: "material-community",
-          name: "google-maps",
-          color: locationStore ? "#00a680" : "#c2c2c2",
-          onPress: () => setIsVisibleMap(true),
-        }}
-        onChange={(e) => setStoreAddress(e.nativeEvent.text)}
+        onChange={(e) => setEliquidName(e.nativeEvent.text)}
       />
       <Input
         placeholder="Descripción"
         multiline={true}
         inputContainerStyle={styles.textAreaStyle}
-        onChange={(e) => setStoreDescription(e.nativeEvent.text)}
+        onChange={(e) => setEliquidDescription(e.nativeEvent.text)}
       />
     </View>
   );
 };
 
-const MyMap = (props) => {
-  const { isVisibleMap, setIsVisibleMap, setLocationStore, toastRef } = props;
-  const [location, setLocation] = useState(null);
 
-  useEffect(() => {
-    (async () => {
-      const resultPermissions = await Permissions.askAsync(
-        Permissions.LOCATION
-      );
-      const statusPermission = resultPermissions.permissions.location.status;
-
-      if (statusPermission !== "granted") {
-        toastRef.current.show(
-          "Es necesario aceptar los permisos de Localización, si los rechazaste debes activarlos de forma manual desde los Ajustes del dispositivo.",
-          5000
-        );
-      } else {
-        const loc = await Location.getCurrentPositionAsync({
-          enableHighAccurracy: true,
-        });
-        setLocation({
-          latitude: loc.coords.latitude,
-          latitudeDelta: 0.001,
-          longitude: loc.coords.longitude,
-          longitudeDelta: 0.001,
-        });
-      }
-    })();
-  }, []);
-
-  const confirmLocation = () => {
-    setLocationStore(location);
-    toastRef.current.show("Se ha guardado la localización");
-    setIsVisibleMap(false);
-  };
-
-  return (
-    <Modal isVisible={isVisibleMap} setIsVisible={setIsVisibleMap}>
-      <View>
-        {location && (
-          <MapView
-            style={styles.mapStyle}
-            initialRegion={location}
-            showsUserLocation={true}
-            onRegionChange={(region) => setLocation(region)}
-          >
-            <MapView.Marker
-              coordinate={{
-                latitude: location.latitude,
-                longitude: location.longitude,
-              }}
-              draggable
-            />
-          </MapView>
-        )}
-
-        <View style={styles.viewMapBtnStyle}>
-          <Button
-            title="Guardar"
-            onPress={confirmLocation}
-            containerStyle={styles.btnSaveMapContainerStyle}
-            buttonStyle={styles.btnSaveMapBtnStyle}
-          />
-          <Button
-            title="Cancelar"
-            onPress={() => setIsVisibleMap(false)}
-            containerStyle={styles.btnCancelMapContainerStyle}
-            buttonStyle={styles.btnCancelMapBtnStyle}
-          />
-        </View>
-      </View>
-    </Modal>
-  );
-};
 
 const styles = StyleSheet.create({
   viewImageStyle: {
@@ -361,7 +257,7 @@ const styles = StyleSheet.create({
   btnCancelMapBtnStyle: {
     backgroundColor: "#a60d0d",
   },
-  btnAddStoreStyle: {
+  btnAddEliquidStyle: {
     backgroundColor: "#00a680",
     margin: 20,
   },

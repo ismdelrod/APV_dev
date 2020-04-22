@@ -22,7 +22,7 @@ console.warn = (message) => {
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import ActionButton from "react-native-action-button";
-import ListStores from "../../components/VapeStores/ListStores";
+import ListEliquids from "../../components/Eliquids/ListEliquids";
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
 
@@ -30,12 +30,12 @@ const db = firebase.firestore(firebase);
 export default Eliquids = (props) => {
   const { navigation } = props;
   const [user, setUser] = useState(null);
-  const [stores, setStores] = useState([]);
-  const [startStores, setStartStores] = useState(null);
+  const [eliquids, setEliquids] = useState([]);
+  const [startEliquids, setStartEliquids] = useState(null);
   const [isLoading, setIsLoading] = useState(null);
-  const [totalStores, setTotalStores] = useState(0);
-  const [isReloadStores, setIsReloadStores] = useState(false);
-  const limitStores = 8;
+  const [totalEliquids, setTotalEliquids] = useState(0);
+  const [isReloadEliquids, setIsReloadEliquids] = useState(false);
+  const limitEliquids = 8;
 
   //useEffectInfoUsuario
   useEffect(() => {
@@ -44,81 +44,81 @@ export default Eliquids = (props) => {
     });
   }, []);
 
-  //useEffectGetStores
+  //useEffectGetEliquids
   useEffect(() => {
-    db.collection("stores")
+    db.collection("eliquids")
       .get()
       .then((snap) => {
-        setTotalStores(snap.size);
+        setTotalEliquids(snap.size);
       });
 
     (async () => {
-      const resultStores = [];
+      const resultEliquids = [];
 
-      const listStores = db
-        .collection("stores")
+      const listEliquids = db
+        .collection("eliquids")
         .orderBy("createAt", "desc")
-        .limit(limitStores);
+        .limit(limitEliquids);
 
-      await listStores.get().then((response) => {
-        setStartStores(response.docs[response.docs.length - 1]);
+      await listEliquids.get().then((response) => {
+        setStartEliquids(response.docs[response.docs.length - 1]);
 
         response.forEach((doc) => {
-          let store = doc.data();
-          store.id = doc.id;
-          resultStores.push({ store });
+          let eliquid = doc.data();
+          eliquid.id = doc.id;
+          resultEliquids.push({ eliquid: eliquid });
         });
-        setStores(resultStores);
+        setEliquids(resultEliquids);
       });
     })();
-    setIsReloadStores(false);
-  }, [isReloadStores]);
+    setIsReloadEliquids(false);
+  }, [isReloadEliquids]);
 
   const handleLoadMore = async () => {
-    const resultStores = [];
-    stores.legth < totalStores && setIsLoading(true);
+    const resultEliquids = [];
+    eliquids.legth < totalEliquids && setIsLoading(true);
 
-    const storesDB = db
-      .collection("stores")
+    const eliquidsDB = db
+      .collection("eliquids")
       .orderBy("createAt", "desc")
-      .startAfter(startStores.data().createAt)
-      .limit(limitStores);
+      .startAfter(startEliquids.data().createAt)
+      .limit(limitEliquids);
 
-    await storesDB.get().then((response) => {
+    await eliquidsDB.get().then((response) => {
       if (response.docs.length > 0) {
-        setStartStores(response.docs[response.docs.length - 1]);
+        setStartEliquids(response.docs[response.docs.length - 1]);
       } else {
         setIsLoading(false);
       }
 
       response.forEach((doc) => {
-        let store = doc.data();
-        store.id = doc.id;
-        resultStores.push({ store });
+        let eliquid = doc.data();
+        eliquid.id = doc.id;
+        resultEliquids.push({ eliquid: eliquid });
       });
 
-      setStores([...stores, ...resultStores]);
+      setEliquids([...eliquids, ...resultEliquids]);
     });
   };
   return (
     <View style={styles.viewBodyStyle}>
-      <ListStores
-        stores={stores}
+      <ListEliquids
+        eliquids={eliquids}
         isLoading={isLoading}
         handleLoadMore={handleLoadMore}
         navigation={navigation}
       />
-      {user && <AddVapeStoreButton navigation={navigation} setIsReloadStores={setIsReloadStores} />}
+      {user && <AddEliquidButton navigation={navigation} setIsReloadEliquids={setIsReloadEliquids} />}
     </View>
   );
 };
 
-AddVapeStoreButton = (props) => {
-  const { navigation, setIsReloadStores } = props;
+AddEliquidButton = (props) => {
+  const { navigation, setIsReloadEliquids } = props;
   return (
     <ActionButton
       buttonColor="#00a680"
-      onPress={() => navigation.navigate("AddVapeStore",{setIsReloadStores})}
+      onPress={() => navigation.navigate("AddEliquid",{setIsReloadEliquids})}
     />
   );
 };
