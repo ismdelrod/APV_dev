@@ -10,7 +10,6 @@ export default MapContainer = (props) => {
 
   // De forma similar a componentDidMount y componentDidUpdate
   useEffect(() => {
-    console.log(region);
     setRegion(region);
   }, []);
 

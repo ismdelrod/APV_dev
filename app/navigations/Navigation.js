@@ -229,6 +229,12 @@ const AppDrawerScreen = () => (
       component={VapeStoresTabsScreen}
       options={{ drawerLabel: "Tiendas" }}
     />
+    <AppDrawer.Screen
+      name="Eliquids"
+      component={VapeStoresTabsScreen}
+      options={{ drawerLabel: "E-liquids" }}
+    />
+    
   </AppDrawer.Navigator>
 );
 

@@ -17,7 +17,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
 import MainImage from "../Global/MainImage";
 import MapView from "react-native-maps";
-import MapContainer from "../../components/Global/MapContainer";
+import MapContainer from "../Global/MapContainer";
 import ModalMapSearcher from "../Global/ModalMapSearcher";
 import * as Location from "expo-location";
 import firebase from "../../utils/Firebase";

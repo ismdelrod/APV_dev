@@ -6,7 +6,6 @@ const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").width;
 export default MyMapViewSearcher = (props) => {
   const {region, onRegionChange}= props;
-  console.log(region);
   return (
     <MapView
       style={{ height: (heightScreen), width: (widthScreen/100)*80 }}
