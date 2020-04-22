@@ -34,7 +34,7 @@ const db = firebase.firestore(firebase);
 
 const screesWidth = Dimensions.get("window").width;
 
-export default VapeStore = (props) => {
+export default Eliquid = (props) => {
   const { navigation, route } = props;
   const { store } = route.params; //Function pasada por parámetros a través de navigation.
   const [imagesStore, setImagesStore] = useState([]);
