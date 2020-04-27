@@ -13,46 +13,46 @@ import { FlatList } from "react-native-gesture-handler";
 import firebase from "../../utils/Firebase";
 
 export default ListTopEliquids = (props) => {
-  const { stores, navigation } = props;
+  const { eliquids, navigation } = props;
 
   return (
     <FlatList
-      data={stores}
-      renderItem={(store) => <Stores store={store} navigation={navigation} />}
+      data={eliquids}
+      renderItem={(eliquid) => <Eliquids eliquid={eliquid} navigation={navigation} />}
       keyExtractor={(item, index) => index.toString()}
     />
   );
 };
 //TO DO: Al añadir nuevos votos en una Tienda, se actualizan los textos del Ranking pero no lo hacen las imagenes 
-const Stores = (props) => {
-  const { store, navigation } = props;
-  const { name, description, images, rating } = store.item;
+const Eliquids = (props) => {
+  const { eliquid, navigation } = props;
+  const { name, description, images, rating } = eliquid.item;
 
-  const [imageStore, setImageStore] = useState(null);
+  const [imageEliquid, setImageEliquid] = useState(null);
   const [iconColor, setIconColor] = useState("#000");
 
   useEffect(() => {
     const image = images[0];
     firebase
       .storage()
-      .ref(`stores-images/${image}`)
+      .ref(`eliquids-images/${image}`)
       .getDownloadURL()
       .then((response) => {
-        setImageStore(response);
+        setImageEliquid(response);
       });
   }, []);
 
   useEffect(() => {
-    if (store.index === 0) {
+    if (eliquid.index === 0) {
       setIconColor("#efb819");
-    } else if (store.index === 1) {
+    } else if (eliquid.index === 1) {
       setIconColor("#e3e4e5");
-    } else if (store.index === 2) {
+    } else if (eliquid.index === 2) {
       setIconColor("#cd7f32");
     }
   }, []);
   return (
-    <TouchableOpacity onPress={() => navigation.navigate("VapeStore", { store: store.item })}>
+    <TouchableOpacity onPress={() => navigation.navigate("Eliquid", { eliquid: eliquid.item })}>
       <Card containerStyle={styles.cardContainerStyle}>
         <Icon
           type="material-community"
@@ -62,9 +62,9 @@ const Stores = (props) => {
           containerStyle={styles.iconContainerStyle}
         />
         <Image
-          style={styles.storeImageStyle}
+          style={styles.eliquidImageStyle}
           resizeMode="cover"
-          source={{ uri: imageStore }}
+          source={{ uri: imageEliquid }}
         />
         <View style={styles.titleRankingStyle}>
           <Text style={styles.titleStyle}>{name}</Text>
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     borderWidth: 0,
   },
-  storeImageStyle: {
+  eliquidImageStyle: {
     width: "100%",
     height: 200,
   },

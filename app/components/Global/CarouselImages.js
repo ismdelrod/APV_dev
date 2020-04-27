@@ -4,7 +4,7 @@ import { Image } from "react-native-elements";
 import Carousel from "react-native-banner-carousel";
 
 export default CarouselImages = (props) => {
-  const { imagesStore, width, height } = props;
+  const { images, width, height } = props;
 
   return (
     <Carousel
@@ -16,7 +16,7 @@ export default CarouselImages = (props) => {
       pageIndicatorStyle={StyleSheet.indicatorStyle}
       activePageIndicatorStyle={styles.indicatorActiveStyle}
     >
-      {imagesStore.map((urlImage) => (
+      {images.map((urlImage) => (
         <View key={urlImage}>
           <Image style={{ width, height }} source={{ uri: urlImage }} />
         </View>

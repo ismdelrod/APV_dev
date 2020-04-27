@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { View, StyleSheet } from "react-native";
 import { AirbnbRating, Button, Input } from "react-native-elements";
 import { RatingStarsNameEnum } from "../../utils/Enumerations";
@@ -10,7 +10,7 @@ const db = firebase.firestore(firebase);
 
 export default AddReviewEliquid = (props) => {
   const { navigation, route } = props;
-  const { idStore, setReviewsReload } = route.params; //pasada por parámetros a través de navigation.
+  const { idEliquid, setReviewsReload } = route.params; //pasada por parámetros a través de navigation.
   const [rating, setRating] = useState(null);
   const [title, setTitle] = useState("");
   const [review, setReview] = useState("");
@@ -31,19 +31,19 @@ export default AddReviewEliquid = (props) => {
       const payload = {
         idUser: user.uid,
         avatarUser: user.photoURL,
-        idReview: idStore,
+        idReview: idEliquid,
         title: title,
         review: review,
         rating: rating,
         createAt: new Date(),
         isActive: true,
-        type: GeneralTypeEnum.store
+        type: GeneralTypeEnum.e_liquid
       };
 
       db.collection("reviews")
         .add(payload)
         .then(() => {
-          updateStore();
+          updateEliquid();
           
         })
         .catch(() => {
@@ -53,16 +53,16 @@ export default AddReviewEliquid = (props) => {
     }
   };
 
-  const updateStore = () => {
-    const storeRef = db.collection("stores").doc(idStore);
+  const updateEliquid = () => {
+    const eliquidRef = db.collection("eliquids").doc(idEliquid);
     
-    storeRef.get().then((response) => {
-      const storeData = response.data();
-      const ratingTotal = storeData.ratingTotal + rating;
-      const quantityVoting = storeData.quantityVoting + 1;
+    eliquidRef.get().then((response) => {
+      const eliquidData = response.data();
+      const ratingTotal = eliquidData.ratingTotal + rating;
+      const quantityVoting = eliquidData.quantityVoting + 1;
       const ratingResult = ratingTotal / quantityVoting;
 
-      storeRef
+      eliquidRef
         .update({ rating: ratingResult, ratingTotal, quantityVoting })
         .then(() => {
           setIsLoading(false);

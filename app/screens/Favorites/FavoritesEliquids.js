@@ -13,7 +13,7 @@ import { Image, Icon, Button } from "react-native-elements";
 import Loading from "../../components/Global/Loading";
 import Toast from "react-native-easy-toast";
 import { GeneralTypeEnum } from "../../utils/Enumerations";
-import { NavigationEvents } from "@react-navigation/compat";
+import { NavigationEvents} from "@react-navigation/compat";
 
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
@@ -21,8 +21,8 @@ const db = firebase.firestore(firebase);
 export default FavoritesEliquids = (props) => {
   const { navigation } = props;
 
-  const [stores, setStores] = useState([]);
-  const [reloadStores, setReloadStores] = useState(false);
+  const [eliquids, setEliquids] = useState([]);
+  const [reloadEliquids, setReloadEliquids] = useState(false);
   const [isVisibleLoading, setIsVisibleLoading] = useState(false);
   const [userLogged, setUserLogged] = useState(false);
   const toastRef = useRef();
@@ -36,70 +36,70 @@ export default FavoritesEliquids = (props) => {
       const idUser = firebase.auth().currentUser.uid;
       db.collection("favorites")
         .where("idUser", "==", idUser)
-        .where("type", "==", GeneralTypeEnum.store)
+        .where("type", "==", GeneralTypeEnum.e_liquid)
         .get()
         .then((response) => {
-          const idStoresArray = [];
+          const idEliquidsArray = [];
           response.forEach((doc) => {
-            idStoresArray.push(doc.data().idFavorite);
+            idEliquidsArray.push(doc.data().idFavorite);
           });
-          getDataStores(idStoresArray).then((response) => {
-            //Se puede hacer el then porque la function getDataStores devuelve una Promise
-            const stores = [];
+          getDataEliquids(idEliquidsArray).then((response) => {
+            //Se puede hacer el then porque la function getDataEliquids devuelve una Promise
+            const eliquids = [];
             response.forEach((doc) => {
-              let store = doc.data();
-              store.id = doc.id; // añadimos el id manualmente porque no va incluída en el objeto
-              stores.push(store);
+              let eliquid = doc.data();
+              eliquid.id = doc.id; // añadimos el id manualmente porque no va incluída en el objeto
+              eliquids.push(eliquid);
             });
-            setStores(stores);
+            setEliquids(eliquids);
           });
         })
         .catch(() => {
           toastRef.current.show("Error obteniendo Favoritos");
         });
     }
-    setReloadStores(false);
-  }, [reloadStores]);
+    setReloadEliquids(false);
+  }, [reloadEliquids]);
 
-  const getDataStores = (idStoresArray) => {
-    const arrayStores = [];
-    idStoresArray.forEach((idStore) => {
-      const result = db.collection("stores").doc(idStore).get();
-      arrayStores.push(result);
+  const getDataEliquids = (idEliquidsArray) => {
+    const arrayEliquids = [];
+    idEliquidsArray.forEach((idEliquid) => {
+      const result = db.collection("eliquids").doc(idEliquid).get();
+      arrayEliquids.push(result);
     });
-    return Promise.all(arrayStores); // la Promise espera a que acabe de llenarse el array
+    return Promise.all(arrayEliquids); // la Promise espera a que acabe de llenarse el array
   };
 
   if (!userLogged) {
     return (
       <UserNotLogged
-        setReloadStores={setReloadStores}
+        setReloadEliquids={setReloadEliquids}
         navigation={navigation}
       />
     );
   }
-  if (stores.length === 0) {
-    return <NotFoundStores setReloadStores={setReloadStores} />;
+  if (eliquids.length === 0) {
+    return <NotFoundEliquids setReloadEliquids={setReloadEliquids} />;
   }
   return (
     <View style={styles.viewBodyStyle}>
-      <NavigationEvents onWillFocus={() => setReloadStores(true)} />
-      {stores ? (
+      <NavigationEvents onWillFocus={() => setReloadEliquids(true)} />
+      {eliquids ? (
         <FlatList
-          data={stores}
-          renderItem={(store) => (
-            <Store
-              store={store}
+          data={eliquids}
+          renderItem={(eliquid) => (
+            <Eliquid
+              eliquid={eliquid}
               navigation={navigation}
               setIsVisibleLoading={setIsVisibleLoading}
-              setReloadStores={setReloadStores}
+              setReloadEliquids={setReloadEliquids}
               toastRef={toastRef}
             />
           )}
           keyExtractor={(item, index) => index.toString()}
         />
       ) : (
-        <View style={styles.loaderStoresStyle}>
+        <View style={styles.loaderEliquidsStyle}>
           <ActivityIndicator size="large" />
           <Text>Cargando E-liquids...</Text>
         </View>
@@ -110,25 +110,25 @@ export default FavoritesEliquids = (props) => {
   );
 };
 
-const Store = (props) => {
+const Eliquid = (props) => {
   const {
-    store,
+    eliquid,
     navigation,
     setIsVisibleLoading,
-    setReloadStores,
+    setReloadEliquids,
     toastRef,
   } = props;
-  const { id, name, images } = store.item;
-  const [imageStore, setImageStore] = useState(null);
+  const { id, name, images } = eliquid.item;
+  const [imageEliquid, setImageEliquid] = useState(null);
 
   useEffect(() => {
     const image = images[0];
     firebase
       .storage()
-      .ref(`stores-images/${image}`)
+      .ref(`eliquids-images/${image}`)
       .getDownloadURL()
       .then((response) => {
-        setImageStore(response);
+        setImageEliquid(response);
       });
   }, []);
 
@@ -155,7 +155,7 @@ const Store = (props) => {
     db.collection("favorites")
       .where("idFavorite", "==", id)
       .where("idUser", "==", firebase.auth().currentUser.uid)
-      .where("type", "==", GeneralTypeEnum.store)
+      .where("type", "==", GeneralTypeEnum.e_liquid)
       .get()
       .then((response) => {
         response.forEach((doc) => {
@@ -165,8 +165,9 @@ const Store = (props) => {
             .delete()
             .then(() => {
               setIsVisibleLoading(false);
-              setReloadStores(true);
+              setReloadEliquids(true);
               toastRef.current.show("Eliminado de Favoritos");
+              navigation.navigate("Eliquids");
             })
             .catch(() => {
               toastRef.current.show(
@@ -178,19 +179,19 @@ const Store = (props) => {
   };
 
   return (
-    <View style={styles.storesStyle}>
+    <View style={styles.eliquidsStyle}>
       <TouchableOpacity
-        onPress={() => navigation.navigate("VapeStore", { store: store.item })}
+        onPress={() => navigation.navigate("Eliquid", { eliquid: eliquid.item })}
       >
         <Image
           resizeMode="cover"
-          source={{ uri: imageStore }}
-          style={styles.imageStoreStyle}
+          source={{ uri: imageEliquid }}
+          style={styles.imageEliquidStyle}
           PlaceholderContent={<ActivityIndicator color="#fff" />}
         />
       </TouchableOpacity>
       <View style={styles.infoStyle}>
-        <Text style={styles.nameStoreStyle}>{name}</Text>
+        <Text style={styles.nameEliquidStyle}>{name}</Text>
         <Icon
           type="material-community"
           name="heart"
@@ -205,13 +206,13 @@ const Store = (props) => {
   );
 };
 
-const NotFoundStores = (props) => {
-  const { setReloadStores } = props;
+const NotFoundEliquids = (props) => {
+  const { setReloadEliquids } = props;
   return (
-    <View style={styles.viewNotFoundStoresStyle}>
-      <NavigationEvents onWillFocus={() => setReloadStores(true)} />
+    <View style={styles.viewNotFoundEliquidsStyle}>
+      <NavigationEvents onWillFocus={() => setReloadEliquids(true)} />
       <Icon type="material-community" name="alert-outline" size={50} />
-      <Text style={styles.textNotFoundStoresStyle}>
+      <Text style={styles.textNotFoundEliquidsStyle}>
         La lista de favoritos está vacía{" "}
       </Text>
     </View>
@@ -219,10 +220,10 @@ const NotFoundStores = (props) => {
 };
 
 const UserNotLogged = (props) => {
-  const { setReloadStores, navigation } = props;
+  const { setReloadEliquids, navigation } = props;
   return (
     <View style={styles.viewUserNotLoggedStyle}>
-      <NavigationEvents onWillFocus={() => setReloadStores(true)} />
+      <NavigationEvents onWillFocus={() => setReloadEliquids(true)} />
       <Icon type="material-community" name="alert-outline" size={50} />
       <Text style={styles.textUserNotLoggedStyle}>
         Esta sección es exclusiva para Usuarios Logueados{" "}
@@ -238,12 +239,12 @@ const UserNotLogged = (props) => {
 };
 
 const styles = StyleSheet.create({
-  viewNotFoundStoresStyle: {
+  viewNotFoundEliquidsStyle: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
-  textNotFoundStoresStyle: {
+  textNotFoundEliquidsStyle: {
     fontSize: 20,
     fontWeight: "bold",
   },
@@ -264,7 +265,7 @@ const styles = StyleSheet.create({
   btnUserNotLoggedButtonStyle: {
     backgroundColor: "#00a680",
   },
-  loaderStoresStyle: {
+  loaderEliquidsStyle: {
     marginTop: 10,
     marginBottom: 10,
   },
@@ -272,10 +273,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f2f2f2",
   },
-  storesStyle: {
+  eliquidsStyle: {
     margin: 10,
   },
-  imageStoreStyle: {
+  imageEliquidStyle: {
     width: "100%",
     height: 180,
   },
@@ -291,7 +292,7 @@ const styles = StyleSheet.create({
     marginTop: -30,
     backgroundColor: "#fff",
   },
-  nameStoreStyle: {
+  nameEliquidStyle: {
     fontWeight: "bold",
     fontSize: 20,
   },

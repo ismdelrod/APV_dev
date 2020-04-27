@@ -7,7 +7,7 @@ import { GeneralTypeEnum } from "../../utils/Enumerations";
 const db = firebase.firestore(firebase);
 
 export default ListEliquidReviews = (props) => {
-  const { navigation, idStore, setRating } = props;
+  const { navigation, idEliquid, setRating } = props;
   const [reviews, setReviews] = useState([]);
   const [reviewsReload, setReviewsReload] = useState(false);
   const [userLogged, setUserLogged] = useState(false);
@@ -22,8 +22,8 @@ export default ListEliquidReviews = (props) => {
       const arrayRatings = [];
 
       db.collection("reviews")
-        .where("idReview", "==", idStore)
-        .where("type", "==", GeneralTypeEnum.store)
+        .where("idReview", "==", idEliquid)
+        .where("type", "==", GeneralTypeEnum.e_liquid)
         .get()
         .then((response) => {
           response.forEach((doc) => {
@@ -59,8 +59,8 @@ export default ListEliquidReviews = (props) => {
             color: "#00a680",
           }}
           onPress={() =>
-            navigation.navigate("AddReviewVapeStore", {
-              idStore,
+            navigation.navigate("AddReviewEliquid", {
+              idEliquid,
               setReviewsReload,
             })
           }

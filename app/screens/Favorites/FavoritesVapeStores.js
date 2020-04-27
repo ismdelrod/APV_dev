@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Alert,
-  
 } from "react-native";
 import { Image, Icon, Button } from "react-native-elements";
 import Loading from "../../components/Global/Loading";
@@ -130,7 +129,7 @@ const Store = (props) => {
       .then((response) => {
         setImageStore(response);
       });
-  }, []);
+  }, [images]);
 
   const confirmRemoveFavorite = () => {
     Alert.alert(
@@ -167,6 +166,7 @@ const Store = (props) => {
               setIsVisibleLoading(false);
               setReloadStores(true);
               toastRef.current.show("Eliminado de Favoritos");
+              navigation.navigate("VapeStores");
             })
             .catch(() => {
               toastRef.current.show(
@@ -180,7 +180,12 @@ const Store = (props) => {
   return (
     <View style={styles.storesStyle}>
       <TouchableOpacity
-        onPress={() => navigation.navigate("VapeStore", { store: store.item })}
+        onPress={() =>
+          navigation.navigate("VapeStore", {
+            store: store.item,
+            favoriteCall: true,
+          })
+        }
       >
         <Image
           resizeMode="cover"
@@ -229,7 +234,7 @@ const UserNotLogged = (props) => {
       </Text>
       <Button
         title="Ir al LogIn de Usuarios"
-        onPress={()=> navigation.navigate("Login")}
+        onPress={() => navigation.navigate("Login")}
         containerStyle={styles.btnUserNotLoggedContainerStyle}
         buttonStyle={styles.btnUserNotLoggedButtonStyle}
       />

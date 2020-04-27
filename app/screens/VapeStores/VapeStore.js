@@ -19,8 +19,15 @@ console.warn = (message) => {
 };
 //********************************************************** */
 
-import React, { useState, useEffect, useRef } from "react";
-import { View, Text, Dimensions, StyleSheet, ScrollView } from "react-native";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import {
+  View,
+  Text,
+  Dimensions,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+} from "react-native";
 import { ListItem, Icon } from "react-native-elements";
 import StarRating from "react-native-star-rating";
 import CarouselImages from "../../components/Global/CarouselImages";
@@ -28,19 +35,28 @@ import MyMapView from "../../components/Global/MyMapView";
 import ListVapeStoreReviews from "../../components/VapeStores/ListVapeStoreReviews";
 import { GeneralTypeEnum } from "../../utils/Enumerations";
 import Toast from "react-native-easy-toast";
-
+import { NavigationEvents } from "@react-navigation/compat";
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
 
 const screesWidth = Dimensions.get("window").width;
+const wait = (timeout) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, timeout);
+  });
+};
 
 export default VapeStore = (props) => {
+  
+  // TO DO: Falta refrescar la VapeStore cuando se elimina de favoritos(desde favoritos).
+
   const { navigation, route } = props;
   const { store } = route.params; //Function pasada por parámetros a través de navigation.
   const [imagesStore, setImagesStore] = useState([]);
   const [isFavorite, setIsFavorite] = useState(false);
   const [userLogged, setUserLogged] = useState(false);
   const [rating, setRating] = useState(store.rating);
+  const [refreshing, setRefreshing] = useState(false);
 
   const toastRef = useRef();
 
@@ -48,7 +64,14 @@ export default VapeStore = (props) => {
     user ? setUserLogged(true) : setUserLogged(false);
   });
 
-  useEffect(() => {   
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    wait(2000).then(() => {
+      setRefreshing(false);
+    });
+  }, [refreshing]);
+
+  useEffect(() => {
     const arrayImagesUrls = [];
     (async () => {
       await Promise.all(
@@ -64,7 +87,7 @@ export default VapeStore = (props) => {
       );
       setImagesStore(arrayImagesUrls);
     })();
-  }, []);
+  }, [isFavorite, refreshing]);
 
   useEffect(() => {
     if (userLogged) {
@@ -78,7 +101,9 @@ export default VapeStore = (props) => {
           }
         });
     }
-  }, []);
+    setRefreshing(false);
+  }, [imagesStore]);
+
   const addFavorite = () => {
     if (userLogged) {
       const payload = {
@@ -86,7 +111,7 @@ export default VapeStore = (props) => {
         idUser: firebase.auth().currentUser.uid,
         type: GeneralTypeEnum.store,
       };
-  
+
       db.collection("favorites")
         .add(payload)
         .then(() => {
@@ -96,9 +121,11 @@ export default VapeStore = (props) => {
         .catch(() => {
           toastRef.current.show("Error al intentar añadir a Favoritos");
         });
-    }
-    else{
-      toastRef.current.show("Para usar el sistema de favoritos debes estar Logueado", 3000)
+    } else {
+      toastRef.current.show(
+        "Para usar el sistema de favoritos debes estar Logueado",
+        3000
+      );
     }
   };
 
@@ -106,11 +133,10 @@ export default VapeStore = (props) => {
     db.collection("favorites")
       .where("idFavorite", "==", store.id)
       .where("idUser", "==", firebase.auth().currentUser.uid)
-      .where("type", "==", GeneralTypeEnum.store)
       .get()
       .then((response) => {
         response.forEach((doc) => {
-          const idFavorite = doc.id;
+          let idFavorite = doc.id;
           db.collection("favorites")
             .doc(idFavorite)
             .delete()
@@ -128,7 +154,13 @@ export default VapeStore = (props) => {
   };
 
   return (
-    <ScrollView style={StyleSheet.viewBodyStyle}>
+    <ScrollView
+      style={StyleSheet.viewBodyStyle}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
+      <NavigationEvents onWillFocus={() => setRefreshing(true)} />
       <View style={styles.viewFavoriteStyle}>
         <Icon
           type="material-community"
@@ -139,11 +171,7 @@ export default VapeStore = (props) => {
           underlayColor="transparent"
         />
       </View>
-      <CarouselImages
-        imagesStore={imagesStore}
-        width={screesWidth}
-        height={200}
-      />
+      <CarouselImages images={imagesStore} width={screesWidth} height={200} />
 
       <TitleStore
         name={store.name}

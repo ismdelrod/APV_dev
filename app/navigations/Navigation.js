@@ -41,7 +41,6 @@ import RegisterFormComponent from "../screens/Account/Register";
 import LoginFormComponent from "../screens/Account/Login";
 //END Account Component  SECTION
 
-
 //VapeStores Stack SECTION
 const VapeStoreStack = createStackNavigator();
 
@@ -53,7 +52,7 @@ const VapeStoresStackScreen = () => {
         component={VapeStoresListComponent}
         options={{
           title: "Tiendas",
-          headerTitleAlign:"center",
+          headerTitleAlign: "center",
           headerStyle: {},
           headerTitleStyle: {},
           headerRight: () => <Header />,
@@ -64,7 +63,7 @@ const VapeStoresStackScreen = () => {
         component={VapeStoreDetailComponent}
         options={({ route }) => ({
           title: route.params.store.name,
-          headerTitleAlign:"center",
+          headerTitleAlign: "center",
           headerStyle: {},
           headerTitleStyle: {},
           headerRight: () => <Header />,
@@ -75,7 +74,7 @@ const VapeStoresStackScreen = () => {
         component={AddVapeStoreFormComponent}
         options={{
           title: "Añadir Nueva Tienda",
-          headerTitleAlign:"center",
+          headerTitleAlign: "center",
           headerStyle: {},
           headerTitleStyle: {},
           headerRight: () => <Header />,
@@ -86,7 +85,7 @@ const VapeStoresStackScreen = () => {
         component={AddReviewVapeStoreFormComponent}
         options={{
           title: "Añadir Opinión",
-          headerTitleAlign:"center",
+          headerTitleAlign: "center",
           headerStyle: {},
           headerTitleStyle: {},
           headerRight: () => <Header />,
@@ -96,7 +95,6 @@ const VapeStoresStackScreen = () => {
   );
 };
 //END VapeStores Stack SECTION
-
 
 //E-liquid Stack SECTION
 const EliquidStack = createStackNavigator();
@@ -109,7 +107,7 @@ const EliquidsStackScreen = () => {
         component={EliquidsListComponent}
         options={{
           title: "E-liquids",
-          headerTitleAlign:"center",
+          headerTitleAlign: "center",
           headerStyle: {},
           headerTitleStyle: {},
           headerRight: () => <Header />,
@@ -119,8 +117,8 @@ const EliquidsStackScreen = () => {
         name="Eliquid"
         component={EliquidDetailComponent}
         options={({ route }) => ({
-          title: route.params.store.name,
-          headerTitleAlign:"center",
+          title: route.params.eliquid.name,
+          headerTitleAlign: "center",
           headerStyle: {},
           headerTitleStyle: {},
           headerRight: () => <Header />,
@@ -131,7 +129,7 @@ const EliquidsStackScreen = () => {
         component={AddEliquidFormComponent}
         options={{
           title: "Añadir Nuevo E-liquid",
-          headerTitleAlign:"center",
+          headerTitleAlign: "center",
           headerStyle: {},
           headerTitleStyle: {},
           headerRight: () => <Header />,
@@ -142,7 +140,7 @@ const EliquidsStackScreen = () => {
         component={AddReviewEliquidFormComponent}
         options={{
           title: "Añadir Opinión",
-          headerTitleAlign:"center",
+          headerTitleAlign: "center",
           headerStyle: {},
           headerTitleStyle: {},
           headerRight: () => <Header />,
@@ -163,7 +161,7 @@ const TopVapeStoresStackScreen = () => {
         component={TopVapeStoresListComponent}
         options={{
           title: "Ranking",
-          headerTitleAlign:"center",
+          headerTitleAlign: "center",
           headerStyle: {},
           headerTitleStyle: {},
           headerRight: () => <Header />,
@@ -182,7 +180,7 @@ const TopEliquidsStackScreen = () => {
         component={TopEliquidsListComponent}
         options={{
           title: "Ranking",
-          headerTitleAlign:"center",
+          headerTitleAlign: "center",
           headerStyle: {},
           headerTitleStyle: {},
           headerRight: () => <Header />,
@@ -192,9 +190,6 @@ const TopEliquidsStackScreen = () => {
   );
 };
 //END Ranking Stack SECTION
-
-
-
 
 //Search Stack SECTION
 const SearchVapeStoresStack = createStackNavigator();
@@ -206,7 +201,7 @@ const SearchVapeStoresStackScreen = () => {
         component={SearchVapeStoresComponent}
         options={{
           title: "Buscar",
-          headerTitleAlign:"center",
+          headerTitleAlign: "center",
           headerStyle: {},
           headerTitleStyle: {},
           headerRight: () => <Header />,
@@ -215,7 +210,6 @@ const SearchVapeStoresStackScreen = () => {
     </SearchVapeStoresStack.Navigator>
   );
 };
-
 
 const SearchEliquidsStack = createStackNavigator();
 const SearchEliquidsStackScreen = () => {
@@ -226,7 +220,7 @@ const SearchEliquidsStackScreen = () => {
         component={SearchEliquidsComponent}
         options={{
           title: "Buscar",
-          headerTitleAlign:"center",
+          headerTitleAlign: "center",
           headerStyle: {},
           headerTitleStyle: {},
           headerRight: () => <Header />,
@@ -236,9 +230,6 @@ const SearchEliquidsStackScreen = () => {
   );
 };
 //END Search Stack SECTION
-
-
-
 
 //Favorites Stack SECTION
 const FavoritesVapeStoresStack = createStackNavigator();
@@ -250,7 +241,7 @@ const FavoritesVapeStoresStackScreen = () => {
         component={FavoritesVapeStoresComponent}
         options={{
           title: "Favoritos",
-          headerTitleAlign:"center",
+          headerTitleAlign: "center",
           headerStyle: {},
           headerTitleStyle: {},
           headerRight: () => <Header />,
@@ -259,7 +250,6 @@ const FavoritesVapeStoresStackScreen = () => {
     </FavoritesVapeStoresStack.Navigator>
   );
 };
-
 
 const FavoritesEliquidsStack = createStackNavigator();
 const FavoritesEliquidsStackScreen = () => {
@@ -270,7 +260,7 @@ const FavoritesEliquidsStackScreen = () => {
         component={FavoritesEliquidsComponent}
         options={{
           title: "Favoritos",
-          headerTitleAlign:"center",
+          headerTitleAlign: "center",
           headerStyle: {},
           headerTitleStyle: {},
           headerRight: () => <Header />,
@@ -280,8 +270,6 @@ const FavoritesEliquidsStackScreen = () => {
   );
 };
 //END Favorites Stack SECTION
-
-
 
 //Account Stack SECTION
 const AccountStack = createStackNavigator();
@@ -293,7 +281,7 @@ const AccountStackScreen = () => {
         component={AccountInfoComponent}
         options={{
           title: "Perfil de Usuario",
-          headerTitleAlign:"center",
+          headerTitleAlign: "center",
           headerStyle: {},
           headerTitleStyle: {},
           headerRight: () => <Header />,
@@ -304,7 +292,7 @@ const AccountStackScreen = () => {
         component={LoginFormComponent}
         options={{
           title: "LogIn de Usuario",
-          headerTitleAlign:"center",
+          headerTitleAlign: "center",
           headerStyle: {},
           headerTitleStyle: {},
           headerRight: () => <Header />,
@@ -315,7 +303,7 @@ const AccountStackScreen = () => {
         component={RegisterFormComponent}
         options={{
           title: "Registrar Nuevo Usuario",
-          headerTitleAlign:"center",
+          headerTitleAlign: "center",
           headerStyle: {},
           headerTitleStyle: {},
           headerRight: () => <Header />,
@@ -325,9 +313,6 @@ const AccountStackScreen = () => {
   );
 };
 //END Account Stack SECTION
-
-
-
 
 //VapeStores Tabs SECTION
 const VapeStoresTabs = createBottomTabNavigator();
@@ -364,13 +349,14 @@ const VapeStoresTabsScreen = () => (
       component={FavoritesVapeStoresStackScreen}
     />
     <VapeStoresTabs.Screen name="Top 5" component={TopVapeStoresStackScreen} />
-    <VapeStoresTabs.Screen name="Buscar" component={SearchVapeStoresStackScreen} />
+    <VapeStoresTabs.Screen
+      name="Buscar"
+      component={SearchVapeStoresStackScreen}
+    />
     <VapeStoresTabs.Screen name="Perfil" component={AccountStackScreen} />
   </VapeStoresTabs.Navigator>
 );
 //END VapeStores SECTION
-
-
 
 //Eliquids Tabs SECTION
 const EliquidsTabs = createBottomTabNavigator();
@@ -414,10 +400,10 @@ const EliquidsTabsScreen = () => (
 //END Eliquids SECTION
 
 
-
 const AppDrawer = createDrawerNavigator();
 const AppDrawerScreen = () => (
   <AppDrawer.Navigator>
+    {/*  */}
     <AppDrawer.Screen
       name="VapeStoreTabs"
       component={VapeStoresTabsScreen}
@@ -428,7 +414,6 @@ const AppDrawerScreen = () => (
       component={EliquidsTabsScreen}
       options={{ drawerLabel: "E-liquids" }}
     />
-    
   </AppDrawer.Navigator>
 );
 
@@ -439,3 +424,49 @@ export default Navigation = () => {
     </NavigationContainer>
   );
 };
+
+
+
+
+
+
+
+
+
+
+//TO DO: Añadir Imagen Logo en Drawer
+
+//import { View, StyleSheet, Image, ImageBackground } from "react-native";
+
+
+// const LogoTitle =()=> {
+//   return (
+//     <View style={styles.container}>
+//       <ImageBackground source={require("../../assets/img/APV_logo.jpg")} style={styles.image}>
+//       <Text style={styles.text}>Inside</Text>
+//     </ImageBackground>
+//     </View>
+//   );
+// }
+//<AppDrawer.Screen
+//       name=" "
+//       component={VapeStoresTabsScreen}
+//       options={{ headerTitle: (props) => <LogoTitle {...props} /> }}
+// />}
+// const styles = StyleSheet.create({
+//   container: {
+//     backgroundColor: "white",
+//     flex: 1,
+//   },
+
+//   image: {
+//     flex: 1,
+//     resizeMode: "cover",
+//     justifyContent: "center"
+//   },
+// });
+
+
+
+
+

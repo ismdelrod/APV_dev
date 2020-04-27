@@ -20,27 +20,41 @@ console.warn = (message) => {
 //********************************************************** */
 
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, Dimensions, StyleSheet, ScrollView } from "react-native";
-import { ListItem, Icon } from "react-native-elements";
+import {
+  View,
+  Text,
+  Dimensions,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+} from "react-native";
+import { Icon } from "react-native-elements";
 import StarRating from "react-native-star-rating";
 import CarouselImages from "../../components/Global/CarouselImages";
-import MyMapView from "../../components/Global/MyMapView";
-import ListVapeStoreReviews from "../../components/VapeStores/ListVapeStoreReviews";
+import ListEliquidReviews from "../../components/Eliquids/ListEliquidReviews";
 import { GeneralTypeEnum } from "../../utils/Enumerations";
 import Toast from "react-native-easy-toast";
-
+import { NavigationEvents } from "@react-navigation/compat";
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
 
 const screesWidth = Dimensions.get("window").width;
+const wait = (timeout) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, timeout);
+  });
+};
 
 export default Eliquid = (props) => {
+  // TO DO: Falta refrescar la VapeStore cuando se elimina de favoritos(desde favoritos).
+
   const { navigation, route } = props;
-  const { store } = route.params; //Function pasada por parámetros a través de navigation.
-  const [imagesStore, setImagesStore] = useState([]);
+  const { eliquid } = route.params; //Function pasada por parámetros a través de navigation.
+  const [imagesEliquid, setImagesEliquid] = useState([]);
   const [isFavorite, setIsFavorite] = useState(false);
   const [userLogged, setUserLogged] = useState(false);
-  const [rating, setRating] = useState(store.rating);
+  const [rating, setRating] = useState(eliquid.rating);
+  const [refreshing, setRefreshing] = useState(false);
 
   const toastRef = useRef();
 
@@ -48,28 +62,35 @@ export default Eliquid = (props) => {
     user ? setUserLogged(true) : setUserLogged(false);
   });
 
-  useEffect(() => {   
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    wait(2000).then(() => {
+      setRefreshing(false);
+    });
+  }, [refreshing]);
+
+  useEffect(() => {
     const arrayImagesUrls = [];
     (async () => {
       await Promise.all(
-        store.images.map(async (idImage) => {
+        eliquid.images.map(async (idImage) => {
           await firebase
             .storage()
-            .ref(`stores-images/${idImage}`)
+            .ref(`eliquids-images/${idImage}`)
             .getDownloadURL()
             .then((imageUrl) => {
               arrayImagesUrls.push(imageUrl);
             });
         })
       );
-      setImagesStore(arrayImagesUrls);
+      setImagesEliquid(arrayImagesUrls);
     })();
-  }, []);
+  }, [isFavorite]);
 
   useEffect(() => {
     if (userLogged) {
       db.collection("favorites")
-        .where("idFavorite", "==", store.id)
+        .where("idFavorite", "==", eliquid.id)
         .where("idUser", "==", firebase.auth().currentUser.uid)
         .get()
         .then((response) => {
@@ -78,15 +99,17 @@ export default Eliquid = (props) => {
           }
         });
     }
-  }, []);
+    setRefreshing(false);
+  }, [imagesEliquid]);
+
   const addFavorite = () => {
     if (userLogged) {
       const payload = {
-        idFavorite: store.id,
+        idFavorite: eliquid.id,
         idUser: firebase.auth().currentUser.uid,
-        type: GeneralTypeEnum.store,
+        type: GeneralTypeEnum.e_liquid,
       };
-  
+
       db.collection("favorites")
         .add(payload)
         .then(() => {
@@ -96,21 +119,22 @@ export default Eliquid = (props) => {
         .catch(() => {
           toastRef.current.show("Error al intentar añadir a Favoritos");
         });
-    }
-    else{
-      toastRef.current.show("Para usar el sistema de favoritos debes estar Logueado", 3000)
+    } else {
+      toastRef.current.show(
+        "Para usar el sistema de favoritos debes estar Logueado",
+        3000
+      );
     }
   };
 
   const removeFavorite = () => {
     db.collection("favorites")
-      .where("idFavorite", "==", store.id)
+      .where("idFavorite", "==", eliquid.id)
       .where("idUser", "==", firebase.auth().currentUser.uid)
-      .where("type", "==", GeneralTypeEnum.store)
       .get()
       .then((response) => {
         response.forEach((doc) => {
-          const idFavorite = doc.id;
+          let idFavorite = doc.id;
           db.collection("favorites")
             .doc(idFavorite)
             .delete()
@@ -128,7 +152,13 @@ export default Eliquid = (props) => {
   };
 
   return (
-    <ScrollView style={StyleSheet.viewBodyStyle}>
+    <ScrollView
+      style={StyleSheet.viewBodyStyle}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
+      <NavigationEvents onWillFocus={() => setRefreshing(true)} />
       <View style={styles.viewFavoriteStyle}>
         <Icon
           type="material-community"
@@ -139,27 +169,19 @@ export default Eliquid = (props) => {
           underlayColor="transparent"
         />
       </View>
-      <CarouselImages
-        imagesStore={imagesStore}
-        width={screesWidth}
-        height={200}
-      />
+      <CarouselImages images={imagesEliquid} width={screesWidth} height={200} />
 
-      <TitleStore
-        name={store.name}
-        description={store.description}
+      <TitleEliquid
+        name={eliquid.name}
+        description={eliquid.description}
         rating={rating}
       />
 
-      <StoreInfo
-        location={store.location}
-        name={store.name}
-        address={store.address}
-      />
+      {/* <EliquidInfo/> */}
 
-      <ListVapeStoreReviews
+      <ListEliquidReviews
         navigation={navigation}
-        idStore={store.id}
+        idEliquid={eliquid.id}
         setRating={setRating}
       />
 
@@ -168,12 +190,12 @@ export default Eliquid = (props) => {
   );
 };
 
-const TitleStore = (props) => {
+const TitleEliquid = (props) => {
   const { name, description, rating } = props;
   return (
-    <View style={styles.viewStoreTitleStyle}>
-      <View style={styles.viewStoreTitleRowStyle}>
-        <Text style={styles.nameStoreStyle}>{name}</Text>
+    <View style={styles.viewEliquidTitleStyle}>
+      <View style={styles.viewEliquidTitleRowStyle}>
+        <Text style={styles.nameEliquidStyle}>{name}</Text>
         <StarRating
           starSize={20}
           disabled={true}
@@ -192,52 +214,50 @@ const TitleStore = (props) => {
           }
         />
       </View>
-      <Text style={styles.descriptionStoreStyle}>{description}</Text>
+      <Text style={styles.descriptionEliquidStyle}>{description}</Text>
     </View>
   );
 };
 
-const StoreInfo = (props) => {
-  const { location, name, address } = props;
-
-  const listInfo = [
-    {
-      text: address,
-      iconName: "map-marker",
-      iconType: "material-community",
-      action: null,
-    },
-    {
-      text: "añadir nº teléfono al form",
-      iconName: "phone",
-      iconType: "material-community",
-      action: null,
-    },
-    {
-      text: "añadir email al form",
-      iconName: "at",
-      iconType: "material-community",
-      action: null,
-    },
-  ];
-  return (
-    <View style={styles.viewInfoStoreStyle}>
-      <Text style={styles.storeInfoTitleStyle}>Info sobre la Tienda</Text>
-      <MyMapView location={location} name={name} height={100} />
-      {listInfo.map((item, index) => (
-        <ListItem
-          key={index}
-          title={item.text}
-          leftIcon={{
-            name: item.iconName,
-            type: item.iconType,
-            color: "#00a680",
-          }}
-          containerStyle={styles.containerListItemStyle}
-        />
-      ))}
-    </View>
-  );
+const EliquidInfo = (props) => {
+  // const { } = props;
+  // const listInfo = [
+  //   {
+  //     text: address,
+  //     iconName: "map-marker",
+  //     iconType: "material-community",
+  //     action: null,
+  //   },
+  //   {
+  //     text: "añadir nº teléfono al form",
+  //     iconName: "phone",
+  //     iconType: "material-community",
+  //     action: null,
+  //   },
+  //   {
+  //     text: "añadir email al form",
+  //     iconName: "at",
+  //     iconType: "material-community",
+  //     action: null,
+  //   },
+  // ];
+  // return (
+  //   <View style={styles.viewInfoEliquidStyle}>
+  //     <Text style={styles.storeInfoTitleStyle}>Info sobre el E-liquid</Text>
+  //     {listInfo.map((item, index) => (
+  //       <ListItem
+  //         key={index}
+  //         title={item.text}
+  //         leftIcon={{
+  //           name: item.iconName,
+  //           type: item.iconType,
+  //           color: "#00a680",
+  //         }}
+  //         containerStyle={styles.containerListItemStyle}
+  //       />
+  //     ))}
+  //   </View>
+  // );
 };
 
 const styles = StyleSheet.create({
@@ -256,33 +276,33 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     paddingRight: 5,
   },
-  viewStoreTitleStyle: {
+  viewEliquidTitleStyle: {
     margin: 15,
   },
-  viewStoreTitleRowStyle: {
+  viewEliquidTitleRowStyle: {
     flexDirection: "row",
     width: "100%",
   },
-  nameStoreStyle: {
+  nameEliquidStyle: {
     fontSize: 20,
     fontWeight: "bold",
     width: "70%",
   },
-  descriptionStoreStyle: {
+  descriptionEliquidStyle: {
     marginTop: 5,
     color: "grey",
   },
-  viewInfoStoreStyle: {
+  viewInfoEliquidStyle: {
     margin: 15,
     marginTop: 25,
-  },
-  storeInfoTitleStyle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
   },
   containerListItemStyle: {
     borderBottomColor: "#d8d8d8",
     borderBottomWidth: 1,
   },
+  // storeInfoTitleStyle: {
+  //   fontSize: 20,
+  //   fontWeight: "bold",
+  //   marginBottom: 10,
+  // },
 });

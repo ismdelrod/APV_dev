@@ -48,7 +48,6 @@ export default AddEliquidForm = (props) => {
             isActive: true,
           })
           .then(() => {
-            debugger;
             setIsLoading(false);
             setIsReloadEliquids(true);
             navigation.navigate("Eliquids");
