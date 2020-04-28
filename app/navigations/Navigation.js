@@ -41,6 +41,10 @@ import RegisterFormComponent from "../screens/Account/Register";
 import LoginFormComponent from "../screens/Account/Login";
 //END Account Component  SECTION
 
+//Search Component SECTION
+import ChatComponent from "../screens/Chat/Chat";
+//END Search Component SECTION
+
 //VapeStores Stack SECTION
 const VapeStoreStack = createStackNavigator();
 
@@ -314,6 +318,27 @@ const AccountStackScreen = () => {
 };
 //END Account Stack SECTION
 
+//Account Chat Stack SECTION
+const ChatStack = createStackNavigator();
+const ChatStackScreen = () => {
+  return (
+    <ChatStack.Navigator>
+      <ChatStack.Screen
+        name="Chat"
+        component={ChatComponent}
+        options={{
+          title: "Chat",
+          headerTitleAlign: "center",
+          headerStyle: {},
+          headerTitleStyle: {},
+          headerRight: () => <Header />,
+        }}
+      />
+    </ChatStack.Navigator>
+  );
+};
+//END Chat Stack SECTION
+
 //VapeStores Tabs SECTION
 const VapeStoresTabs = createBottomTabNavigator();
 const VapeStoresTabsScreen = () => (
@@ -399,6 +424,31 @@ const EliquidsTabsScreen = () => (
 );
 //END Eliquids SECTION
 
+//Chat Tabs SECTION
+const ChatTabs = createBottomTabNavigator();
+const ChatTabsScreen = () => (
+  <ChatTabs.Navigator
+    screenOptions={({ route }) => ({
+      tabBarIcon: ({ focused, color, size }) => {
+        let iconName;
+
+        if (route.name === "Chat") {
+          iconName = focused ? "home" : "home-outline";
+        }
+        return (
+          <MaterialCommunityIcons name={iconName} size={size} color={color} />
+        );
+      },
+    })}
+    tabBarOptions={{
+      activeTintColor: "#008EE1",
+      inactiveTintColor: "#D1D1D1",
+    }}
+  >
+    <ChatTabs.Screen name="Chat" component={ChatStackScreen} />
+  </ChatTabs.Navigator>
+);
+//END Eliquids SECTION
 
 const AppDrawer = createDrawerNavigator();
 const AppDrawerScreen = () => (
@@ -414,6 +464,11 @@ const AppDrawerScreen = () => (
       component={EliquidsTabsScreen}
       options={{ drawerLabel: "E-liquids" }}
     />
+    <AppDrawer.Screen
+      name="Chat"
+      component={ChatTabsScreen}
+      options={{ drawerLabel: "Chat" }}
+    />
   </AppDrawer.Navigator>
 );
 
@@ -425,19 +480,9 @@ export default Navigation = () => {
   );
 };
 
-
-
-
-
-
-
-
-
-
 //TO DO: Añadir Imagen Logo en Drawer
 
 //import { View, StyleSheet, Image, ImageBackground } from "react-native";
-
 
 // const LogoTitle =()=> {
 //   return (
@@ -465,8 +510,3 @@ export default Navigation = () => {
 //     justifyContent: "center"
 //   },
 // });
-
-
-
-
-
