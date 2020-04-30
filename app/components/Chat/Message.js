@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-export default function Message({ message, side }) {
+export default Message = ({ message, side }) => {
   const isLeftSide = side === "left";
 
   const containerStyles = isLeftSide

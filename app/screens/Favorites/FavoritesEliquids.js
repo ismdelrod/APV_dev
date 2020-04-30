@@ -39,7 +39,7 @@ export default FavoritesEliquids = (props) => {
         .where("type", "==", GeneralTypeEnum.e_liquid)
         .get()
         .then((response) => {
-          const idEliquidsArray = [];
+          const idEliquidsArray = []; 
           response.forEach((doc) => {
             idEliquidsArray.push(doc.data().idFavorite);
           });

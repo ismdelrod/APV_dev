@@ -1,4 +1,4 @@
-import React, { useCallback, useState} from "react";//, useContext, createContext 
+import React, { useCallback, useState } from "react";
 import { View, TextInput, StyleSheet } from "react-native";
 
 import Button from "../Chat/Button";
@@ -7,15 +7,11 @@ import Loader from "../Chat/Loader";
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
 
-// const UserContext = createContext(null);
-
 export default Input = (props) => {
-  // const { uid } = useContext(UserContext);
-  const {uid} = props;
+  const { uid } = props;
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  
   const createMessage = async ({ message, uid }) => {
     await db.collection("messages").add({
       message,
@@ -24,16 +20,13 @@ export default Input = (props) => {
     });
   };
 
-  const handlePress = useCallback(
-    function () {
-      setIsLoading(true);
-      createMessage({ message, uid }).then(function () {
-        setIsLoading(false);
-        setMessage("");
-      });
-    },
-    [message]
-  );
+  const handlePress = useCallback(() => {
+    setIsLoading(true);
+    createMessage({ message, uid }).then(() => {
+      setIsLoading(false);
+      setMessage("");
+    });
+  }, [message]);
 
   return (
     <View style={styles.container}>
@@ -51,7 +44,7 @@ export default Input = (props) => {
       {isLoading && <Loader />}
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

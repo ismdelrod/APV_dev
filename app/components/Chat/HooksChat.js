@@ -7,11 +7,12 @@ import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
 
 const messagesReducer = (state, action) => {
+  console.log(state);
   switch (action.type) {
     case "add":
-      return unionWith(state, action.payload, function (a, b) {
+      return unionWith(state, action.payload, (a, b) => {
         return a.id === b.id;
-      }).sort(function (a, b) {
+      }).sort((a, b) => {
         const aData = a.data();
         const bData = b.data();
 
@@ -26,11 +27,11 @@ export default HooksChat = (props) => {
   const {uid} = props;
   const [messages, dispatchMessages] = useReducer(messagesReducer, []);
 
-  useEffect(function () {
+  useEffect( ()=> {
     return db
       .collection("messages")
       .orderBy("created_at", "desc")
-      .onSnapshot(function (snapshot) {
+      .onSnapshot((snapshot) =>{
         dispatchMessages({ type: "add", payload: snapshot.docs });
       });
   }, []);
@@ -41,10 +42,10 @@ export default HooksChat = (props) => {
         <FlatList
           inverted
           data={messages}
-          keyExtractor={function (item) {
+          keyExtractor={ (item) =>{
             return item.id;
           }}
-          renderItem={function ({ item }) {
+          renderItem={ ({ item })=> {
             const data = item.data();
             const side = data.user_id === uid ? "right" : "left";
 

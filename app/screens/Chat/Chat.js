@@ -1,4 +1,4 @@
-import React, { useState, useEffect,  useCallback } from "react"; //createContext 
+import React, { useState, useEffect, useCallback } from "react";
 import { Alert } from "react-native";
 
 import Loader from "../../components/Chat/Loader";
@@ -6,16 +6,10 @@ import HooksChat from "../../components/Chat//HooksChat";
 
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
-// const UserContext = createContext();
 
 export default Chat = () => {
   const [user, setUser] = useState(firebase.auth().currentUser);
-  const [userLogged, setUserLogged] = useState(false);
   const logout = useCallback(() => firebase.auth().signOut(), []);
-
-  firebase.auth().onAuthStateChanged((user) => {
-    user ? setUserLogged(true) : setUserLogged(false);
-  });
 
   const signIn = async () => {
     try {
@@ -35,35 +29,26 @@ export default Chat = () => {
 
     return messages.docs;
   };
- 
-  useEffect(function () {
-   
-    if (userLogged) {
-        const user = firebase.auth().currentUser;
-        const idUser = firebase.auth().currentUser.uid;
-        setUser(user);
-      } else {
-        Alert.alert("Something went wrong");
-        return;
-      }
-    // signIn().then(({ user, error }) => {
-    //   if (error) {
-    //     Alert.alert("Something went wrong");
-    //     return;
-    //   }
 
-    //   setUser(user);
-    // });
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged((usr) => {
+      usr && setUser(usr);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      const user = firebase.auth().currentUser;
+      setUser(user);
+    } else {
+      Alert.alert("Something went wrong");
+      return;
+    }
   }, []);
 
   if (!user) {
     return <Loader />;
-  } 
+  }
 
-  return (
-    // <UserContext.Provider value={user}>
-    //   <HooksChat />
-    // </UserContext.Provider>
-    <HooksChat uid ={user.uid} />
-  );
+  return <HooksChat uid={user.uid} />;
 };
