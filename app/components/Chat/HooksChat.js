@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer} from "react"; 
+import React, { useEffect, useReducer } from "react";
 import { FlatList, SafeAreaView, View, StyleSheet } from "react-native";
 import Input from "./Input";
 import Message from "./Message";
@@ -7,7 +7,6 @@ import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
 
 const messagesReducer = (state, action) => {
-  console.log(state);
   switch (action.type) {
     case "add":
       return unionWith(state, action.payload, (a, b) => {
@@ -24,14 +23,14 @@ const messagesReducer = (state, action) => {
 };
 
 export default HooksChat = (props) => {
-  const {uid} = props;
+  const { logMessages, user, uid } = props;
   const [messages, dispatchMessages] = useReducer(messagesReducer, []);
 
-  useEffect( ()=> {
+  useEffect(() => {
     return db
       .collection("messages")
       .orderBy("created_at", "desc")
-      .onSnapshot((snapshot) =>{
+      .onSnapshot((snapshot) => {
         dispatchMessages({ type: "add", payload: snapshot.docs });
       });
   }, []);
@@ -42,10 +41,10 @@ export default HooksChat = (props) => {
         <FlatList
           inverted
           data={messages}
-          keyExtractor={ (item) =>{
+          keyExtractor={(item) => {
             return item.id;
           }}
-          renderItem={ ({ item })=> {
+          renderItem={({ item }) => {
             const data = item.data();
             const side = data.user_id === uid ? "right" : "left";
 
@@ -55,7 +54,7 @@ export default HooksChat = (props) => {
       </View>
 
       <View style={styles.inputContainer}>
-        <Input uid ={uid}  />
+        <Input uid={uid} />
       </View>
     </SafeAreaView>
   );

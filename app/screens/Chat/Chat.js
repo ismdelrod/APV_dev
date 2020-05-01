@@ -9,22 +9,15 @@ const db = firebase.firestore(firebase);
 
 export default Chat = () => {
   const [user, setUser] = useState(firebase.auth().currentUser);
+  const [logMessages, setLogMessages] = useState([]);
   const logout = useCallback(() => firebase.auth().signOut(), []);
 
-  const signIn = async () => {
-    try {
-      const response = await firebase.auth().signInAnonymously();
-      return { user: response.user };
-    } catch (error) {
-      return { error };
-    }
-  };
 
   const fetchMessages = async () => {
     const messages = await db
       .collection("messages")
       .orderBy("created_at", "desc")
-      .limit(10)
+      .limit(30)
       .get();
 
     return messages.docs;
@@ -38,9 +31,12 @@ export default Chat = () => {
 
   useEffect(() => {
     if (user) {
+      debugger;
       const user = firebase.auth().currentUser;
       setUser(user);
+      setLogMessages(fetchMessages);
     } else {
+      debugger;
       Alert.alert("Something went wrong");
       return;
     }
@@ -50,5 +46,21 @@ export default Chat = () => {
     return <Loader />;
   }
 
-  return <HooksChat uid={user.uid} />;
+  return <HooksChat logMessages={logMessages} user ={user} uid={user.uid} />;
 };
+
+
+
+
+
+
+
+
+  // const signIn = async () => {
+  //   try {
+  //     const response = await firebase.auth().signInAnonymously();
+  //     return { user: response.user };
+  //   } catch (error) {
+  //     return { error };
+  //   }
+  // };
