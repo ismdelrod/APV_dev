@@ -22,8 +22,6 @@ LoginForm = (props) => {
   //Eventos botones
   // TO DO: Añadir validación para email ya registrado y validar la seguridad del password
   const btnLoginOnPress = async () => {
-    const resultEmailValidation = validateEmail(email);
-    const resultPasswordValidation = validatePassword(password);
 
     setIsVisibleLoading(true);
 

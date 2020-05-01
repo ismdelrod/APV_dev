@@ -27,6 +27,8 @@ import {
   StyleSheet,
   ScrollView,
   RefreshControl,
+  Linking,
+  Platform,
 } from "react-native";
 import { ListItem, Icon } from "react-native-elements";
 import StarRating from "react-native-star-rating";
@@ -47,7 +49,6 @@ const wait = (timeout) => {
 };
 
 export default VapeStore = (props) => {
-  
   // TO DO: Falta refrescar la VapeStore cuando se elimina de favoritos(desde favoritos).
 
   const { navigation, route } = props;
@@ -183,6 +184,10 @@ export default VapeStore = (props) => {
         location={store.location}
         name={store.name}
         address={store.address}
+        webSite={store.webSite}
+        phoneNumber={store.phoneNumber}
+        email={store.email}
+        toastRef={toastRef}
       />
 
       <ListVapeStoreReviews
@@ -226,7 +231,15 @@ const TitleStore = (props) => {
 };
 
 const StoreInfo = (props) => {
-  const { location, name, address } = props;
+  const {
+    location,
+    name,
+    address,
+    webSite,
+    phoneNumber,
+    email,
+    toastRef,
+  } = props;
 
   const listInfo = [
     {
@@ -236,13 +249,22 @@ const StoreInfo = (props) => {
       action: null,
     },
     {
-      text: "añadir nº teléfono al form",
+      name: "webSite",
+      text: webSite,
+      iconName: "book-open-page-variant",
+      iconType: "material-community",
+      action: null,
+    },
+    {
+      name: "phone",
+      text: phoneNumber,
       iconName: "phone",
       iconType: "material-community",
       action: null,
     },
     {
-      text: "añadir email al form",
+      name: "email",
+      text: email,
       iconName: "at",
       iconType: "material-community",
       action: null,
@@ -262,10 +284,70 @@ const StoreInfo = (props) => {
             color: "#00a680",
           }}
           containerStyle={styles.containerListItemStyle}
+          onPress={
+            item.name === "email"
+              ? () => openAppEmail(item.text, toastRef)
+              : item.name === "phone"
+              ? () => openAppCall(item.text, toastRef)
+              : item.name === "webSite"
+              ? () => openAppNavigator(item.text, toastRef)
+              : () => {}
+          }
         />
       ))}
     </View>
   );
+};
+//TO DO: Comprobar si es necesario otorgar permisos para abrir aplicación de llamadas o Navegador o App de Correo
+const openAppCall = (phone, toastRef) => {
+  debugger;
+  if (typeof phone !== "undefined" && phone.trim() !== "") {
+    let phoneNumber = phone;
+    if (Platform.OS !== "android") {
+      phoneNumber = `telprompt:${phone}`;
+    } else {
+      phoneNumber = `tel:${phone}`;
+    }
+    Linking.canOpenURL(phoneNumber)
+      .then((supported) => {
+        if (!supported) {
+          toastRef.current.show("Error en el número de Teléfono");
+        } else {
+          return Linking.openURL(phoneNumber);
+        }
+      })
+      .catch(() => {
+        toastRef.current.show("Error en el número de Teléfono");
+      });
+  }
+};
+
+const openAppEmail = (email, toastRef) => {
+  debugger;
+  if (typeof email !== "undefined" && email.trim() !== "") {
+    Linking.openURL("mailto:" + email)
+      .then(() => {})
+      .catch(() => {
+        toastRef.current.show("Error en el Correo Electrónico");
+      });
+  }
+};
+
+const openAppNavigator = (webSite, toastRef) => {
+  debugger;
+  if (typeof webSite !== "undefined" && webSite.trim() !== "") {
+    if (webSite && webSite.includes("http")) {
+      Linking.openURL(webSite);
+    } else if (webSite && webSite.includes("www")) {
+      Linking.openURL("https://" + webSite);
+    } else {
+      Linking.openURL("https://www." + webSite)
+        .then(() => {})
+        .catch(() => {
+          toastRef.current.show("Error en la dirección web");
+        });
+    }
+  }
 };
 
 const styles = StyleSheet.create({

@@ -17,7 +17,13 @@ import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
 import MainImage from "../Global/MainImage";
 import MapView from "react-native-maps";
+import { formPropertieType } from "../../utils/Enumerations";
 import Modal from "../Global/Modal";
+import {
+  validateEmail,
+  validatePhoneNumber,
+  validateWebSite,
+} from "../../utils/Validation";
 import * as Location from "expo-location";
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
@@ -32,43 +38,78 @@ export default AddVapeStoreForm = (props) => {
   const [storeDescription, setStoreDescription] = useState("");
   const [isVisibleMap, setIsVisibleMap] = useState(false);
   const [locationStore, setLocationStore] = useState(null);
- 
+
+  const [storeWebSite, setStoreWebSite] = useState("");
+  const [storePhoneNumber, setStorePhoneNumber] = useState("");
+  const [storeEmail, setStoreEmail] = useState("");
+
   const addStore = () => {
+    let errorMessage = "";
+
     if (!storeName || !storeAddress || !storeDescription) {
-      toastRef.current.show("Todos los campos del formulario son obligatorios");
+      errorMessage = getErrorMessage(formPropertieType.typeRequireds);
+      toastRef.current.show(errorMessage);
     } else if (imagesSelected.length === 0) {
-      toastRef.current.show("Hay que añadir mínimo una imagen");
+      errorMessage = getErrorMessage(formPropertieType.typeImage);
+      toastRef.current.show(errorMessage);
     } else if (!locationStore) {
-      toastRef.current.show("Tienes que ubicar la dirección en el mapa");
+      errorMessage = getErrorMessage(formPropertieType.typeLocation);
+      toastRef.current.show(errorMessage);
     } else {
-      setIsLoading(true);
-      uploadImageStorage(imagesSelected).then((arrayImages) => {
-        db.collection("stores")
-          .add({
-            name: storeName,
-            address: storeAddress,
-            description: storeDescription,
-            location: locationStore,
-            images: arrayImages,
-            rating: 0,
-            ratingTotal: 0,
-            quantityVoting: 0,
-            createAt: new Date(),
-            createBy: firebase.auth().currentUser.uid,
-            isActive: false,
-          })
-          .then(() => {
-            setIsLoading(false);
-            setIsReloadStores(true);
-            navigation.navigate("VapeStores");
-          })
-          .catch(() => {
-            setIsLoading(false);
-            toastRef.current.show(
-              "Error al añadir el nuevo registro, inténtelo más tarde"
-            );
-          });
-      });
+      if (
+        typeof storeEmail !== "undefined" &&
+        storeEmail.trim() !== "" &&
+        !validateEmail(storeEmail)
+      ) {
+        errorMessage = getErrorMessage(formPropertieType.typeEmail);
+        toastRef.current.show( errorMessage  );
+      } else if (
+        typeof storePhoneNumber !== "undefined" &&
+        storePhoneNumber.trim() !== "" &&
+        !validatePhoneNumber(storePhoneNumber)
+      ) {
+        errorMessage = getErrorMessage(formPropertieType.typePhone);
+        toastRef.current.show( errorMessage );
+      } else if (
+        typeof storeWebSite !== "undefined" &&
+        storeWebSite.trim() !== "" &&
+        !validateWebSite(storeWebSite)
+      ) {
+        errorMessage = getErrorMessage(formPropertieType.typeWebSite);
+        toastRef.current.show( errorMessage );
+      } else {
+        setIsLoading(true);
+        uploadImageStorage(imagesSelected).then((arrayImages) => {
+          db.collection("stores")
+            .add({
+              name: storeName,
+              address: storeAddress,
+              description: storeDescription,
+              location: locationStore,
+              webSite: storeWebSite,
+              phoneNumber: storePhoneNumber,
+              email: storeEmail,
+              images: arrayImages,
+              rating: 0,
+              ratingTotal: 0,
+              quantityVoting: 0,
+              createAt: new Date(),
+              createBy: firebase.auth().currentUser.uid,
+              isActive: false,
+            })
+            .then(() => {
+              setIsLoading(false);
+              setIsReloadStores(true);
+              navigation.navigate("VapeStores");
+            })
+            .catch(() => {
+              setIsLoading(false);
+              toastRef.current.show(
+                "Error al añadir el nuevo registro, inténtelo más tarde"
+              );
+            });
+        });
+      }
     }
   };
 
@@ -95,6 +136,9 @@ export default AddVapeStoreForm = (props) => {
         setStoreName={setStoreName}
         setStoreAddress={setStoreAddress}
         setStoreDescription={setStoreDescription}
+        setStoreWebSite={setStoreWebSite}
+        setStorePhoneNumber={setStorePhoneNumber}
+        setStoreEmail={setStoreEmail}
         setIsVisibleMap={setIsVisibleMap}
         locationStore={locationStore}
       />
@@ -201,6 +245,9 @@ const FormAdd = (props) => {
     setStoreName,
     setStoreAddress,
     setStoreDescription,
+    setStoreWebSite,
+    setStorePhoneNumber,
+    setStoreEmail,
     setIsVisibleMap,
     locationStore,
   } = props;
@@ -227,6 +274,21 @@ const FormAdd = (props) => {
         multiline={true}
         inputContainerStyle={styles.textAreaStyle}
         onChange={(e) => setStoreDescription(e.nativeEvent.text)}
+      />
+      <Input
+        placeholder="Página Web"
+        containerStyle={styles.inputStyle}
+        onChange={(e) => setStoreWebSite(e.nativeEvent.text)}
+      />
+      <Input
+        placeholder="Nº Teléfono"
+        containerStyle={styles.inputStyle}
+        onChange={(e) => setStorePhoneNumber(e.nativeEvent.text)}
+      />
+      <Input
+        placeholder="Email"
+        containerStyle={styles.inputStyle}
+        onChange={(e) => setStoreEmail(e.nativeEvent.text)}
       />
     </View>
   );
@@ -307,6 +369,26 @@ const MyMap = (props) => {
   );
 };
 
+const getErrorMessage = (type) => {
+  let errorMessage = "";
+  if (type === formPropertieType.typeRequireds) {
+    errorMessage =
+      "Falta por introducir alguno de los campos obligatorios (nombre, dirección, localización o descripción)";
+  } else if (type === formPropertieType.typeImage) {
+    errorMessage = "Hay que añadir mínimo una imagen";
+  } else if (type === formPropertieType.typeLocation) {
+    errorMessage = "Tienes que ubicar la dirección en el mapa";
+  } else {
+    if (type === formPropertieType.typeEmail) {
+      errorMessage = "El Email introducido no tiene un formato válido";
+    } else if (type === formPropertieType.typePhone) {
+      errorMessage = "El Nº de Teléfono introducido no tiene un formato válido";
+    } else if (type === formPropertieType.typeWebSite) {
+      errorMessage = "La Página Web introducida no tiene un formato válido";
+    }
+  }
+  return errorMessage;
+};
 const styles = StyleSheet.create({
   viewImageStyle: {
     flexDirection: "row",

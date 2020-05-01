@@ -10,3 +10,15 @@ export const RatingStarsNameEnum = {
   four_stars: "Muy bueno",
   five_stars: "Espectacular",
 };
+
+export const formPropertieType = {
+  typeRequireds : "requireds",
+  typeName : "name",
+  typeAddress : "address",
+  typeDescription: "description",
+  typeImage:"image",
+  typeLocation:"location",
+  typeEmail:"email",
+  typePhone:"phone",
+  typeWebSite:"webSite",
+}
