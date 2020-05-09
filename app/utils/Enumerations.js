@@ -12,13 +12,19 @@ export const RatingStarsNameEnum = {
 };
 
 export const formPropertieType = {
-  typeRequireds : "requireds",
-  typeName : "name",
-  typeAddress : "address",
+  typeRequireds: "requireds",
+  typeName: "name",
+  typeAddress: "address",
   typeDescription: "description",
-  typeImage:"image",
-  typeLocation:"location",
-  typeEmail:"email",
-  typePhone:"phone",
-  typeWebSite:"webSite",
-}
+  typeImage: "image",
+  typeLocation: "location",
+  typeEmail: "email",
+  typePhone: "phone",
+  typeWebSite: "webSite",
+};
+
+export const EliquidFlavorsEnum = {
+  fruity: "Frutal",
+  dessert: "Postre",
+  tobacco: "Tabaquil",
+};

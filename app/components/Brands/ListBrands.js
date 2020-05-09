@@ -1,0 +1,136 @@
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
+import { Image } from "react-native-elements";
+import * as firebase from "firebase";
+
+export default ListBrands = (props) => {
+  const { brands, isLoading, handleLoadMore,navigation } = props;
+
+  return (
+    <View>
+      {brands ? (
+        <FlatList
+          data={brands}
+          renderItem={(brand) => <Brand brand={brand} navigation={navigation}/>}
+          keyExtractor={(item, index) => index.toString()}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0}
+          ListFooterComponent={<FooterList isLoading={isLoading} />}
+        />
+      ) : (
+        <View style={styles.loaderBrandStyle}>
+          <ActivityIndicator size="large" />
+          <Text>Cargando E-liquids</Text>
+        </View>
+      )}
+    </View>
+  );
+};
+
+const Brand = (props) => {
+  const { brand, navigation } = props;
+  const { name, address, description, images } = brand.item.brand;
+  const [imageBrand, setImageBrand] = useState(null);
+
+  useEffect(() => {
+    const image = images[0];
+
+    firebase
+      .storage()
+      .ref(`brands-images/${image}`)
+      .getDownloadURL()
+      .then((resultUrlImage) => {
+        setImageBrand(resultUrlImage);
+      });
+  });
+
+  return (
+    <TouchableOpacity onPress={() => navigation.navigate("Brand", {brand: brand.item.brand})}>
+      <View style={styles.viewBrandStyle}>
+        <View style={styles.viewBrandImageStyle}>
+          <Image
+            resizeMode="cover"
+            source={{ uri: imageBrand }}
+            style={styles.brandImageStyle}
+            PlaceholderContent={<ActivityIndicator color="fff" />}
+          />
+        </View>
+        <View>
+          <Text style={styles.brandNameStyle}>{name}</Text>
+          <Text style={styles.brandAddressStyle}>{address}</Text>
+          <Text style={styles.brandDescriptionStyle}>
+            {description.substr(0, 60)}
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+const FooterList = (props) => {
+  const { isLoading } = props;
+
+  if (isLoading) {
+    return (
+      <View style={styles.viewLoadingStyle}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  } else {
+    return (
+      <View style={styles.notFoundBrandsStyle}>
+        <Text>No quedan más Marcas por cargar.</Text>
+      </View>
+    );
+  }
+};
+
+const styles = StyleSheet.create({
+  loadingBrandsStyle: {
+    marginTop: 20,
+    alignItems: "center",
+  },
+  viewBrandStyle: {
+    flexDirection: "row",
+    margin: 10,
+  },
+  viewBrandImageStyle: {
+    marginRight: 15,
+  },
+  brandImageStyle: {
+    width: 80,
+    height: 80,
+  },
+  brandNameStyle: {
+    fontWeight: "bold",
+  },
+  brandAddressStyle: {
+    paddingTop: 2,
+    color: "grey",
+  },
+  brandDescriptionStyle: {
+    paddingTop: 2,
+    color: "grey",
+    width: 300,
+  },
+  viewLoadingStyle: {
+    marginTop: 20,
+    alignItems: "center",
+  },
+  loaderBrandStyle: {
+    marginTop: 19,
+    marginBottom: 10,
+  },
+  notFoundBrandsStyle: {
+    marginTop: 10,
+    marginBottom: 20,
+    alignItems: "center",
+  },
+});

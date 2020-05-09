@@ -16,57 +16,45 @@ import {
   View,
   ScrollView,
   Alert,
-  Picker,
   Text,
 } from "react-native";
 import { Icon, Avatar, Input, Button } from "react-native-elements";
 import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
-import { EliquidFlavorsEnum } from "../../utils/Enumerations";
 import MainImage from "../Global/MainImage";
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
 
 import uuid from "random-uuid-v4/uuidv4";
 
-export default AddEliquidForm = (props) => {
-  const { navigation, toastRef, setIsLoading, setIsReloadEliquids } = props;
+export default AddBrandForm = (props) => {
+  const { navigation, toastRef, setIsLoading, setIsReloadBrands } = props;
   const [imagesSelected, setImageSelected] = useState([]);
-  const [brandId, setBrandId] = useState("");
-  const [eliquidName, setEliquidName] = useState("");
-  const [eliquidDescription, setEliquidDescription] = useState("");
+  const [brandName, setBrandName] = useState("");
+  const [brandDescription, setBrandDescription] = useState("");
 
-  const brands = [
-    { id: "4fdsafvcsdddf", name: "Vampire Vape" },
-    { id: "5dfgvdsgffcds", name: "King Crest" },
-    { id: "6fdsfvsfdsffd", name: "Five Powns" },
-  ];
 
-  const addEliquid = () => {
-    if (!eliquidName || !eliquidDescription) {
+  const addBrand = () => {
+    if (!brandName || !brandDescription) {
       toastRef.current.show("Todos los campos del formulario son obligatorios");
     } else if (imagesSelected.length === 0) {
       toastRef.current.show("Hay que añadir mínimo una imagen");
     } else {
       setIsLoading(true);
       uploadImageStorage(imagesSelected).then((arrayImages) => {
-        db.collection("eliquids")
+        db.collection("brands")
           .add({
-            name: eliquidName,
-            description: eliquidDescription,
+            name: brandName,
+            description: brandDescription,
             images: arrayImages,
-            rating: 0,
-            ratingTotal: 0,
-            quantityVoting: 0,
             createAt: new Date(),
             createBy: firebase.auth().currentUser.uid,
             isActive: true,
-            brandId: brandId,
           })
           .then(() => {
             setIsLoading(false);
-            setIsReloadEliquids(true);
-            navigation.navigate("Eliquids");
+            setIsReloadBrands(true);
+            navigation.navigate("Brands");
           })
           .catch(() => {
             setIsLoading(false);
@@ -84,7 +72,7 @@ export default AddEliquidForm = (props) => {
       imagesArray.map(async (image) => {
         const response = await fetch(image);
         const blob = await response.blob();
-        const ref = firebase.storage().ref("eliquids-images").child(uuid());
+        const ref = firebase.storage().ref("brands-images").child(uuid());
 
         await ref.put(blob).then((result) => {
           arrayImages.push(result.metadata.name);
@@ -98,10 +86,8 @@ export default AddEliquidForm = (props) => {
     <ScrollView>
       <MainImage image={imagesSelected[0]} />
       <FormAdd
-        brands={brands}
-        setEliquidName={setEliquidName}
-        setEliquidDescription={setEliquidDescription}
-        setBrandId={setBrandId}
+        setBrandName={setBrandName}
+        setBrandDescription={setBrandDescription}
       />
       <UploadImage
         imagesSelected={imagesSelected}
@@ -111,8 +97,8 @@ export default AddEliquidForm = (props) => {
 
       <Button
         title="Añadir"
-        onPress={addEliquid}
-        buttonStyle={styles.btnAddEliquidStyle}
+        onPress={addBrand}
+        buttonStyle={styles.btnAddBrandStyle}
       />
     </ScrollView>
   );
@@ -196,36 +182,20 @@ const UploadImage = (props) => {
 };
 
 const FormAdd = (props) => {
-  const { brands, setEliquidName, setEliquidDescription, setBrandId } = props;
-  const [selection, setSelection] = useState(0);
+  const {setBrandName, setBrandDescription} = props;
   return (
     <View style={styles.viewFormStyle}>
       <Input
-        placeholder="Nombre del E-liquid"
+        placeholder="Nombre de la Marca"
         containerStyle={styles.inputStyle}
-        onChange={(e) => setEliquidName(e.nativeEvent.text)}
+        onChange={(e) => setBrandName(e.nativeEvent.text)}
       />
       <Input
         placeholder="Descripción"
         multiline={true}
         inputContainerStyle={styles.textAreaStyle}
-        onChange={(e) => setEliquidDescription(e.nativeEvent.text)}
+        onChange={(e) => setBrandDescription(e.nativeEvent.text)}
       />
-      <Text style={{ margin: 10, fontSize: 20, fontWeight: "bold" }}>
-        Marca
-      </Text>
-      <Picker
-        style={styles.pickerStyle}
-        selectedValue={selection}
-        onValueChange={(brandId) => {
-          setBrandId(brandId);
-          setSelection(brandId);
-        }}
-      >
-        {brands.map((brnd, index) => (
-          <Picker.Item key={index} label={brnd.name} value={brnd.id} />
-        ))}
-      </Picker>
     </View>
   );
 };
@@ -288,7 +258,7 @@ const styles = StyleSheet.create({
   btnCancelMapBtnStyle: {
     backgroundColor: "#a60d0d",
   },
-  btnAddEliquidStyle: {
+  btnAddBrandStyle: {
     backgroundColor: "#00a680",
     margin: 20,
   },
