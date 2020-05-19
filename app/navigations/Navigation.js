@@ -13,11 +13,17 @@ import AddVapeStoreFormComponent from "../screens/VapeStores/AddVapeStore";
 import AddReviewVapeStoreFormComponent from "../screens/VapeStores/AddReviewVapeStore";
 //END VapeStores Component SECTION
 
-//E-liquid Component SECTION
+//E-liquids Component SECTION
 import EliquidsListComponent from "../screens/Eliquids/Eliquids";
 import EliquidDetailComponent from "../screens/Eliquids/Eliquid";
 import AddEliquidFormComponent from "../screens/Eliquids/AddEliquid";
 import AddReviewEliquidFormComponent from "../screens/Eliquids/AddReviewEliquid";
+//END E-liquids Component SECTION
+
+//Brands Component SECTION
+import BrandsListComponent from "../screens/Brands/Brands";
+import BrandDetailComponent from "../screens/Brands/Brand";
+import AddBrandFormComponent from "../screens/Brands/AddBrand";
 //END E-liquid Component SECTION
 
 //Ranking Component SECTION
@@ -33,6 +39,7 @@ import FavoritesEliquidsComponent from "../screens/Favorites/FavoritesEliquids";
 //Search Component SECTION
 import SearchVapeStoresComponent from "../screens/Search/SearchVapeStores";
 import SearchEliquidsComponent from "../screens/Search/SearchEliquids";
+import SearchBrandsComponent from "../screens/Search/SearchBrands";
 //END Search Component SECTION
 
 //Account Component SECTION
@@ -155,6 +162,50 @@ const EliquidsStackScreen = () => {
 };
 //END E-liquid Stack SECTION
 
+//Brand Stack SECTION
+const BrandStack = createStackNavigator();
+
+const BrandsStackScreen = () => {
+  return (
+    <BrandStack.Navigator>
+      <BrandStack.Screen
+        name="Brands"
+        component={BrandsListComponent}
+        options={{
+          title: "Brands",
+          headerTitleAlign: "center",
+          headerStyle: {},
+          headerTitleStyle: {},
+          headerRight: () => <Header />,
+        }}
+      />
+      <BrandStack.Screen
+        name="Brand"
+        component={BrandDetailComponent}
+        options={({ route }) => ({
+          title: route.params.brand.name,
+          headerTitleAlign: "center",
+          headerStyle: {},
+          headerTitleStyle: {},
+          headerRight: () => <Header />,
+        })}
+      />
+      <BrandStack.Screen
+        name="AddBrand"
+        component={AddBrandFormComponent}
+        options={{
+          title: "Añadir Nueva Marca",
+          headerTitleAlign: "center",
+          headerStyle: {},
+          headerTitleStyle: {},
+          headerRight: () => <Header />,
+        }}
+      />
+    </BrandStack.Navigator>
+  );
+};
+//END Brand Stack SECTION
+
 //Ranking Stack SECTION
 const TopVapeStoresStack = createStackNavigator();
 const TopVapeStoresStackScreen = () => {
@@ -231,6 +282,25 @@ const SearchEliquidsStackScreen = () => {
         }}
       />
     </SearchEliquidsStack.Navigator>
+  );
+};
+
+const SearchBrandsStack = createStackNavigator();
+const SearchBrandsStackScreen = () => {
+  return (
+    <SearchBrandsStack.Navigator>
+      <SearchBrandsStack.Screen
+        name="SearchBrands"
+        component={SearchBrandsComponent}
+        options={{
+          title: "Buscar",
+          headerTitleAlign: "center",
+          headerStyle: {},
+          headerTitleStyle: {},
+          headerRight: () => <Header />,
+        }}
+      />
+    </SearchBrandsStack.Navigator>
   );
 };
 //END Search Stack SECTION
@@ -424,6 +494,41 @@ const EliquidsTabsScreen = () => (
 );
 //END Eliquids SECTION
 
+
+//Brands Tabs SECTION
+const BrandsTabs = createBottomTabNavigator();
+const BrandsTabsScreen = () => (
+  <BrandsTabs.Navigator
+    screenOptions={({ route }) => ({
+      tabBarIcon: ({ focused, color, size }) => {
+        let iconName;
+
+        if (route.name === "Brands") {
+          iconName = focused ? "home" : "home-outline";
+        }  else if (route.name === "Buscar") {
+          iconName = focused ? "feature-search" : "feature-search-outline";
+        }else if (route.name === "Perfil") {
+          iconName = focused ? "account" : "account-outline";
+        }
+        return (
+          <MaterialCommunityIcons name={iconName} size={size} color={color} />
+        );
+      },
+    })}
+    tabBarOptions={{
+      activeTintColor: "#008EE1",
+      inactiveTintColor: "#D1D1D1",
+    }}
+  >
+    <BrandsTabs.Screen name="Brands" component={BrandsStackScreen} />
+    {/* <BrandsTabs.Screen name="empty" />
+    <BrandsTabs.Screen name="empty" /> */}
+    <BrandsTabs.Screen name="Buscar" component={SearchBrandsStackScreen} />
+    <BrandsTabs.Screen name="Perfil" component={AccountStackScreen} />
+  </BrandsTabs.Navigator>
+);
+//END Brands SECTION
+
 //Chat Tabs SECTION
 const ChatTabs = createBottomTabNavigator();
 const ChatTabsScreen = () => (
@@ -463,6 +568,11 @@ const AppDrawerScreen = () => (
       name="Eliquids"
       component={EliquidsTabsScreen}
       options={{ drawerLabel: "E-liquids" }}
+    />
+    <AppDrawer.Screen
+      name="Brands"
+      component={BrandsTabsScreen}
+      options={{ drawerLabel: "Brands" }}
     />
     <AppDrawer.Screen
       name="Chat"
