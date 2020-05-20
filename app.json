@@ -24,14 +24,19 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false,
+      "bundleIdentifier": "com.ismdelrod.appAPV",
+      "buildNumber": "1.0.0"
     },
     "android": {
       "permissions": [
         "CAMERA_ROLL",
         "LOCATION"
-      ]
+      ],
+      "package": "com.ismdelrod.appAPV",
+      "versionCode": 1
     },
     "description": ""
+
   }
 }

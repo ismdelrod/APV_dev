@@ -57,7 +57,7 @@ export default AddEliquidForm = (props) => {
             images: arrayImages,
             rating: 0,
             ratingTotal: 0,
-            quantityVoting: 0,
+                        quantityVoting: 0,
             createAt: new Date(),
             createBy: firebase.auth().currentUser.uid,
             isActive: true,
