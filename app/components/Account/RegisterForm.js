@@ -5,12 +5,15 @@ import { withNavigation } from "@react-navigation/compat";
 import {
   validateEmail,
   validatePassword,
-  validatePasswordConfirmationIsOK
+  validatePasswordConfirmationIsOK,
 } from "../../utils/Validation";
-import * as firebase from "firebase";
+// import * as firebase from "firebase";
 import Loading from "../Global/Loading";
 
-RegisterForm = props => {
+import firebase from "../../utils/Firebase";
+const db = firebase.firestore(firebase);
+
+RegisterForm = (props) => {
   //mensajes de Info/Error y navegación con restructuring
   const { toastRef, navigation } = props;
 
@@ -37,6 +40,18 @@ RegisterForm = props => {
       passwordConfirmation
     );
 
+    const addUserRole = (uid, email) => {
+      db.collection("users_roles")
+        .add({
+          uid: uid,
+          email: email,
+          admin: false,
+          isActive: true,
+        })
+        .then(() => {})
+        .catch(() => {});
+    };
+
     setIsVisibleLoading(true);
 
     if (!email || !password || !passwordConfirmation) {
@@ -51,8 +66,14 @@ RegisterForm = props => {
           await firebase
             .auth()
             .createUserWithEmailAndPassword(email, password)
-            .then(() => {
+            .then((newUser) => {
+              
+              let uid = newUser.user.uid;
+              
+              addUserRole(uid, email);
+              
               navigation.navigate("Account");
+              
             })
             .catch(() => {
               toastRef.current.show(
@@ -71,7 +92,7 @@ RegisterForm = props => {
       <Input
         style={styles.inputForm}
         placeholder="Correo electrónico"
-        onChange={e => setEmail(e.nativeEvent.text)}
+        onChange={(e) => setEmail(e.nativeEvent.text)}
         rightIcon={
           <Icon
             type="material-community"
@@ -85,7 +106,7 @@ RegisterForm = props => {
         passwordRules={true}
         secureTextEntry={hidePassword}
         containerStyle={styles.inputForm}
-        onChange={e => setPassword(e.nativeEvent.text)}
+        onChange={(e) => setPassword(e.nativeEvent.text)}
         rightIcon={
           <Icon
             type="material-community"
@@ -100,7 +121,7 @@ RegisterForm = props => {
         passwordRules={true}
         secureTextEntry={hidePasswordConfirmation}
         containerStyle={styles.inputForm}
-        onChange={e => setPasswordConfirmation(e.nativeEvent.text)}
+        onChange={(e) => setPasswordConfirmation(e.nativeEvent.text)}
         rightIcon={
           <Icon
             type="material-community"
@@ -130,20 +151,20 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 30
+    marginTop: 30,
   },
   inputForm: {
     width: "100%",
-    marginTop: 20
+    marginTop: 20,
   },
   iconRight: {
-    color: "#c1c1c1"
+    color: "#c1c1c1",
   },
   btnContainerRegister: {
     marginTop: 20,
-    width: "95%"
+    width: "95%",
   },
   btnRegister: {
-    backgroundColor: "#00a680"
-  }
+    backgroundColor: "#00a680",
+  },
 });
