@@ -189,11 +189,13 @@ export default VapeStore = (props) => {
       case "displayModalChangeEmail":
         setRenderComponent(
           <ChangeStoreEmailForm
-            email={userInfo.email}
+            email={text}
             setIsVisibleModal={setIsVisibleModal}
             setIsReloadStore={setIsReloadStore}
             setIsReloadStores={setIsReloadStores}
             toastRef={toastRef}
+            store={store}
+            setUpdatedStore={setUpdatedStore}
           />
         );
         setIsVisibleModal(true);
@@ -257,6 +259,9 @@ export default VapeStore = (props) => {
         renderComponent={renderComponent}
         isVisibleModal={isVisibleModal}
         setIsVisibleModal={setIsVisibleModal}
+        store={store}
+        setUpdatedStore={setUpdatedStore}
+        selectedComponent={selectedComponent}
       />
 
       <ListVapeStoreReviews
@@ -334,6 +339,9 @@ const StoreInfo = (props) => {
     renderComponent,
     isVisibleModal,
     setIsVisibleModal,
+    store,
+    setUpdatedStore,
+    selectedComponent
   } = props;
 
   const listInfo = [
@@ -391,7 +399,14 @@ const StoreInfo = (props) => {
           }
           onLongPress={
             item.name === "email"
-              ? () => userIsAdmin && console.log("Abrir modal edición email") //selectedComponent("displayModalChangeName")
+              ? () =>
+                  userIsAdmin &&
+                  selectedComponent(
+                    "displayModalChangeEmail",
+                    email,
+                    store,
+                    setUpdatedStore
+                  )
               : item.name === "phone"
               ? () => userIsAdmin && console.log("Abrir modal edición phone") //selectedComponent("displayModalChangeEmail")
               : item.name === "webSite"

@@ -24,9 +24,7 @@ export default ChangeDisplayStoreNameForm = (props) => {
       setError("No ha introducido ningún nombre");
     } else {
       setIsLoading(true);
-      const update = {
-        name: newName,
-      };
+
       db.collection("stores") 
         .doc(store.id)
         .update({name: newName})
