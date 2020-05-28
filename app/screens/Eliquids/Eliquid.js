@@ -35,6 +35,11 @@ import ListEliquidReviews from "../../components/Eliquids/ListEliquidReviews";
 import { GeneralTypeEnum } from "../../utils/Enumerations";
 import Toast from "react-native-easy-toast";
 import { NavigationEvents } from "@react-navigation/compat";
+
+import Modal from "../../components/Global/Modal";
+import ChangeEliquidNameForm from "./ChangeEliquidNameForm";
+
+
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
 
@@ -46,15 +51,25 @@ const wait = (timeout) => {
 };
 
 export default Eliquid = (props) => {
-  // TO DO: Falta refrescar la VapeStore cuando se elimina de favoritos(desde favoritos).
+  // TO DO: Falta refrescar la Eliquid cuando se elimina de favoritos(desde favoritos).
 
   const { navigation, route } = props;
-  const { eliquid } = route.params; //Function pasada por parámetros a través de navigation.
+  const {
+    eliquid,
+    userIsAdmin,
+    setIsReloadEliquids,
+    setIsReloadEliquid,
+    setUpdatedEliquid,
+  } = route.params; //Function pasada por parámetros a través de navigation.
   const [imagesEliquid, setImagesEliquid] = useState([]);
   const [isFavorite, setIsFavorite] = useState(false);
   const [userLogged, setUserLogged] = useState(false);
   const [rating, setRating] = useState(eliquid.rating);
   const [refreshing, setRefreshing] = useState(false);
+
+
+  const [isVisibleModal, setIsVisibleModal] = useState(false);
+  const [renderComponent, setRenderComponent] = useState(null);
 
   const toastRef = useRef();
 
@@ -84,6 +99,7 @@ export default Eliquid = (props) => {
         })
       );
       setImagesEliquid(arrayImagesUrls);
+      setIsReloadEliquids(true);
     })();
   }, [isFavorite]);
 
@@ -151,6 +167,27 @@ export default Eliquid = (props) => {
       });
   };
 
+  const selectedComponent = (key, text, eliquid, setUpdatedEliquid) => {
+    switch (key) {
+      case "displayModalChangeName":
+        setRenderComponent(
+          <ChangeEliquidNameForm
+            displayName={text}
+            setIsVisibleModal={setIsVisibleModal}
+            setIsReloadEliquid={setIsReloadEliquid}
+            setIsReloadEliquids={setIsReloadEliquids}
+            toastRef={toastRef}
+            eliquid={eliquid}
+            setUpdatedEliquid={setUpdatedEliquid}
+          />
+        );
+        setIsVisibleModal(true);
+        break;     
+      default:
+        break;
+    }
+  };
+
   return (
     <ScrollView
       style={StyleSheet.viewBodyStyle}
@@ -175,9 +212,18 @@ export default Eliquid = (props) => {
         name={eliquid.name}
         description={eliquid.description}
         rating={rating}
+        userIsAdmin={userIsAdmin}
+        selectedComponent={selectedComponent}
+        eliquid={eliquid}
+        setUpdatedEliquid={setUpdatedEliquid}
       />
 
       {/* <EliquidInfo/> */}
+      {renderComponent && (
+        <Modal isVisible={isVisibleModal} setIsVisible={setIsVisibleModal}>
+          {renderComponent}
+        </Modal>
+      )}
 
       <ListEliquidReviews
         navigation={navigation}
@@ -191,11 +237,32 @@ export default Eliquid = (props) => {
 };
 
 const TitleEliquid = (props) => {
-  const { name, description, rating } = props;
+  const {
+    name,
+    description,
+    rating,
+    userIsAdmin,
+    selectedComponent,
+    eliquid,
+    setUpdatedEliquid,
+  } = props;
   return (
     <View style={styles.viewEliquidTitleStyle}>
       <View style={styles.viewEliquidTitleRowStyle}>
-        <Text style={styles.nameEliquidStyle}>{name}</Text>
+        <Text
+          onLongPress={() =>
+            userIsAdmin &&
+            selectedComponent(
+              "displayModalChangeName",
+              name,
+              eliquid,
+              setUpdatedEliquid
+            )
+          }
+          style={styles.nameEliquidStyle}
+        >
+          {name}
+        </Text>
         <StarRating
           starSize={20}
           disabled={true}
@@ -259,7 +326,6 @@ const EliquidInfo = (props) => {
   //   </View>
   // );
 };
-
 const styles = StyleSheet.create({
   viewBodyStyle: {
     flex: 1,
@@ -300,9 +366,4 @@ const styles = StyleSheet.create({
     borderBottomColor: "#d8d8d8",
     borderBottomWidth: 1,
   },
-  // storeInfoTitleStyle: {
-  //   fontSize: 20,
-  //   fontWeight: "bold",
-  //   marginBottom: 10,
-  // },
 });

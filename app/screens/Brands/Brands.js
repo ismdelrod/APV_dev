@@ -30,19 +30,24 @@ const db = firebase.firestore(firebase);
 export default Brands = (props) => {
   const { navigation } = props;
   const [user, setUser] = useState(null);
+  const [userIsAdmin, setUserIsAdmin] = useState(false);
   const [brands, setBrands] = useState([]);
   const [startBrands, setStartBrands] = useState(null);
   const [isLoading, setIsLoading] = useState(null);
   const [totalBrands, setTotalBrands] = useState(0);
   const [isReloadBrands, setIsReloadBrands] = useState(false);
+  const [isReloadBrand, setIsReloadBrand] = useState(false);
   const limitBrands = 8;
 
   //useEffectInfoUsuario
   useEffect(() => {
     firebase.auth().onAuthStateChanged((userInfo) => {
       setUser(userInfo);
+      validateAdmin(userInfo);
     });
   }, []);
+
+
 
   //useEffectGetBrands
   useEffect(() => {
@@ -73,6 +78,30 @@ export default Brands = (props) => {
     })();
     setIsReloadBrands(false);
   }, [isReloadBrands]);
+
+
+  const validateAdmin = (user)=> {
+    if (user) {
+      const resultUsers = [];
+      const idUser = user.uid;
+      db.collection("users_roles")
+        .where("uid", "==", idUser)
+        .get()
+        .then((response) => {
+
+          if(response.docs.length > 0){
+            response.forEach((doc) => {
+              let user_role = doc.data();
+              resultUsers.push({ user_role });
+            });
+          }
+          // user_role = resultUsers[0].user_role;
+          setUserIsAdmin(resultUsers[0].user_role.admin);
+          // setUserIsAdmin(user_role.admin);
+        })
+        .catch(() => {});
+    }
+  };
 
   const handleLoadMore = async () => {
     const resultBrands = [];
@@ -107,8 +136,11 @@ export default Brands = (props) => {
         isLoading={isLoading}
         handleLoadMore={handleLoadMore}
         navigation={navigation}
+        setIsReloadBrands={setIsReloadBrands}
+        setIsReloadBrand={setIsReloadBrand}
+        isReloadBrand = {isReloadBrand}
       />
-      {user && <AddBrandButton navigation={navigation} setIsReloadBrands={setIsReloadBrands} />}
+      {(user && userIsAdmin) && <AddBrandButton navigation={navigation} setIsReloadBrands={setIsReloadBrands} />}
     </View>
   );
 };

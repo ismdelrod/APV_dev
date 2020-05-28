@@ -19,16 +19,38 @@ const db = firebase.firestore(firebase);
 
 export default FavoritesVapeStores = (props) => {
   const { navigation } = props;
-
   const [stores, setStores] = useState([]);
   const [reloadStores, setReloadStores] = useState(false);
   const [isVisibleLoading, setIsVisibleLoading] = useState(false);
   const [userLogged, setUserLogged] = useState(false);
   const toastRef = useRef();
 
+  const [userIsAdmin, setUserIsAdmin] = useState(false);
+
   firebase.auth().onAuthStateChanged((user) => {
     user ? setUserLogged(true) : setUserLogged(false);
+    validateAdmin(user);
   });
+
+  const validateAdmin = (user) => {
+    if (user) {
+      const resultUsers = [];
+      const idUser = user.uid;
+      db.collection("users_roles")
+        .where("uid", "==", idUser)
+        .get()
+        .then((response) => {
+          if (response.docs.length > 0) {
+            response.forEach((doc) => {
+              let user_role = doc.data();
+              resultUsers.push({ user_role });
+            });
+          }
+          setUserIsAdmin(resultUsers[0].user_role.admin);
+        })
+        .catch(() => {});
+    }
+  };
 
   useEffect(() => {
     if (userLogged) {
@@ -92,6 +114,7 @@ export default FavoritesVapeStores = (props) => {
               navigation={navigation}
               setIsVisibleLoading={setIsVisibleLoading}
               setReloadStores={setReloadStores}
+              userIsAdmin={userIsAdmin}
               toastRef={toastRef}
             />
           )}
@@ -116,9 +139,13 @@ const Store = (props) => {
     setIsVisibleLoading,
     setReloadStores,
     toastRef,
+    userIsAdmin,
   } = props;
   const { id, name, images } = store.item;
   const [imageStore, setImageStore] = useState(null);
+  const [updatedStore, setUpdatedStore] = useState(null);
+  const [isReloadStores, setIsReloadStores] = useState(false);
+  const [isReloadStore, setIsReloadStore] = useState(false);
 
   useEffect(() => {
     const image = images[0];
@@ -184,6 +211,11 @@ const Store = (props) => {
           navigation.navigate("VapeStore", {
             store: store.item,
             favoriteCall: true,
+            userIsAdmin: userIsAdmin,
+            setIsReloadStores: setIsReloadStores,
+            setIsReloadStore: setIsReloadStore,
+            updatedStore: store.item,
+            setUpdatedStore: setUpdatedStore,
           })
         }
       >

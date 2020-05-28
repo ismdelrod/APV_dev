@@ -38,6 +38,12 @@ import ListVapeStoreReviews from "../../components/VapeStores/ListVapeStoreRevie
 import { GeneralTypeEnum } from "../../utils/Enumerations";
 import Toast from "react-native-easy-toast";
 import { NavigationEvents } from "@react-navigation/compat";
+
+import Modal from "../../components/Global/Modal";
+import ChangeDisplayStoreNameForm from "./ChangeDisplayStoreNameForm";
+import ChangeStoreEmailForm from "./ChangeStoreEmailForm";
+import ChangeStorePhoneForm from "./ChangeStorePhoneForm";
+
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
 
@@ -52,12 +58,21 @@ export default VapeStore = (props) => {
   // TO DO: Falta refrescar la VapeStore cuando se elimina de favoritos(desde favoritos).
 
   const { navigation, route } = props;
-  const { store } = route.params; //Function pasada por parámetros a través de navigation.
+  const {
+    store,
+    userIsAdmin,
+    setIsReloadStores,
+    setIsReloadStore,
+    setUpdatedStore,
+  } = route.params; //Function pasada por parámetros a través de navigation.
   const [imagesStore, setImagesStore] = useState([]);
   const [isFavorite, setIsFavorite] = useState(false);
   const [userLogged, setUserLogged] = useState(false);
   const [rating, setRating] = useState(store.rating);
   const [refreshing, setRefreshing] = useState(false);
+
+  const [isVisibleModal, setIsVisibleModal] = useState(false);
+  const [renderComponent, setRenderComponent] = useState(null);
 
   const toastRef = useRef();
 
@@ -87,6 +102,7 @@ export default VapeStore = (props) => {
         })
       );
       setImagesStore(arrayImagesUrls);
+      setIsReloadStores(true);
     })();
   }, [isFavorite, refreshing]);
 
@@ -154,6 +170,51 @@ export default VapeStore = (props) => {
       });
   };
 
+  const selectedComponent = (key, text, store, setUpdatedStore) => {
+    switch (key) {
+      case "displayModalChangeName":
+        setRenderComponent(
+          <ChangeDisplayStoreNameForm
+            displayName={text}
+            setIsVisibleModal={setIsVisibleModal}
+            setIsReloadStore={setIsReloadStore}
+            setIsReloadStores={setIsReloadStores}
+            toastRef={toastRef}
+            store={store}
+            setUpdatedStore={setUpdatedStore}
+          />
+        );
+        setIsVisibleModal(true);
+        break;
+      case "displayModalChangeEmail":
+        setRenderComponent(
+          <ChangeStoreEmailForm
+            email={userInfo.email}
+            setIsVisibleModal={setIsVisibleModal}
+            setIsReloadStore={setIsReloadStore}
+            setIsReloadStores={setIsReloadStores}
+            toastRef={toastRef}
+          />
+        );
+        setIsVisibleModal(true);
+        break;
+      case "displayModalChangePassword":
+        setRenderComponent(
+          <ChangeStorePhoneForm
+            password={userInfo.password}
+            setIsVisibleModal={setIsVisibleModal}
+            setIsReloadStore={setIsReloadStore}
+            setIsReloadStores={setIsReloadStores}
+            toastRef={toastRef}
+          />
+        );
+        setIsVisibleModal(true);
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <ScrollView
       style={StyleSheet.viewBodyStyle}
@@ -178,6 +239,10 @@ export default VapeStore = (props) => {
         name={store.name}
         description={store.description}
         rating={rating}
+        userIsAdmin={userIsAdmin}
+        selectedComponent={selectedComponent}
+        store={store}
+        setUpdatedStore={setUpdatedStore}
       />
 
       <StoreInfo
@@ -188,6 +253,10 @@ export default VapeStore = (props) => {
         phoneNumber={store.phoneNumber}
         email={store.email}
         toastRef={toastRef}
+        userIsAdmin={userIsAdmin}
+        renderComponent={renderComponent}
+        isVisibleModal={isVisibleModal}
+        setIsVisibleModal={setIsVisibleModal}
       />
 
       <ListVapeStoreReviews
@@ -201,12 +270,34 @@ export default VapeStore = (props) => {
   );
 };
 
+//Cabecera Información Básica Tienda con media votos
 const TitleStore = (props) => {
-  const { name, description, rating } = props;
+  const {
+    name,
+    description,
+    rating,
+    userIsAdmin,
+    selectedComponent,
+    store,
+    setUpdatedStore,
+  } = props;
   return (
     <View style={styles.viewStoreTitleStyle}>
       <View style={styles.viewStoreTitleRowStyle}>
-        <Text style={styles.nameStoreStyle}>{name}</Text>
+        <Text
+          onLongPress={() =>
+            userIsAdmin &&
+            selectedComponent(
+              "displayModalChangeName",
+              name,
+              store,
+              setUpdatedStore
+            )
+          }
+          style={styles.nameStoreStyle}
+        >
+          {name}
+        </Text>
         <StarRating
           starSize={20}
           disabled={true}
@@ -239,6 +330,10 @@ const StoreInfo = (props) => {
     phoneNumber,
     email,
     toastRef,
+    userIsAdmin,
+    renderComponent,
+    isVisibleModal,
+    setIsVisibleModal,
   } = props;
 
   const listInfo = [
@@ -270,6 +365,7 @@ const StoreInfo = (props) => {
       action: null,
     },
   ];
+
   return (
     <View style={styles.viewInfoStoreStyle}>
       <Text style={styles.storeInfoTitleStyle}>Info sobre la Tienda</Text>
@@ -293,14 +389,29 @@ const StoreInfo = (props) => {
               ? () => openAppNavigator(item.text, toastRef)
               : () => {}
           }
+          onLongPress={
+            item.name === "email"
+              ? () => userIsAdmin && console.log("Abrir modal edición email") //selectedComponent("displayModalChangeName")
+              : item.name === "phone"
+              ? () => userIsAdmin && console.log("Abrir modal edición phone") //selectedComponent("displayModalChangeEmail")
+              : item.name === "webSite"
+              ? () => userIsAdmin && console.log("Abrir modal edición webSite") //selectedComponent("displayModalChangePassword")
+              : () => {}
+          }
         />
       ))}
+
+      {renderComponent && (
+        <Modal isVisible={isVisibleModal} setIsVisible={setIsVisibleModal}>
+          {renderComponent}
+        </Modal>
+      )}
     </View>
   );
 };
+
 //TO DO: Comprobar si es necesario otorgar permisos para abrir aplicación de llamadas o Navegador o App de Correo
 const openAppCall = (phone, toastRef) => {
-  debugger;
   if (typeof phone !== "undefined" && phone.trim() !== "") {
     let phoneNumber = phone;
     if (Platform.OS !== "android") {
@@ -323,7 +434,6 @@ const openAppCall = (phone, toastRef) => {
 };
 
 const openAppEmail = (email, toastRef) => {
-  debugger;
   if (typeof email !== "undefined" && email.trim() !== "") {
     Linking.openURL("mailto:" + email)
       .then(() => {})
@@ -334,7 +444,6 @@ const openAppEmail = (email, toastRef) => {
 };
 
 const openAppNavigator = (webSite, toastRef) => {
-  debugger;
   if (typeof webSite !== "undefined" && webSite.trim() !== "") {
     if (webSite && webSite.includes("http")) {
       Linking.openURL(webSite);

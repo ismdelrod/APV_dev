@@ -35,6 +35,7 @@ export default VapeStores = (props) => {
   const [isLoading, setIsLoading] = useState(null);
   const [totalStores, setTotalStores] = useState(0);
   const [isReloadStores, setIsReloadStores] = useState(false);
+  const [isReloadStore, setIsReloadStore] = useState(false);
   const limitStores = 8;
 
   //useEffectInfoUsuario
@@ -107,6 +108,9 @@ export default VapeStores = (props) => {
         isLoading={isLoading}
         handleLoadMore={handleLoadMore}
         navigation={navigation}
+        setIsReloadStores={setIsReloadStores}
+        setIsReloadStore={setIsReloadStore}
+        isReloadStore = {isReloadStore}
       />
       {user && <AddVapeStoreButton navigation={navigation} setIsReloadStores={setIsReloadStores} />}
     </View>

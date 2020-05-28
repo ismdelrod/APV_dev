@@ -8,17 +8,83 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Image } from "react-native-elements";
-import * as firebase from "firebase";
+import firebase from "../../utils/Firebase";
+const db = firebase.firestore(firebase);
 
 export default ListBrands = (props) => {
-  const { brands, isLoading, handleLoadMore,navigation } = props;
+  const {
+    brands,
+    isLoading,
+    handleLoadMore,
+    navigation,
+    setIsReloadBrands,
+    setIsReloadBrand,
+    isReloadBrand,
+  } = props;
+  const [user, setUser] = useState(null);
+  const [userIsAdmin, setUserIsAdmin] = useState(false);
+  const [updatedBrand, setUpdatedBrand] = useState(null);
+
+  //useEffect Validación User Logueado y si es Admin
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged((userInfo) => {
+      setUser(userInfo);
+      validateAdmin(userInfo);
+    });
+  }, []);
+
+  const validateAdmin = (user) => {
+    if (user) {
+      const resultUsers = [];
+      const idUser = user.uid;
+      db.collection("users_roles")
+        .where("uid", "==", idUser)
+        .get()
+        .then((response) => {
+          if (response.docs.length > 0) {
+            response.forEach((doc) => {
+              let user_role = doc.data();
+              resultUsers.push({ user_role });
+            });
+          }
+          setUserIsAdmin(resultUsers[0].user_role.admin);
+        })
+        .catch(() => {});
+    }
+  };
+
+  //useEffect encargado de actualizar el elemento de la lista justo después de sufrir un cambio (update)
+  useEffect(() => {
+    debugger;
+    if (isReloadBrand) {
+      setIsReloadBrand(false);
+      navigation.navigate("VapeBrand", {
+        brand: updatedBrand,
+        userIsAdmin: userIsAdmin,
+        setIsReloadBrands: setIsReloadBrands,
+        setIsReloadBrand: setIsReloadBrand,
+        updatedBrand: updatedBrand,
+        setUpdatedBrand: setUpdatedBrand,
+      });
+    }
+  }, [isReloadBrand]);
 
   return (
     <View>
       {brands ? (
         <FlatList
           data={brands}
-          renderItem={(brand) => <Brand brand={brand} navigation={navigation}/>}
+          renderItem={(brand) => (
+            <Brand
+              brand={brand}
+              navigation={navigation}
+              userIsAdmin={userIsAdmin}
+              setIsReloadBrands={setIsReloadBrands}
+              setIsReloadBrand={setIsReloadBrand}
+              setUpdatedBrand={setUpdatedBrand}
+              updatedBrand={updatedBrand}
+            />
+          )}
           keyExtractor={(item, index) => index.toString()}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0}
@@ -35,7 +101,15 @@ export default ListBrands = (props) => {
 };
 
 const Brand = (props) => {
-  const { brand, navigation } = props;
+  const {
+    brand,
+    navigation,
+    userIsAdmin,
+    setIsReloadBrands,
+    setIsReloadBrand,
+    setUpdatedBrand,
+    updatedBrand,
+  } = props;
   const { name, address, description, images } = brand.item.brand;
   const [imageBrand, setImageBrand] = useState(null);
 
@@ -52,7 +126,19 @@ const Brand = (props) => {
   });
 
   return (
-    <TouchableOpacity onPress={() => navigation.navigate("Brand", {brand: brand.item.brand})}>
+    <TouchableOpacity
+      onPress={() =>
+        navigation.navigate("Brand", {
+          brand: brand.item.brand,
+          userIsAdmin: userIsAdmin,
+          setIsReloadBrands: setIsReloadBrands,
+          setIsReloadBrand: setIsReloadBrand,
+          updatedBrand: updatedBrand,
+          setUpdatedBrand: setUpdatedBrand,
+        })
+      }
+      onLongPress={() => userIsAdmin && console.log("Abrir modal de Borrado")}
+    >
       <View style={styles.viewBrandStyle}>
         <View style={styles.viewBrandImageStyle}>
           <Image

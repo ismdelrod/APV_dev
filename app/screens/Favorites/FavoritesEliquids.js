@@ -7,29 +7,50 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Alert,
-  
 } from "react-native";
 import { Image, Icon, Button } from "react-native-elements";
 import Loading from "../../components/Global/Loading";
 import Toast from "react-native-easy-toast";
 import { GeneralTypeEnum } from "../../utils/Enumerations";
-import { NavigationEvents} from "@react-navigation/compat";
+import { NavigationEvents } from "@react-navigation/compat";
 
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
 
 export default FavoritesEliquids = (props) => {
   const { navigation } = props;
-
   const [eliquids, setEliquids] = useState([]);
   const [reloadEliquids, setReloadEliquids] = useState(false);
   const [isVisibleLoading, setIsVisibleLoading] = useState(false);
   const [userLogged, setUserLogged] = useState(false);
   const toastRef = useRef();
 
+  const [userIsAdmin, setUserIsAdmin] = useState(false);
+
   firebase.auth().onAuthStateChanged((user) => {
     user ? setUserLogged(true) : setUserLogged(false);
+    validateAdmin(user);
   });
+
+  const validateAdmin = (user) => {
+    if (user) {
+      const resultUsers = [];
+      const idUser = user.uid;
+      db.collection("users_roles")
+        .where("uid", "==", idUser)
+        .get()
+        .then((response) => {
+          if (response.docs.length > 0) {
+            response.forEach((doc) => {
+              let user_role = doc.data();
+              resultUsers.push({ user_role });
+            });
+          }
+          setUserIsAdmin(resultUsers[0].user_role.admin);
+        })
+        .catch(() => {});
+    }
+  };
 
   useEffect(() => {
     if (userLogged) {
@@ -39,7 +60,7 @@ export default FavoritesEliquids = (props) => {
         .where("type", "==", GeneralTypeEnum.e_liquid)
         .get()
         .then((response) => {
-          const idEliquidsArray = []; 
+          const idEliquidsArray = [];
           response.forEach((doc) => {
             idEliquidsArray.push(doc.data().idFavorite);
           });
@@ -93,6 +114,7 @@ export default FavoritesEliquids = (props) => {
               navigation={navigation}
               setIsVisibleLoading={setIsVisibleLoading}
               setReloadEliquids={setReloadEliquids}
+              userIsAdmin={userIsAdmin}
               toastRef={toastRef}
             />
           )}
@@ -117,10 +139,13 @@ const Eliquid = (props) => {
     setIsVisibleLoading,
     setReloadEliquids,
     toastRef,
+    userIsAdmin,
   } = props;
   const { id, name, images } = eliquid.item;
   const [imageEliquid, setImageEliquid] = useState(null);
-
+  const [updatedEliquid, setUpdatedEliquid] = useState(null);
+  const [isReloadEliquids, setIsReloadEliquids] = useState(false);
+  const [isReloadEliquid, setIsReloadEliquid] = useState(false);
   useEffect(() => {
     const image = images[0];
     firebase
@@ -181,7 +206,16 @@ const Eliquid = (props) => {
   return (
     <View style={styles.eliquidsStyle}>
       <TouchableOpacity
-        onPress={() => navigation.navigate("Eliquid", { eliquid: eliquid.item })}
+        onPress={() =>
+          navigation.navigate("Eliquid", {
+            eliquid: eliquid.item,
+            userIsAdmin: userIsAdmin,
+            setIsReloadEliquids: setIsReloadEliquids,
+            setIsReloadEliquid: setIsReloadEliquid,
+            updatedEliquid: eliquid.item,
+            setUpdatedEliquid: setUpdatedEliquid,
+          })
+        }
       >
         <Image
           resizeMode="cover"
@@ -230,7 +264,7 @@ const UserNotLogged = (props) => {
       </Text>
       <Button
         title="Ir al LogIn de Usuarios"
-        onPress={()=> navigation.navigate("Login")}
+        onPress={() => navigation.navigate("Login")}
         containerStyle={styles.btnUserNotLoggedContainerStyle}
         buttonStyle={styles.btnUserNotLoggedButtonStyle}
       />

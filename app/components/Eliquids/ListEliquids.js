@@ -8,17 +8,83 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Image } from "react-native-elements";
-import * as firebase from "firebase";
+import firebase from "../../utils/Firebase";
+const db = firebase.firestore(firebase);
 
 export default ListEliquids = (props) => {
-  const { eliquids, isLoading, handleLoadMore,navigation } = props;
+  const {
+    eliquids,
+    isLoading,
+    handleLoadMore,
+    navigation,
+    setIsReloadEliquids,
+    setIsReloadEliquid,
+    isReloadEliquid,
+  } = props;
+  const [user, setUser] = useState(null);
+  const [userIsAdmin, setUserIsAdmin] = useState(false);
+  const [updatedEliquid, setUpdatedEliquid] = useState(null);
+
+  //useEffect Validación User Logueado y si es Admin
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged((userInfo) => {
+      setUser(userInfo);
+      validateAdmin(userInfo);
+    });
+  }, []);
+
+  const validateAdmin = (user) => {
+    if (user) {
+      const resultUsers = [];
+      const idUser = user.uid;
+      db.collection("users_roles")
+        .where("uid", "==", idUser)
+        .get()
+        .then((response) => {
+          if (response.docs.length > 0) {
+            response.forEach((doc) => {
+              let user_role = doc.data();
+              resultUsers.push({ user_role });
+            });
+          }
+          setUserIsAdmin(resultUsers[0].user_role.admin);
+        })
+        .catch(() => {});
+    }
+  };
+
+  //useEffect encargado de actualizar el elemento de la lista justo después de sufrir un cambio (update)
+  useEffect(() => {
+    debugger;
+    if (isReloadEliquid) {
+      setIsReloadEliquid(false);
+      navigation.navigate("Eliquid", {
+        eliquid: updatedEliquid,
+        userIsAdmin: userIsAdmin,
+        setIsReloadEliquids: setIsReloadEliquids,
+        setIsReloadEliquid: setIsReloadEliquid,
+        updatedEliquid: updatedEliquid,
+        setUpdatedEliquid: setUpdatedEliquid,
+      });
+    }
+  }, [isReloadEliquid]);
 
   return (
     <View>
       {eliquids ? (
         <FlatList
           data={eliquids}
-          renderItem={(eliquid) => <Eliquid eliquid={eliquid} navigation={navigation}/>}
+          renderItem={(eliquid) => (
+            <Eliquid
+              eliquid={eliquid}
+              navigation={navigation}
+              userIsAdmin={userIsAdmin}
+              setIsReloadEliquids={setIsReloadEliquids}
+              setIsReloadEliquid={setIsReloadEliquid}
+              setUpdatedEliquid={setUpdatedEliquid}
+              updatedEliquid={updatedEliquid}
+            />
+          )}
           keyExtractor={(item, index) => index.toString()}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0}
@@ -35,7 +101,15 @@ export default ListEliquids = (props) => {
 };
 
 const Eliquid = (props) => {
-  const { eliquid, navigation } = props;
+  const {
+    eliquid,
+    navigation,
+    userIsAdmin,
+    setIsReloadEliquids,
+    setIsReloadEliquid,
+    setUpdatedEliquid,
+    updatedEliquid,
+  } = props;
   const { name, address, description, images } = eliquid.item.eliquid;
   const [imageEliquid, setImageEliquid] = useState(null);
 
@@ -52,7 +126,18 @@ const Eliquid = (props) => {
   });
 
   return (
-    <TouchableOpacity onPress={() => navigation.navigate("Eliquid", {eliquid: eliquid.item.eliquid})}>
+    <TouchableOpacity
+      onPress={() =>
+        navigation.navigate("Eliquid", {
+          eliquid: eliquid.item.eliquid,
+          userIsAdmin: userIsAdmin,
+          setIsReloadEliquids: setIsReloadEliquids,
+          setIsReloadEliquid: setIsReloadEliquid,
+          updatedEliquid: updatedEliquid,
+          setUpdatedEliquid: setUpdatedEliquid,
+        })
+      }
+    >
       <View style={styles.viewEliquidStyle}>
         <View style={styles.viewEliquidImageStyle}>
           <Image

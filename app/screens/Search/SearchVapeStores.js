@@ -12,6 +12,33 @@ export default SearchVapeStores = (props) => {
   const { navigation } = props;
   const [stores, setStores] = useState([]);
   const [search, setSearch] = useState("");
+  const [userIsAdmin, setUserIsAdmin] = useState(false);
+  const [userLogged, setUserLogged] = useState(false);
+
+  firebase.auth().onAuthStateChanged((user) => {
+    user ? setUserLogged(true) : setUserLogged(false);
+    validateAdmin(user);
+  });
+
+  const validateAdmin = (user) => {
+    if (user) {
+      const resultUsers = [];
+      const idUser = user.uid;
+      db.collection("users_roles")
+        .where("uid", "==", idUser)
+        .get()
+        .then((response) => {
+          if (response.docs.length > 0) {
+            response.forEach((doc) => {
+              let user_role = doc.data();
+              resultUsers.push({ user_role });
+            });
+          }
+          setUserIsAdmin(resultUsers[0].user_role.admin);
+        })
+        .catch(() => {});
+    }
+  };
 
   useEffect(() => {
     onSearch();
@@ -40,7 +67,11 @@ export default SearchVapeStores = (props) => {
         <FlatList
           data={stores}
           renderItem={(store) => (
-            <Stores store={store} navigation={navigation} />
+            <Stores
+              userIsAdmin={userIsAdmin}
+              store={store}
+              navigation={navigation}
+            />
           )}
           keyExtractor={(item, index) => index.toString()}
         />
@@ -50,10 +81,14 @@ export default SearchVapeStores = (props) => {
 };
 
 const Stores = (props) => {
-  const { store, navigation } = props;
+  const { store, navigation, userIsAdmin } = props;
   const { name, images } = store.item;
 
   const [imageStore, setImageStore] = useState(null);
+
+  const [updatedStore, setUpdatedStore] = useState(null);
+  const [isReloadStores, setIsReloadStores] = useState(false);
+  const [isReloadStore, setIsReloadStore] = useState(false);
 
   useEffect(() => {
     const image = images[0];
@@ -71,7 +106,16 @@ const Stores = (props) => {
       title={name}
       leftAvatar={{ source: { uri: imageStore } }}
       rightIcon={<Icon type="material-community" name="chevron-right" />}
-      onPress={() => navigation.navigate("VapeStore", { store: store.item })}
+      onPress={() =>
+        navigation.navigate("VapeStore", {
+          store: store.item,
+          userIsAdmin: userIsAdmin,
+          setIsReloadStores: setIsReloadStores,
+          setIsReloadStore: setIsReloadStore,
+          updatedStore: store.item,
+          setUpdatedStore: setUpdatedStore,
+        })
+      }
     />
   );
 };

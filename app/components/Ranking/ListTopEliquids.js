@@ -1,35 +1,68 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
-import { Card, Image,Icon } from "react-native-elements";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Card, Image, Icon } from "react-native-elements";
 import { GeneralTypeEnum } from "../../utils/Enumerations";
 import StarRating from "react-native-star-rating";
 import { FlatList } from "react-native-gesture-handler";
 
 import firebase from "../../utils/Firebase";
+const db = firebase.firestore(firebase);
 
 export default ListTopEliquids = (props) => {
   const { eliquids, navigation } = props;
+  const [userIsAdmin, setUserIsAdmin] = useState(false);
+  const [userLogged, setUserLogged] = useState(false);
+
+  firebase.auth().onAuthStateChanged((user) => {
+    user ? setUserLogged(true) : setUserLogged(false);
+    validateAdmin(user);
+  });
+
+  const validateAdmin = (user) => {
+    if (user) {
+      const resultUsers = [];
+      const idUser = user.uid;
+      db.collection("users_roles")
+        .where("uid", "==", idUser)
+        .get()
+        .then((response) => {
+          if (response.docs.length > 0) {
+            response.forEach((doc) => {
+              let user_role = doc.data();
+              resultUsers.push({ user_role });
+            });
+          }
+          setUserIsAdmin(resultUsers[0].user_role.admin);
+        })
+        .catch(() => {});
+    }
+  };
 
   return (
     <FlatList
       data={eliquids}
-      renderItem={(eliquid) => <Eliquids eliquid={eliquid} navigation={navigation} />}
+      renderItem={(eliquid) => (
+        <Eliquids
+          userIsAdmin={userIsAdmin}
+          eliquid={eliquid}
+          navigation={navigation}
+        />
+      )}
       keyExtractor={(item, index) => index.toString()}
     />
   );
 };
-//TO DO: Al añadir nuevos votos en una Tienda, se actualizan los textos del Ranking pero no lo hacen las imagenes 
+//TO DO: Al añadir nuevos votos en una Tienda, se actualizan los textos del Ranking pero no lo hacen las imagenes
 const Eliquids = (props) => {
-  const { eliquid, navigation } = props;
+  const { eliquid, navigation, userIsAdmin } = props;
   const { name, description, images, rating } = eliquid.item;
 
   const [imageEliquid, setImageEliquid] = useState(null);
   const [iconColor, setIconColor] = useState("#000");
+
+  const [updatedEliquid, setUpdatedEliquid] = useState(null);
+  const [isReloadEliquids, setIsReloadEliquids] = useState(false);
+  const [isReloadEliquid, setIsReloadEliquid] = useState(false);
 
   useEffect(() => {
     const image = images[0];
@@ -52,7 +85,18 @@ const Eliquids = (props) => {
     }
   }, []);
   return (
-    <TouchableOpacity onPress={() => navigation.navigate("Eliquid", { eliquid: eliquid.item })}>
+    <TouchableOpacity
+      onPress={() =>
+        navigation.navigate("Eliquid", {
+          eliquid: eliquid.item,
+          userIsAdmin: userIsAdmin,
+          setIsReloadEliquids: setIsReloadEliquids,
+          setIsReloadEliquid: setIsReloadEliquid,
+          updatedEliquid: eliquid.item,
+          setUpdatedEliquid: setUpdatedEliquid,
+        })
+      }
+    >
       <Card containerStyle={styles.cardContainerStyle}>
         <Icon
           type="material-community"

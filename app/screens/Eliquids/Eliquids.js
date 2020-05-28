@@ -35,6 +35,7 @@ export default Eliquids = (props) => {
   const [isLoading, setIsLoading] = useState(null);
   const [totalEliquids, setTotalEliquids] = useState(0);
   const [isReloadEliquids, setIsReloadEliquids] = useState(false);
+  const [isReloadEliquid, setIsReloadEliquid] = useState(false);
   const limitEliquids = 8;
 
   //useEffectInfoUsuario
@@ -107,6 +108,9 @@ export default Eliquids = (props) => {
         isLoading={isLoading}
         handleLoadMore={handleLoadMore}
         navigation={navigation}
+        setIsReloadEliquids={setIsReloadEliquids}
+        setIsReloadEliquid={setIsReloadEliquid}
+        isReloadEliquid = {isReloadEliquid}
       />
       {user && <AddEliquidButton navigation={navigation} setIsReloadEliquids={setIsReloadEliquids} />}
     </View>

@@ -12,6 +12,33 @@ export default SearchBrands = (props) => {
   const { navigation } = props;
   const [brands, setBrands] = useState([]);
   const [search, setSearch] = useState("");
+  const [userIsAdmin, setUserIsAdmin] = useState(false);
+  const [userLogged, setUserLogged] = useState(false);
+
+  firebase.auth().onAuthStateChanged((user) => {
+    user ? setUserLogged(true) : setUserLogged(false);
+    validateAdmin(user);
+  });
+
+  const validateAdmin = (user) => {
+    if (user) {
+      const resultUsers = [];
+      const idUser = user.uid;
+      db.collection("users_roles")
+        .where("uid", "==", idUser)
+        .get()
+        .then((response) => {
+          if (response.docs.length > 0) {
+            response.forEach((doc) => {
+              let user_role = doc.data();
+              resultUsers.push({ user_role });
+            });
+          }
+          setUserIsAdmin(resultUsers[0].user_role.admin);
+        })
+        .catch(() => {});
+    }
+  };
 
   useEffect(() => {
     onSearch();
@@ -40,7 +67,11 @@ export default SearchBrands = (props) => {
         <FlatList
           data={brands}
           renderItem={(brand) => (
-            <Brands brand={brand} navigation={navigation} />
+            <Brands
+              userIsAdmin={userIsAdmin}
+              brand={brand}
+              navigation={navigation}
+            />
           )}
           keyExtractor={(item, index) => index.toString()}
         />
@@ -50,10 +81,14 @@ export default SearchBrands = (props) => {
 };
 
 const Brands = (props) => {
-  const { brand, navigation } = props;
+  const { brand, navigation, userIsAdmin } = props;
   const { name, images } = brand.item;
 
   const [imageBrand, setImageBrand] = useState(null);
+
+  const [updatedBrand, setUpdatedBrand] = useState(null);
+  const [isReloadBrands, setIsReloadBrands] = useState(false);
+  const [isReloadBrand, setIsReloadBrand] = useState(false);
 
   useEffect(() => {
     const image = images[0];
@@ -71,7 +106,16 @@ const Brands = (props) => {
       title={name}
       leftAvatar={{ source: { uri: imageBrand } }}
       rightIcon={<Icon type="material-community" name="chevron-right" />}
-      onPress={() => navigation.navigate("Brand", { brand: brand.item })}
+      onPress={() =>
+        navigation.navigate("Brand", {
+          brand: brand.item,
+          userIsAdmin: userIsAdmin,
+          setIsReloadBrands: setIsReloadBrands,
+          setIsReloadBrand: setIsReloadBrand,
+          updatedBrand: brand.item,
+          setUpdatedBrand: setUpdatedBrand,
+        })
+      }
     />
   );
 };

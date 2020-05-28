@@ -19,7 +19,7 @@ export default AccountOptions = props => {
       iconColorLeft: "#ccc",
       iconNameRight: "chevron-right",
       iconColorRight: "#ccc",
-      onPress: () => selectedComponent("displayModalChangeName")
+      onLongPress: () => selectedComponent("displayModalChangeName")
     },
     {
       title: "Cambiar Email",
