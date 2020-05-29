@@ -43,6 +43,8 @@ import Modal from "../../components/Global/Modal";
 import ChangeDisplayStoreNameForm from "./ChangeDisplayStoreNameForm";
 import ChangeStoreEmailForm from "./ChangeStoreEmailForm";
 import ChangeStorePhoneForm from "./ChangeStorePhoneForm";
+import ChangeStoreWebSiteForm from "./ChangeStoreWebSiteForm";
+import ChangeStoreAddressForm from "./ChangeStoreAddressForm";
 
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
@@ -200,14 +202,44 @@ export default VapeStore = (props) => {
         );
         setIsVisibleModal(true);
         break;
-      case "displayModalChangePassword":
+      case "displayModalChangePhone":
         setRenderComponent(
           <ChangeStorePhoneForm
-            password={userInfo.password}
+            phoneNumber={text}
             setIsVisibleModal={setIsVisibleModal}
             setIsReloadStore={setIsReloadStore}
             setIsReloadStores={setIsReloadStores}
             toastRef={toastRef}
+            store={store}
+            setUpdatedStore={setUpdatedStore}
+          />
+        );
+        setIsVisibleModal(true);
+        break;
+        case "displayModalChangeWebSite":
+        setRenderComponent(
+          <ChangeStoreWebSiteForm
+            webSite={text}
+            setIsVisibleModal={setIsVisibleModal}
+            setIsReloadStore={setIsReloadStore}
+            setIsReloadStores={setIsReloadStores}
+            toastRef={toastRef}
+            store={store}
+            setUpdatedStore={setUpdatedStore}
+          />
+        );
+        setIsVisibleModal(true);
+        break;
+        case "displayModalChangeAddress":
+        setRenderComponent(
+          <ChangeStoreAddressForm
+            address={text}
+            setIsVisibleModal={setIsVisibleModal}
+            setIsReloadStore={setIsReloadStore}
+            setIsReloadStores={setIsReloadStores}
+            toastRef={toastRef}
+            store={store}
+            setUpdatedStore={setUpdatedStore}
           />
         );
         setIsVisibleModal(true);
@@ -341,11 +373,12 @@ const StoreInfo = (props) => {
     setIsVisibleModal,
     store,
     setUpdatedStore,
-    selectedComponent
+    selectedComponent,
   } = props;
 
   const listInfo = [
     {
+      name: "address",
       text: address,
       iconName: "map-marker",
       iconType: "material-community",
@@ -391,6 +424,8 @@ const StoreInfo = (props) => {
           onPress={
             item.name === "email"
               ? () => openAppEmail(item.text, toastRef)
+              : item.name === "address"
+              ? () => toastRef.current.show("Funcionalidad en Desarrollo")
               : item.name === "phone"
               ? () => openAppCall(item.text, toastRef)
               : item.name === "webSite"
@@ -408,9 +443,32 @@ const StoreInfo = (props) => {
                     setUpdatedStore
                   )
               : item.name === "phone"
-              ? () => userIsAdmin && console.log("Abrir modal edición phone") //selectedComponent("displayModalChangeEmail")
+              ? () =>
+                  userIsAdmin &&
+                  selectedComponent(
+                    "displayModalChangePhone",
+                    phoneNumber,
+                    store,
+                    setUpdatedStore
+                  )
               : item.name === "webSite"
-              ? () => userIsAdmin && console.log("Abrir modal edición webSite") //selectedComponent("displayModalChangePassword")
+              ? () =>
+                  userIsAdmin &&
+                  selectedComponent(
+                    "displayModalChangeWebSite",
+                    webSite,
+                    store,
+                    setUpdatedStore
+                  )
+              : item.name === "address"
+              ? () =>
+                  userIsAdmin &&
+                  selectedComponent(
+                    "displayModalChangeAddress",
+                    address,
+                    store,
+                    setUpdatedStore
+                  )
               : () => {}
           }
         />

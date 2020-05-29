@@ -32,25 +32,24 @@ export default ChangeStoreEmailForm = (props) => {
           email: "El Email introducido no tiene un formato válido",
         });
       } else {
-        debugger;
         setIsLoading(true);
 
-      db.collection("stores") 
-        .doc(store.id)
-        .update({email: newEmail})
-        .then((x) => {
-          store.email = newEmail;
-          setUpdatedStore(store);
-          setIsLoading(false);
-          setIsReloadStore(true);
-          setIsReloadStores(true);
-          toastRef.current.show("Email actualizado correctamente");
-          setIsVisibleModal(false);
-        })
-        .catch(() => {
-          setError("Error al intentar actualizar Email");
-          setIsLoading(false);
-        });
+        db.collection("stores")
+          .doc(store.id)
+          .update({ email: newEmail })
+          .then((x) => {
+            store.email = newEmail;
+            setUpdatedStore(store);
+            setIsLoading(false);
+            setIsReloadStore(true);
+            setIsReloadStores(true);
+            toastRef.current.show("Email actualizado correctamente");
+            setIsVisibleModal(false);
+          })
+          .catch(() => {
+            setError("Error al intentar actualizar Email");
+            setIsLoading(false);
+          });
       }
     }
   };
@@ -76,8 +75,7 @@ export default ChangeStoreEmailForm = (props) => {
         onPress={updateEmail}
         loading={isLoading}
       />
-
-<Loading isVisible={isLoading} text="Guardando Email" />
+      <Loading isVisible={isLoading} text="Guardando Email" />
     </View>
   );
 };

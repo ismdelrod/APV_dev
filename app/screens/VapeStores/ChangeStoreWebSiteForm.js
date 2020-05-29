@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { Input, Button } from "react-native-elements";
-import { validatePhoneNumber } from "../../utils/Validation";
+import { validateWebSite } from "../../utils/Validation";
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
 
-export default ChangeStorePhoneForm = (props) => {
+export default ChangeStoreWebSiteForm = (props) => {
   const {
-    phoneNumber,
+    webSite,
     setIsVisibleModal,
     setIsReloadStore,
     setIsReloadStores,
@@ -15,40 +15,40 @@ export default ChangeStorePhoneForm = (props) => {
     store,
     setUpdatedStore,
   } = props;
-  const [newPhone, setNewPhone] = useState("");
+  const [newWebSite, setNewWebSite] = useState("");
   const [error, setError] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
 
-  const updatePhone = () => {
+  const updateWebSite = () => {
     setError({});
 
-    if (!newPhone || newPhone === phoneNumber) {
+    if (!newWebSite || newWebSite === webSite) {
       setError({
-        phoneNumber: "El Teléfono no puede ser el ya registrado ni puede estar vacío",
+        webSite: "La Dirección Web no puede ser la ya registrada ni puede estar vacía",
       });
     } else {
-      if (!validatePhoneNumber(newPhone)) {
+      if (!validateWebSite(newWebSite)) {
         setError({
-          phoneNumber: "El Teléfono introducido no tiene un formato válido",
+          webSite: "La Dirección Web introducida no tiene un formato válido",
         });
       } else {
         debugger;
         setIsLoading(true);
         db.collection("stores")
           .doc(store.id)
-          .update({ phoneNumber: newPhone })
+          .update({ webSite: newWebSite })
           .then((x) => {
-            store.phoneNumber = newPhone;
+            store.webSite = newWebSite;
             setUpdatedStore(store);
             setIsLoading(false);
             setIsReloadStore(true);
             setIsReloadStores(true);
-            toastRef.current.show("Teléfono actualizado correctamente");
+            toastRef.current.show("Dirección Web actualizada correctamente");
             setIsVisibleModal(false);
           })
           .catch(() => {
-            setError("Error al intentar actualizar Teléfono");
+            setError("Error al intentar actualizar Dirección Web");
             setIsLoading(false);
           });
       }
@@ -58,25 +58,25 @@ export default ChangeStorePhoneForm = (props) => {
   return (
     <View style={styles.viewStyle}>
       <Input
-        placeholder="Teléfono Actual"
+        placeholder="Dirección Web Actual"
         containerStyle={styles.inputContainerStyle}
-        defaultValue={phoneNumber && phoneNumber}
-        onChange={(e) => setNewPhone(e.nativeEvent.text)}
+        defaultValue={webSite && webSite}
+        onChange={(e) => setNewWebSite(e.nativeEvent.text)}
         rightIcon={{
           type: "material-community",
           name: "eye-outline",
           color: "#c2c2c2",
         }}
-        errorMessage={error.phoneNumber}
+        errorMessage={error.webSite}
       />
       <Button
-        title="Editar Teléfono"
+        title="Editar Dirección Web"
         containerStyle={styles.btnContainerStyle}
         buttonStyle={styles.btnStyle}
-        onPress={updatePhone}
+        onPress={updateWebSite}
         loading={isLoading}
       />
-      <Loading isVisible={isLoading} text="Guardando Email" />
+      <Loading isVisible={isLoading} text="Guardando Dirección Web" />
     </View>
   );
 };
