@@ -118,22 +118,23 @@ const Brand = (props) => {
   } = props;
   const { name, address, description, images } = brand.item.brand;
   const [imageBrand, setImageBrand] = useState(null);
-  const wait = (timeout) => {
-    return new Promise((resolve) => {
-      setTimeout(resolve, timeout);
-    });
-  };
-  useEffect(() => {
-    const image = images[0];
 
-    firebase
-      .storage()
-      .ref(`brands-images/${image}`)
-      .getDownloadURL()
-      .then((resultUrlImage) => {
-        setImageBrand(resultUrlImage);
-      });
-  });
+  useEffect(() => {
+    let image = images[0];
+    const updateImages = (async () => {
+      await firebase
+        .storage()
+        .ref(`brands-images/${image}`)
+        .getDownloadURL()
+        .then((resultUrlImage) => {
+          setImageBrand(resultUrlImage);
+        });
+    })();
+    return () => {
+      updateImages;
+    };
+  }),
+    [];
 
   const confirmRemoveBrand = () => {
     let brandName = brand.item.brand.name;

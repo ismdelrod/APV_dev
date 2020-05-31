@@ -8,7 +8,7 @@ if (!global.atob) {
 }
 //****************************************************************************** */
 // TO DO: Para Evitar los Warnings sobre el componente ActionButton
-import { YellowBox } from "react-native";
+import { YellowBox, RefreshControl, View, StyleSheet, ScrollView } from "react-native";
 import _ from "lodash";
 YellowBox.ignoreWarnings(["componentWillReceiveProps"]);
 const _console = _.clone(console);
@@ -19,8 +19,7 @@ console.warn = (message) => {
 };
 //********************************************************** */
 
-import React, { useState, useEffect, useRef } from "react";
-import { View, StyleSheet } from "react-native";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import ActionButton from "react-native-action-button";
 import ListBrands from "../../components/Brands/ListBrands";
 import Toast from "react-native-easy-toast";
@@ -41,6 +40,19 @@ export default Brands = (props) => {
   const [isReloadBrand, setIsReloadBrand] = useState(false);
   const limitBrands = 8;
   const toastRef = useRef();
+  const [refreshing, setRefreshing] = useState(false);
+  const wait = (timeout) => {
+    return new Promise((resolve) => {
+      setTimeout(resolve, timeout);
+    });
+  };
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setIsReloadBrands(true);
+    wait(2000).then(() => {
+      setRefreshing(false);
+    });
+  }, [refreshing]);
 
   //useEffectInfoUsuario
   useEffect(() => {
@@ -52,6 +64,7 @@ export default Brands = (props) => {
 
   //useEffectGetBrands
   useEffect(() => {
+    setIsReloadBrands(false);
     db.collection("brands")
       .get()
       .then((snap) => {
@@ -67,18 +80,17 @@ export default Brands = (props) => {
 
       await listBrands.get().then((response) => {
         setStartBrands(response.docs[response.docs.length - 1]);
-
         response.forEach((doc) => {
           let brand = doc.data();
           brand.id = doc.id;
           resultBrands.push({ brand: brand });
         });
+        setBrands(resultBrands);
       });
-      setBrands(resultBrands);
-      setIsReloadBrands(false);
     })();
-
+    
     return () => {
+      debugger;
       updateList;
     };
   }, [isReloadBrands]);
@@ -97,9 +109,7 @@ export default Brands = (props) => {
               resultUsers.push({ user_role });
             });
           }
-          // user_role = resultUsers[0].user_role;
           setUserIsAdmin(resultUsers[0].user_role.admin);
-          // setUserIsAdmin(user_role.admin);
         })
         .catch(() => {});
     }
@@ -133,20 +143,27 @@ export default Brands = (props) => {
   };
   return (
     <View style={styles.viewBodyStyle}>
-      <NavigationEvents onWillFocus={() => setIsReloadBrands(true)} />
-      <ListBrands
-        brands={brands}
-        toastRef={toastRef}
-        setIsLoading={setIsLoading}
-        isLoading={isLoading}
-        handleLoadMore={handleLoadMore}
-        navigation={navigation}
-        setIsReloadBrands={setIsReloadBrands}
-        setIsReloadBrand={setIsReloadBrand}
-        isReloadBrand={isReloadBrand}
-      />
-      <Toast ref={toastRef} position="center" opacity={1} />
-      <Loading text="Cargando" isVisible={isLoading} />
+      <ScrollView
+        style={styles.viewBodyStyle}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <NavigationEvents onWillFocus={() => setIsReloadBrands(true)} />
+        <ListBrands
+          brands={brands}
+          toastRef={toastRef}
+          setIsLoading={setIsLoading}
+          isLoading={isLoading}
+          handleLoadMore={handleLoadMore}
+          navigation={navigation}
+          setIsReloadBrands={setIsReloadBrands}
+          setIsReloadBrand={setIsReloadBrand}
+          isReloadBrand={isReloadBrand}
+        />
+        <Toast ref={toastRef} position="center" opacity={1} />
+        <Loading text="Cargando" isVisible={isLoading} />
+      </ScrollView>
       {user && userIsAdmin && (
         <AddBrandButton
           navigation={navigation}

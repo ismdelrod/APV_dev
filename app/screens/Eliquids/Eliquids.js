@@ -8,7 +8,13 @@ if (!global.atob) {
 }
 //****************************************************************************** */
 // TO DO: Para Evitar los Warnings sobre el componente ActionButton
-import { YellowBox } from "react-native";
+import {
+  YellowBox,
+  RefreshControl,
+  View,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
 import _ from "lodash";
 YellowBox.ignoreWarnings(["componentWillReceiveProps"]);
 const _console = _.clone(console);
@@ -19,8 +25,7 @@ console.warn = (message) => {
 };
 //********************************************************** */
 
-import React, { useState, useEffect, useRef } from "react";
-import { View, StyleSheet } from "react-native";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import ActionButton from "react-native-action-button";
 import ListEliquids from "../../components/Eliquids/ListEliquids";
 import Toast from "react-native-easy-toast";
@@ -40,14 +45,19 @@ export default Eliquids = (props) => {
   const [isReloadEliquid, setIsReloadEliquid] = useState(false);
   const limitEliquids = 8;
   const toastRef = useRef();
-  const signOut = () => {
-    firebase.auth().signOut();
-  };
+  const [refreshing, setRefreshing] = useState(false);
   const wait = (timeout) => {
     return new Promise((resolve) => {
       setTimeout(resolve, timeout);
     });
   };
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setIsReloadEliquids(true);
+    wait(2000).then(() => {
+      setRefreshing(false);
+    });
+  }, [refreshing]);
   //useEffectInfoUsuario
   useEffect(() => {
     firebase.auth().onAuthStateChanged((userInfo) => {
@@ -57,6 +67,7 @@ export default Eliquids = (props) => {
 
   //useEffectGetEliquids
   useEffect(() => {
+    setIsReloadEliquids(false);
     db.collection("eliquids")
       .get()
       .then((snap) => {
@@ -77,13 +88,11 @@ export default Eliquids = (props) => {
           eliquid.id = doc.id;
           resultEliquids.push({ eliquid: eliquid });
         });
+        setEliquids(resultEliquids);
       });
-      setEliquids(resultEliquids);
-      setIsReloadEliquids(false);
     })();
 
     return () => {
-      // wait(2000).then(() => {});
       updateList;
     };
   }, [isReloadEliquids]);
@@ -116,20 +125,27 @@ export default Eliquids = (props) => {
   };
   return (
     <View style={styles.viewBodyStyle}>
-      <NavigationEvents onWillFocus={() => setIsReloadEliquids(true)} />
-      <ListEliquids
-        eliquids={eliquids}
-        toastRef={toastRef}
-        setIsLoading={setIsLoading}
-        isLoading={isLoading}
-        handleLoadMore={handleLoadMore}
-        navigation={navigation}
-        setIsReloadEliquids={setIsReloadEliquids}
-        setIsReloadEliquid={setIsReloadEliquid}
-        isReloadEliquid={isReloadEliquid}
-      />
-      <Toast ref={toastRef} position="center" opacity={1} />
-      <Loading text="Cargando" isVisible={isLoading} />
+      <ScrollView
+        style={styles.viewBodyStyle}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <NavigationEvents onWillFocus={() => setIsReloadEliquids(true)} />
+        <ListEliquids
+          eliquids={eliquids}
+          toastRef={toastRef}
+          setIsLoading={setIsLoading}
+          isLoading={isLoading}
+          handleLoadMore={handleLoadMore}
+          navigation={navigation}
+          setIsReloadEliquids={setIsReloadEliquids}
+          setIsReloadEliquid={setIsReloadEliquid}
+          isReloadEliquid={isReloadEliquid}
+        />
+        <Toast ref={toastRef} position="center" opacity={1} />
+        <Loading text="Cargando" isVisible={isLoading} />
+      </ScrollView>
       {user && (
         <AddEliquidButton
           navigation={navigation}

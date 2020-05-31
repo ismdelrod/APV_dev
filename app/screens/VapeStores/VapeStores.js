@@ -8,7 +8,13 @@ if (!global.atob) {
 }
 //****************************************************************************** */
 // TO DO: Para Evitar los Warnings sobre el componente ActionButton
-import { YellowBox } from "react-native";
+import {
+  YellowBox,
+  RefreshControl,
+  View,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
 import _ from "lodash";
 YellowBox.ignoreWarnings(["componentWillReceiveProps"]);
 const _console = _.clone(console);
@@ -19,8 +25,7 @@ console.warn = (message) => {
 };
 //********************************************************** */
 
-import React, { useState, useEffect, useRef } from "react";
-import { View, StyleSheet } from "react-native";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import ActionButton from "react-native-action-button";
 import ListStores from "../../components/VapeStores/ListStores";
 import Toast from "react-native-easy-toast";
@@ -40,16 +45,29 @@ export default VapeStores = (props) => {
   const [isReloadStore, setIsReloadStore] = useState(false);
   const limitStores = 8;
   const toastRef = useRef();
-
+  const [refreshing, setRefreshing] = useState(false);
+  const wait = (timeout) => {
+    return new Promise((resolve) => {
+      setTimeout(resolve, timeout);
+    });
+  };
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setIsReloadStores(true);
+    wait(2000).then(() => {
+      setRefreshing(false);
+    });
+  }, [refreshing]);
   //useEffectInfoUsuario
   useEffect(() => {
     firebase.auth().onAuthStateChanged((userInfo) => {
       setUser(userInfo);
     });
   }, []);
-  
+
   //useEffectGetStores
   useEffect(() => {
+    setIsReloadStores(false);
     db.collection("stores")
       .get()
       .then((snap) => {
@@ -72,11 +90,8 @@ export default VapeStores = (props) => {
           store.id = doc.id;
           resultStores.push({ store });
         });
-        
-      });
-      debugger;
         setStores(resultStores);
-        setIsReloadStores(false);
+      });
     })();
 
     return () => {
@@ -112,20 +127,27 @@ export default VapeStores = (props) => {
   };
   return (
     <View style={styles.viewBodyStyle}>
-      <NavigationEvents onWillFocus={() => setIsReloadStores(true)} />
-      <ListStores
-        stores={stores}
-        toastRef={toastRef}
-        setIsLoading={setIsLoading}
-        isLoading={isLoading}
-        handleLoadMore={handleLoadMore}
-        navigation={navigation}
-        setIsReloadStores={setIsReloadStores}
-        setIsReloadStore={setIsReloadStore}
-        isReloadStore={isReloadStore}
-      />
-      <Toast ref={toastRef} position="center" opacity={1} />
-      <Loading text="Cargando" isVisible={isLoading} />
+      <ScrollView
+        style={styles.viewBodyStyle}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <NavigationEvents onWillFocus={() => setIsReloadStores(true)} />
+        <ListStores
+          stores={stores}
+          toastRef={toastRef}
+          setIsLoading={setIsLoading}
+          isLoading={isLoading}
+          handleLoadMore={handleLoadMore}
+          navigation={navigation}
+          setIsReloadStores={setIsReloadStores}
+          setIsReloadStore={setIsReloadStore}
+          isReloadStore={isReloadStore}
+        />
+        <Toast ref={toastRef} position="center" opacity={1} />
+        <Loading text="Cargando" isVisible={isLoading} />
+      </ScrollView>
       {user && (
         <AddVapeStoreButton
           navigation={navigation}

@@ -119,22 +119,25 @@ const Eliquid = (props) => {
 
   const { name, address, description, images } = eliquid.item.eliquid;
   const [imageEliquid, setImageEliquid] = useState(null);
-  const wait = (timeout) => {
-    return new Promise((resolve) => {
-      setTimeout(resolve, timeout);
-    });
-  };
-  useEffect(() => {
-    const image = images[0];
+  const [remove, setRemove] = useState(false);
 
-    firebase
-      .storage()
-      .ref(`eliquids-images/${image}`)
-      .getDownloadURL()
-      .then((resultUrlImage) => {
-        setImageEliquid(resultUrlImage);
-      });
-  });
+  useEffect(() => {
+
+    let image = images[0];
+    const updateImages = (async () => {
+      await firebase
+        .storage()
+        .ref(`eliquids-images/${image}`)
+        .getDownloadURL()
+        .then((resultUrlImage) => {
+          setImageEliquid(resultUrlImage);
+        });
+    })();
+    return () => {
+      updateImages;
+    };
+  }),
+    [];
 
   const confirmRemoveEliquid = () => {
     let eliquidName = eliquid.item.eliquid.name;

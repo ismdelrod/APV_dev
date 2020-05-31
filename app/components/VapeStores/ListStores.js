@@ -122,21 +122,21 @@ const Store = (props) => {
 
   const { name, address, description, images } = store.item.store;
   const [imageStore, setImageStore] = useState(null);
-  const wait = (timeout) => {
-    return new Promise((resolve) => {
-      setTimeout(resolve, timeout);
-    });
-  };
+  
   useEffect(() => {
-    const image = images[0];
-
-    firebase
-      .storage()
-      .ref(`stores-images/${image}`)
-      .getDownloadURL()
-      .then((resultUrlImage) => {
-        setImageStore(resultUrlImage);
-      });
+    let image = images[0];
+    const updateImages = (async () => {
+      firebase
+        .storage()
+        .ref(`stores-images/${image}`)
+        .getDownloadURL()
+        .then((resultUrlImage) => {
+          setImageStore(resultUrlImage);
+        });
+    })();
+    return () => {
+      updateImages;
+    };
   }),
     [];
 
