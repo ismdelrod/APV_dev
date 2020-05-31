@@ -119,7 +119,11 @@ const Eliquid = (props) => {
 
   const { name, address, description, images } = eliquid.item.eliquid;
   const [imageEliquid, setImageEliquid] = useState(null);
-
+  const wait = (timeout) => {
+    return new Promise((resolve) => {
+      setTimeout(resolve, timeout);
+    });
+  };
   useEffect(() => {
     const image = images[0];
 
@@ -151,18 +155,21 @@ const Eliquid = (props) => {
     );
   };
 
-  const removeEliquid = async() => {
+  const removeEliquid = async () => {
     let eliquidId = eliquid.item.eliquid.id;
     let imagesArray = eliquid.item.eliquid.images;
     setIsLoading(true);
     //Elimina el E-liquid
-    await db.collection("eliquids")
+    await db
+      .collection("eliquids")
       .doc(eliquidId)
       .delete()
       .then(() => {
-        toastRef.current.show("E-liquid Eliminado");
-        setIsLoading(false);
-        setIsReloadEliquids(true);
+        wait(2000).then(() => {
+          toastRef.current.show("E-liquid Eliminado!");
+          setIsLoading(false);
+          setIsReloadEliquids(true);
+        });
       })
       .catch((error) => {
         toastRef.current.show(
@@ -170,7 +177,8 @@ const Eliquid = (props) => {
         );
       });
     //Elimina los Favoritos asociados el E-liquid
-    await db.collection("favorites")
+    await db
+      .collection("favorites")
       .where("idFavorite", "==", eliquidId)
       .get()
       .then((response) => {

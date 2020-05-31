@@ -122,7 +122,11 @@ const Store = (props) => {
 
   const { name, address, description, images } = store.item.store;
   const [imageStore, setImageStore] = useState(null);
-
+  const wait = (timeout) => {
+    return new Promise((resolve) => {
+      setTimeout(resolve, timeout);
+    });
+  };
   useEffect(() => {
     const image = images[0];
 
@@ -160,13 +164,16 @@ const Store = (props) => {
     let imagesArray = store.item.store.images;
     setIsLoading(true);
     //Elimina la Tienda
-    await db.collection("stores")
+    await db
+      .collection("stores")
       .doc(storeId)
       .delete()
       .then(() => {
-        toastRef.current.show("Tienda Eliminada");
-        setIsLoading(false);
-        setIsReloadStores(true);
+        wait(2000).then(() => {
+          toastRef.current.show("Tienda Eliminada!");
+          setIsLoading(false);
+          setIsReloadStores(true);
+        });
       })
       .catch((error) => {
         toastRef.current.show(
@@ -174,7 +181,8 @@ const Store = (props) => {
         );
       });
     //Elimina los Favoritos asociados a la Tienda
-    await db.collection("favorites")
+    await db
+      .collection("favorites")
       .where("idFavorite", "==", storeId)
       .get()
       .then((response) => {

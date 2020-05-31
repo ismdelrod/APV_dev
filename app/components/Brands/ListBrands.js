@@ -118,7 +118,11 @@ const Brand = (props) => {
   } = props;
   const { name, address, description, images } = brand.item.brand;
   const [imageBrand, setImageBrand] = useState(null);
-
+  const wait = (timeout) => {
+    return new Promise((resolve) => {
+      setTimeout(resolve, timeout);
+    });
+  };
   useEffect(() => {
     const image = images[0];
 
@@ -130,7 +134,6 @@ const Brand = (props) => {
         setImageBrand(resultUrlImage);
       });
   });
-
 
   const confirmRemoveBrand = () => {
     let brandName = brand.item.brand.name;
@@ -151,18 +154,21 @@ const Brand = (props) => {
     );
   };
 
-  const removeBrand = async() => {
+  const removeBrand = async () => {
     let brandId = brand.item.brand.id;
     let imagesArray = brand.item.brand.images;
     setIsLoading(true);
     //Elimina el Marca
-    await db.collection("brands")
+    await db
+      .collection("brands")
       .doc(brandId)
       .delete()
       .then(() => {
-        toastRef.current.show("Marca Eliminada");
-        setIsLoading(false);
-        setIsReloadBrands(true);
+        wait(2000).then(() => {
+          toastRef.current.show("Marca Eliminada!");
+          setIsLoading(false);
+          setIsReloadBrands(true);
+        });
       })
       .catch((error) => {
         toastRef.current.show(
@@ -170,7 +176,8 @@ const Brand = (props) => {
         );
       });
     //Elimina los Favoritos asociados el Marca
-    await db.collection("favorites")
+    await db
+      .collection("favorites")
       .where("idFavorite", "==", brandId)
       .get()
       .then((response) => {
@@ -187,7 +194,6 @@ const Brand = (props) => {
       })
       .catch(() => {});
   };
-
 
   return (
     <TouchableOpacity
