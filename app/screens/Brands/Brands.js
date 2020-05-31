@@ -25,6 +25,7 @@ import ActionButton from "react-native-action-button";
 import ListBrands from "../../components/Brands/ListBrands";
 import Toast from "react-native-easy-toast";
 import Loading from "../../components/Global/Loading";
+import { NavigationEvents } from "@react-navigation/compat";
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
 
@@ -132,6 +133,7 @@ export default Brands = (props) => {
   };
   return (
     <View style={styles.viewBodyStyle}>
+       <NavigationEvents onWillFocus={() => setIsReloadBrands(true)} />
       <ListBrands
         brands={brands}
         toastRef={toastRef}

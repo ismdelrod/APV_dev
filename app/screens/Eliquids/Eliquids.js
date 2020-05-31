@@ -25,6 +25,7 @@ import ActionButton from "react-native-action-button";
 import ListEliquids from "../../components/Eliquids/ListEliquids";
 import Toast from "react-native-easy-toast";
 import Loading from "../../components/Global/Loading";
+import { NavigationEvents } from "@react-navigation/compat";
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
 
@@ -56,7 +57,6 @@ export default Eliquids = (props) => {
       .then((snap) => {
         setTotalEliquids(snap.size);
       });
-
     const updateList = (async () => {
       const resultEliquids = [];
       const listEliquids = db
@@ -110,6 +110,7 @@ export default Eliquids = (props) => {
   };
   return (
     <View style={styles.viewBodyStyle}>
+       <NavigationEvents onWillFocus={() => setIsReloadEliquids(true)} />
       <ListEliquids
         eliquids={eliquids}
         toastRef={toastRef}

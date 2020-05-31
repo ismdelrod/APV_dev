@@ -25,6 +25,7 @@ import ActionButton from "react-native-action-button";
 import ListStores from "../../components/VapeStores/ListStores";
 import Toast from "react-native-easy-toast";
 import Loading from "../../components/Global/Loading";
+import { NavigationEvents } from "@react-navigation/compat";
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
 
@@ -46,7 +47,7 @@ export default VapeStores = (props) => {
       setUser(userInfo);
     });
   }, []);
-
+  
   //useEffectGetStores
   useEffect(() => {
     db.collection("stores")
@@ -109,6 +110,7 @@ export default VapeStores = (props) => {
   };
   return (
     <View style={styles.viewBodyStyle}>
+      <NavigationEvents onWillFocus={() => setIsReloadStores(true)} />
       <ListStores
         stores={stores}
         toastRef={toastRef}
