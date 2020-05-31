@@ -73,7 +73,7 @@ const VapeStoresStackScreen = () => {
         name="VapeStore"
         component={VapeStoreDetailComponent}
         options={({ route }) => ({
-          title: route.params.store.name,
+          title: route.params.store &&  route.params.store.name,
           headerTitleAlign: "center",
           headerStyle: {},
           headerTitleStyle: {},
@@ -128,7 +128,7 @@ const EliquidsStackScreen = () => {
         name="Eliquid"
         component={EliquidDetailComponent}
         options={({ route }) => ({
-          title: route.params.eliquid.name,
+          title:route.params.eliquid && route.params.eliquid.name,
           headerTitleAlign: "center",
           headerStyle: {},
           headerTitleStyle: {},
@@ -183,7 +183,7 @@ const BrandsStackScreen = () => {
         name="Brand"
         component={BrandDetailComponent}
         options={({ route }) => ({
-          title: route.params.brand.name,
+          title: route.params.brand && route.params.brand.name,
           headerTitleAlign: "center",
           headerStyle: {},
           headerTitleStyle: {},

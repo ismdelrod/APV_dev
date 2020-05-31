@@ -19,10 +19,12 @@ console.warn = (message) => {
 };
 //********************************************************** */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, StyleSheet } from "react-native";
 import ActionButton from "react-native-action-button";
 import ListBrands from "../../components/Brands/ListBrands";
+import Toast from "react-native-easy-toast";
+import Loading from "../../components/Global/Loading";
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
 
@@ -33,11 +35,12 @@ export default Brands = (props) => {
   const [userIsAdmin, setUserIsAdmin] = useState(false);
   const [brands, setBrands] = useState([]);
   const [startBrands, setStartBrands] = useState(null);
-  const [isLoading, setIsLoading] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [totalBrands, setTotalBrands] = useState(0);
   const [isReloadBrands, setIsReloadBrands] = useState(false);
   const [isReloadBrand, setIsReloadBrand] = useState(false);
   const limitBrands = 8;
+  const toastRef = useRef();
 
   //useEffectInfoUsuario
   useEffect(() => {
@@ -59,8 +62,6 @@ export default Brands = (props) => {
 
     (async () => {
       const resultBrands = [];
-
-      debugger;
       const listBrands = db
         .collection("brands")
         .orderBy("createAt", "desc")
@@ -134,6 +135,8 @@ export default Brands = (props) => {
     <View style={styles.viewBodyStyle}>
       <ListBrands
         brands={brands}
+        toastRef={toastRef}
+        setIsLoading={setIsLoading}
         isLoading={isLoading}
         handleLoadMore={handleLoadMore}
         navigation={navigation}
@@ -141,6 +144,8 @@ export default Brands = (props) => {
         setIsReloadBrand={setIsReloadBrand}
         isReloadBrand = {isReloadBrand}
       />
+      <Toast ref={toastRef} position="center" opacity={1} />
+      <Loading text="Cargando" isVisible={isLoading} />
       {(user && userIsAdmin) && <AddBrandButton navigation={navigation} setIsReloadBrands={setIsReloadBrands} />}
     </View>
   );

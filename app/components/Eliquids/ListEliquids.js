@@ -6,6 +6,7 @@ import {
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { Image } from "react-native-elements";
 import firebase from "../../utils/Firebase";
@@ -14,12 +15,14 @@ const db = firebase.firestore(firebase);
 export default ListEliquids = (props) => {
   const {
     eliquids,
+    setIsLoading,
     isLoading,
     handleLoadMore,
     navigation,
     setIsReloadEliquids,
     setIsReloadEliquid,
     isReloadEliquid,
+    toastRef,
   } = props;
   const [user, setUser] = useState(null);
   const [userIsAdmin, setUserIsAdmin] = useState(false);
@@ -56,6 +59,7 @@ export default ListEliquids = (props) => {
   //useEffect encargado de actualizar el elemento de la lista justo después de sufrir un cambio (update)
   useEffect(() => {
     if (isReloadEliquid) {
+      debugger;
       setIsReloadEliquid(false);
       navigation.navigate("Eliquid", {
         eliquid: updatedEliquid,
@@ -76,12 +80,14 @@ export default ListEliquids = (props) => {
           renderItem={(eliquid) => (
             <Eliquid
               eliquid={eliquid}
+              setIsLoading={setIsLoading}
               navigation={navigation}
               userIsAdmin={userIsAdmin}
               setIsReloadEliquids={setIsReloadEliquids}
               setIsReloadEliquid={setIsReloadEliquid}
               setUpdatedEliquid={setUpdatedEliquid}
               updatedEliquid={updatedEliquid}
+              toastRef={toastRef}
             />
           )}
           keyExtractor={(item, index) => index.toString()}
@@ -102,13 +108,16 @@ export default ListEliquids = (props) => {
 const Eliquid = (props) => {
   const {
     eliquid,
+    setIsLoading,
     navigation,
     userIsAdmin,
     setIsReloadEliquids,
     setIsReloadEliquid,
     setUpdatedEliquid,
     updatedEliquid,
+    toastRef,
   } = props;
+
   const { name, address, description, images } = eliquid.item.eliquid;
   const [imageEliquid, setImageEliquid] = useState(null);
 
@@ -124,6 +133,67 @@ const Eliquid = (props) => {
       });
   });
 
+  const confirmRemoveEliquid = () => {
+    let eliquidName = eliquid.item.eliquid.name;
+    Alert.alert(
+      "Eliminar E-liquid",
+      "¿Estás seguro de querer eliminar el E-liquid: " + eliquidName + "?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Eliminar",
+          onPress: removeEliquid,
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  const removeEliquid = () => {
+    let eliquidId = eliquid.item.eliquid.id;
+    let imagesArray = eliquid.item.eliquid.images;
+    setIsLoading(true);
+    //Elimina el E-liquid
+    db.collection("eliquids")
+      .doc(eliquidId)
+      .delete()
+      .then(() => {
+        toastRef.current.show("E-liquid Eliminado");
+        setIsLoading(false);
+        setIsReloadEliquids(true);
+      })
+      .catch((error) => {
+        toastRef.current.show(
+          "No se ha podido eliminar el E-liquid, intentarlo más tarde"
+        );
+      });
+    //Elimina los Favoritos asociados el E-liquid
+    db.collection("favorites")
+      .where("idFavorite", "==", eliquidId)
+      .get()
+      .then((response) => {
+        if (response.docs.length > 0) {
+          response.forEach((doc) => {
+            const idFavorite = doc.id;
+            db.collection("favorites")
+              .doc(idFavorite)
+              .delete()
+              .then(() => {
+                toastRef.current.show(
+                  "Eliminados los Favoritos asociados el E-liquid: " +
+                    eliquidName
+                );
+              })
+              .catch(() => {});
+          });
+        }
+      })
+      .catch(() => {});
+  };
+
   return (
     <TouchableOpacity
       onPress={() =>
@@ -136,6 +206,7 @@ const Eliquid = (props) => {
           setUpdatedEliquid: setUpdatedEliquid,
         })
       }
+      onLongPress={() => userIsAdmin && confirmRemoveEliquid()}
     >
       <View style={styles.viewEliquidStyle}>
         <View style={styles.viewEliquidImageStyle}>

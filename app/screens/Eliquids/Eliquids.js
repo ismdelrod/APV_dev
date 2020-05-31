@@ -1,10 +1,10 @@
 // TO DO: Soluciona problema al cargar imagenes en ciertas versiones de firebase
-import {decode, encode} from 'base-64'
+import { decode, encode } from "base-64";
 if (!global.btoa) {
-    global.btoa = encode;
+  global.btoa = encode;
 }
 if (!global.atob) {
-    global.atob = decode;
+  global.atob = decode;
 }
 //****************************************************************************** */
 // TO DO: Para Evitar los Warnings sobre el componente ActionButton
@@ -19,25 +19,26 @@ console.warn = (message) => {
 };
 //********************************************************** */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, StyleSheet } from "react-native";
 import ActionButton from "react-native-action-button";
 import ListEliquids from "../../components/Eliquids/ListEliquids";
+import Toast from "react-native-easy-toast";
+import Loading from "../../components/Global/Loading";
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
-
 
 export default Eliquids = (props) => {
   const { navigation } = props;
   const [user, setUser] = useState(null);
   const [eliquids, setEliquids] = useState([]);
   const [startEliquids, setStartEliquids] = useState(null);
-  const [isLoading, setIsLoading] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [totalEliquids, setTotalEliquids] = useState(0);
   const [isReloadEliquids, setIsReloadEliquids] = useState(false);
   const [isReloadEliquid, setIsReloadEliquid] = useState(false);
   const limitEliquids = 8;
-
+  const toastRef = useRef();
   //useEffectInfoUsuario
   useEffect(() => {
     firebase.auth().onAuthStateChanged((userInfo) => {
@@ -105,14 +106,23 @@ export default Eliquids = (props) => {
     <View style={styles.viewBodyStyle}>
       <ListEliquids
         eliquids={eliquids}
+        toastRef={toastRef}
+        setIsLoading={setIsLoading}
         isLoading={isLoading}
         handleLoadMore={handleLoadMore}
         navigation={navigation}
         setIsReloadEliquids={setIsReloadEliquids}
         setIsReloadEliquid={setIsReloadEliquid}
-        isReloadEliquid = {isReloadEliquid}
+        isReloadEliquid={isReloadEliquid}
       />
-      {user && <AddEliquidButton navigation={navigation} setIsReloadEliquids={setIsReloadEliquids} />}
+      <Toast ref={toastRef} position="center" opacity={1} />
+      <Loading text="Cargando" isVisible={isLoading} />
+      {user && (
+        <AddEliquidButton
+          navigation={navigation}
+          setIsReloadEliquids={setIsReloadEliquids}
+        />
+      )}
     </View>
   );
 };
@@ -122,7 +132,7 @@ AddEliquidButton = (props) => {
   return (
     <ActionButton
       buttonColor="#00a680"
-      onPress={() => navigation.navigate("AddEliquid",{setIsReloadEliquids})}
+      onPress={() => navigation.navigate("AddEliquid", { setIsReloadEliquids })}
     />
   );
 };

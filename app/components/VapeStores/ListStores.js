@@ -6,6 +6,7 @@ import {
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { Image } from "react-native-elements";
 // import * as firebase from "firebase";
@@ -17,12 +18,14 @@ const db = firebase.firestore(firebase);
 export default ListStores = (props) => {
   const {
     stores,
+    setIsLoading,
     isLoading,
     handleLoadMore,
     navigation,
     setIsReloadStores,
     setIsReloadStore,
     isReloadStore,
+    toastRef,
   } = props;
   const [user, setUser] = useState(null);
   const [userIsAdmin, setUserIsAdmin] = useState(false);
@@ -59,6 +62,7 @@ export default ListStores = (props) => {
   //useEffect encargado de actualizar el elemento de la lista justo después de sufrir un cambio (update)
   useEffect(() => {
     if (isReloadStore) {
+      debugger;
       setIsReloadStore(false);
       navigation.navigate("VapeStore", {
         store: updatedStore,
@@ -79,12 +83,14 @@ export default ListStores = (props) => {
           renderItem={(store) => (
             <Store
               store={store}
+              setIsLoading={setIsLoading}
               navigation={navigation}
               userIsAdmin={userIsAdmin}
               setIsReloadStores={setIsReloadStores}
               setIsReloadStore={setIsReloadStore}
               setUpdatedStore={setUpdatedStore}
               updatedStore={updatedStore}
+              toastRef={toastRef}
             />
           )}
           keyExtractor={(item, index) => index.toString()}
@@ -105,12 +111,14 @@ export default ListStores = (props) => {
 const Store = (props) => {
   const {
     store,
+    setIsLoading,
     navigation,
     userIsAdmin,
     setIsReloadStores,
     setIsReloadStore,
     setUpdatedStore,
     updatedStore,
+    toastRef,
   } = props;
 
   const { name, address, description, images } = store.item.store;
@@ -129,6 +137,87 @@ const Store = (props) => {
   }),
     [];
 
+  const confirmRemoveStore = () => {
+    let storeName = store.item.store.name;
+    Alert.alert(
+      "Eliminar Tienda",
+      "¿Estás seguro de querer eliminar a la Tienda: " + storeName + "?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Eliminar",
+          onPress: removeStore,
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  const removeStore = () => {
+    let storeId = store.item.store.id;
+    let imagesArray = store.item.store.images;
+    setIsLoading(true);
+    //Elimina la Tienda
+    db.collection("stores")
+      .doc(storeId)
+      .delete()
+      .then(() => {
+        toastRef.current.show("Tienda Eliminada");
+        setIsLoading(false);
+        setIsReloadStores(true);
+      })
+      .catch((error) => {
+        toastRef.current.show(
+          "No se ha podido eliminar la Tienda, intentarlo más tarde"
+        );
+      });
+    //Elimina los Favoritos asociados a la Tienda
+    db.collection("favorites")
+      .where("idFavorite", "==", storeId)
+      .get()
+      .then((response) => {
+        if (response.docs.length > 0) {
+          response.forEach((doc) => {
+            const idFavorite = doc.id;
+            db.collection("favorites")
+              .doc(idFavorite)
+              .delete()
+              .then(() => {
+                toastRef.current.show(
+                  "Eliminados los Favoritos asociados a la Tienda: " + storeName
+                );
+              })
+              .catch(() => {});
+          });
+        }
+      })
+      .catch(() => {});
+
+    // TO DO Solucionar el borrado de Imágenes asociadas a la Tienda eliminada.
+    //Elimina las Imágenes asociados a la Tienda
+    // if (imagesArray.length > 0) {
+
+    //   imagesArray.forEach(async (image) => {
+    //   debugger;
+    //   const response = await fetch(image);
+    //   const blob = await response.blob();
+    //   const ref = firebase.storage().ref("stores-images").child(`avatar/${nameImage}`);;
+
+    //   await ref
+    //     .delete()
+    //     .then(() => {
+    //       toastRef.current.show(
+    //         "Eliminadas las Imágenes asociadas a la Tienda: " + storeName
+    //       );
+    //     })
+    //     .catch(() => {});
+    // });
+    // }
+  };
+
   return (
     <TouchableOpacity
       onPress={() =>
@@ -141,7 +230,7 @@ const Store = (props) => {
           setUpdatedStore: setUpdatedStore,
         })
       }
-      onLongPress={() => userIsAdmin && console.log("Abrir modal de Borrado")}
+      onLongPress={() => userIsAdmin && confirmRemoveStore()}
     >
       <View style={styles.viewStoreStyle}>
         <View style={styles.viewStoreImageStyle}>

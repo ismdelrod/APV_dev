@@ -6,6 +6,7 @@ import {
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { Image } from "react-native-elements";
 import firebase from "../../utils/Firebase";
@@ -14,12 +15,14 @@ const db = firebase.firestore(firebase);
 export default ListBrands = (props) => {
   const {
     brands,
+    setIsLoading,
     isLoading,
     handleLoadMore,
     navigation,
     setIsReloadBrands,
     setIsReloadBrand,
     isReloadBrand,
+    toastRef,
   } = props;
   const [user, setUser] = useState(null);
   const [userIsAdmin, setUserIsAdmin] = useState(false);
@@ -76,12 +79,14 @@ export default ListBrands = (props) => {
           renderItem={(brand) => (
             <Brand
               brand={brand}
+              setIsLoading={setIsLoading}
               navigation={navigation}
               userIsAdmin={userIsAdmin}
               setIsReloadBrands={setIsReloadBrands}
               setIsReloadBrand={setIsReloadBrand}
               setUpdatedBrand={setUpdatedBrand}
               updatedBrand={updatedBrand}
+              toastRef={toastRef}
             />
           )}
           keyExtractor={(item, index) => index.toString()}
@@ -92,7 +97,7 @@ export default ListBrands = (props) => {
       ) : (
         <View style={styles.loaderBrandStyle}>
           <ActivityIndicator size="large" />
-          <Text>Cargando E-liquids</Text>
+          <Text>Cargando Marcas</Text>
         </View>
       )}
     </View>
@@ -102,12 +107,14 @@ export default ListBrands = (props) => {
 const Brand = (props) => {
   const {
     brand,
+    setIsLoading,
     navigation,
     userIsAdmin,
     setIsReloadBrands,
     setIsReloadBrand,
     setUpdatedBrand,
     updatedBrand,
+    toastRef,
   } = props;
   const { name, address, description, images } = brand.item.brand;
   const [imageBrand, setImageBrand] = useState(null);
@@ -124,6 +131,69 @@ const Brand = (props) => {
       });
   });
 
+
+  const confirmRemoveBrand = () => {
+    let brandName = brand.item.brand.name;
+    Alert.alert(
+      "Eliminar Marca",
+      "¿Estás seguro de querer eliminar el Marca: " + brandName + "?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Eliminar",
+          onPress: removeBrand,
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  const removeBrand = () => {
+    let brandId = brand.item.brand.id;
+    let imagesArray = brand.item.brand.images;
+    setIsLoading(true);
+    //Elimina el Marca
+    db.collection("brands")
+      .doc(brandId)
+      .delete()
+      .then(() => {
+        toastRef.current.show("Marca Eliminada");
+        setIsLoading(false);
+        setIsReloadBrands(true);
+      })
+      .catch((error) => {
+        toastRef.current.show(
+          "No se ha podido eliminar la Marca, intentarlo más tarde"
+        );
+      });
+    //Elimina los Favoritos asociados el Marca
+    db.collection("favorites")
+      .where("idFavorite", "==", brandId)
+      .get()
+      .then((response) => {
+        if (response.docs.length > 0) {
+          response.forEach((doc) => {
+            const idFavorite = doc.id;
+            db.collection("favorites")
+              .doc(idFavorite)
+              .delete()
+              .then(() => {
+                toastRef.current.show(
+                  "Eliminados los Favoritos asociados la Marca: " +
+                    brandName
+                );
+              })
+              .catch(() => {});
+          });
+        }
+      })
+      .catch(() => {});
+  };
+
+
   return (
     <TouchableOpacity
       onPress={() =>
@@ -136,7 +206,7 @@ const Brand = (props) => {
           setUpdatedBrand: setUpdatedBrand,
         })
       }
-      onLongPress={() => userIsAdmin && console.log("Abrir modal de Borrado")}
+      onLongPress={() => userIsAdmin && confirmRemoveBrand()}
     >
       <View style={styles.viewBrandStyle}>
         <View style={styles.viewBrandImageStyle}>

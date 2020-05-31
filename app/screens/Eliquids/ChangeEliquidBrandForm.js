@@ -93,7 +93,7 @@ export default ChangeEliquidBrandForm = (props) => {
         loading={isLoading}
       />
 
-      <Loading isVisible={isLoading} text="Guardando Nombre" />
+      <Loading isVisible={isLoading} text="Guardando Marca" />
     </View>
   );
 };

@@ -19,10 +19,12 @@ console.warn = (message) => {
 };
 //********************************************************** */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, StyleSheet } from "react-native";
 import ActionButton from "react-native-action-button";
 import ListStores from "../../components/VapeStores/ListStores";
+import Toast from "react-native-easy-toast";
+import Loading from "../../components/Global/Loading";
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
 
@@ -32,11 +34,12 @@ export default VapeStores = (props) => {
   const [user, setUser] = useState(null);
   const [stores, setStores] = useState([]);
   const [startStores, setStartStores] = useState(null);
-  const [isLoading, setIsLoading] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [totalStores, setTotalStores] = useState(0);
   const [isReloadStores, setIsReloadStores] = useState(false);
   const [isReloadStore, setIsReloadStore] = useState(false);
   const limitStores = 8;
+  const toastRef = useRef();
 
   //useEffectInfoUsuario
   useEffect(() => {
@@ -105,6 +108,8 @@ export default VapeStores = (props) => {
     <View style={styles.viewBodyStyle}>
       <ListStores
         stores={stores}
+        toastRef={toastRef}
+        setIsLoading={setIsLoading}
         isLoading={isLoading}
         handleLoadMore={handleLoadMore}
         navigation={navigation}
@@ -112,6 +117,8 @@ export default VapeStores = (props) => {
         setIsReloadStore={setIsReloadStore}
         isReloadStore = {isReloadStore}
       />
+      <Toast ref={toastRef} position="center" opacity={1} />
+      <Loading text="Cargando" isVisible={isLoading} />
       {user && <AddVapeStoreButton navigation={navigation} setIsReloadStores={setIsReloadStores} />}
     </View>
   );
