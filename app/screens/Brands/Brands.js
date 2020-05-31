@@ -73,9 +73,9 @@ export default Brands = (props) => {
           brand.id = doc.id;
           resultBrands.push({ brand: brand });
         });
-        setBrands(resultBrands);
-        setIsReloadBrands(false);
       });
+      setBrands(resultBrands);
+      setIsReloadBrands(false);
     })();
 
     return () => {
@@ -133,7 +133,7 @@ export default Brands = (props) => {
   };
   return (
     <View style={styles.viewBodyStyle}>
-       <NavigationEvents onWillFocus={() => setIsReloadBrands(true)} />
+      <NavigationEvents onWillFocus={() => setIsReloadBrands(true)} />
       <ListBrands
         brands={brands}
         toastRef={toastRef}

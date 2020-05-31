@@ -72,9 +72,11 @@ export default VapeStores = (props) => {
           store.id = doc.id;
           resultStores.push({ store });
         });
+        
+      });
+      debugger;
         setStores(resultStores);
         setIsReloadStores(false);
-      });
     })();
 
     return () => {

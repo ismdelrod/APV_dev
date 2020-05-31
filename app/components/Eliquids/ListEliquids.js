@@ -165,11 +165,10 @@ const Eliquid = (props) => {
       .doc(eliquidId)
       .delete()
       .then(() => {
-        wait(2000).then(() => {
-          toastRef.current.show("E-liquid Eliminado!");
-          setIsLoading(false);
-          setIsReloadEliquids(true);
-        });
+        // wait(2000).then(() => {});
+        toastRef.current.show("E-liquid Eliminado!");
+        setIsLoading(false);
+        setIsReloadEliquids(true);
       })
       .catch((error) => {
         toastRef.current.show(

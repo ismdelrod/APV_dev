@@ -43,6 +43,11 @@ export default Eliquids = (props) => {
   const signOut = () => {
     firebase.auth().signOut();
   };
+  const wait = (timeout) => {
+    return new Promise((resolve) => {
+      setTimeout(resolve, timeout);
+    });
+  };
   //useEffectInfoUsuario
   useEffect(() => {
     firebase.auth().onAuthStateChanged((userInfo) => {
@@ -72,12 +77,13 @@ export default Eliquids = (props) => {
           eliquid.id = doc.id;
           resultEliquids.push({ eliquid: eliquid });
         });
-        setEliquids(resultEliquids);
-        setIsReloadEliquids(false);
       });
+      setEliquids(resultEliquids);
+      setIsReloadEliquids(false);
     })();
 
     return () => {
+      // wait(2000).then(() => {});
       updateList;
     };
   }, [isReloadEliquids]);
@@ -110,7 +116,7 @@ export default Eliquids = (props) => {
   };
   return (
     <View style={styles.viewBodyStyle}>
-       <NavigationEvents onWillFocus={() => setIsReloadEliquids(true)} />
+      <NavigationEvents onWillFocus={() => setIsReloadEliquids(true)} />
       <ListEliquids
         eliquids={eliquids}
         toastRef={toastRef}

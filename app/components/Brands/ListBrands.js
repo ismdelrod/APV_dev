@@ -164,11 +164,10 @@ const Brand = (props) => {
       .doc(brandId)
       .delete()
       .then(() => {
-        wait(2000).then(() => {
-          toastRef.current.show("Marca Eliminada!");
-          setIsLoading(false);
-          setIsReloadBrands(true);
-        });
+        // wait(2000).then(() => {});
+        toastRef.current.show("Marca Eliminada!");
+        setIsLoading(false);
+        setIsReloadBrands(true);
       })
       .catch((error) => {
         toastRef.current.show(

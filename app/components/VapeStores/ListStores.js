@@ -169,11 +169,10 @@ const Store = (props) => {
       .doc(storeId)
       .delete()
       .then(() => {
-        wait(2000).then(() => {
-          toastRef.current.show("Tienda Eliminada!");
-          setIsLoading(false);
-          setIsReloadStores(true);
-        });
+        // wait(2000).then(() => {});
+        toastRef.current.show("Tienda Eliminada!");
+        setIsLoading(false);
+        setIsReloadStores(true);
       })
       .catch((error) => {
         toastRef.current.show(
