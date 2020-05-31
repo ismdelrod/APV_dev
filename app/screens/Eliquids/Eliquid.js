@@ -28,7 +28,7 @@ import {
   ScrollView,
   RefreshControl,
 } from "react-native";
-import { Icon } from "react-native-elements";
+import { ListItem, Icon } from "react-native-elements";
 import StarRating from "react-native-star-rating";
 import CarouselImages from "../../components/Global/CarouselImages";
 import ListEliquidReviews from "../../components/Eliquids/ListEliquidReviews";
@@ -38,7 +38,7 @@ import { NavigationEvents } from "@react-navigation/compat";
 
 import Modal from "../../components/Global/Modal";
 import ChangeEliquidNameForm from "./ChangeEliquidNameForm";
-
+import ChangeEliquidBrandForm from "./ChangeEliquidBrandForm";
 
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
@@ -66,7 +66,8 @@ export default Eliquid = (props) => {
   const [userLogged, setUserLogged] = useState(false);
   const [rating, setRating] = useState(eliquid.rating);
   const [refreshing, setRefreshing] = useState(false);
-
+  const [brand, setBrand] = useState(null);
+  const [reloadBrand, setReloadBrand] = useState(false);
 
   const [isVisibleModal, setIsVisibleModal] = useState(false);
   const [renderComponent, setRenderComponent] = useState(null);
@@ -101,7 +102,7 @@ export default Eliquid = (props) => {
       setImagesEliquid(arrayImagesUrls);
       setIsReloadEliquids(true);
     })();
-  }, [isFavorite]);
+  }, [isFavorite, refreshing]);
 
   useEffect(() => {
     if (userLogged) {
@@ -117,6 +118,28 @@ export default Eliquid = (props) => {
     }
     setRefreshing(false);
   }, [imagesEliquid]);
+
+  //useEffectGetBrand
+  useEffect(() => {
+    db.collection("brands").get();
+
+    (async () => {
+      var docRef = db.collection("brands").doc(eliquid.brandId);
+      docRef
+        .get()
+        .then((doc) => {
+          if (doc.exists) {
+            let brand = doc.data();
+            brand.id = doc.id;
+            setBrand(brand);
+          }
+        })
+        .catch(() => {
+          toastRef.current.show("Error al intentar recuperar la Marca");
+        });
+      setReloadBrand(false);
+    })();
+  }, [reloadBrand]);
 
   const addFavorite = () => {
     if (userLogged) {
@@ -182,7 +205,22 @@ export default Eliquid = (props) => {
           />
         );
         setIsVisibleModal(true);
-        break;     
+        break;
+
+        case "displayModalChangeEliquidBrand":
+        setRenderComponent(
+          <ChangeEliquidBrandForm
+            setIsVisibleModal={setIsVisibleModal}
+            setIsReloadEliquid={setIsReloadEliquid}
+            setIsReloadEliquids={setIsReloadEliquids}
+            toastRef={toastRef}
+            eliquid={eliquid}
+            setUpdatedEliquid={setUpdatedEliquid}
+            setReloadBrand = {setReloadBrand}
+          />
+        );
+        setIsVisibleModal(true);
+        break;
       default:
         break;
     }
@@ -218,7 +256,17 @@ export default Eliquid = (props) => {
         setUpdatedEliquid={setUpdatedEliquid}
       />
 
-      {/* <EliquidInfo/> */}
+      <EliquidInfo
+        brandName={brand && brand.name}
+        toastRef={toastRef}
+        userIsAdmin={userIsAdmin}
+        renderComponent={renderComponent}
+        isVisibleModal={isVisibleModal}
+        setIsVisibleModal={setIsVisibleModal}
+        eliquid={eliquid}
+        setUpdatedEliquid={setUpdatedEliquid}
+        selectedComponent={selectedComponent}
+      />
       {renderComponent && (
         <Modal isVisible={isVisibleModal} setIsVisible={setIsVisibleModal}>
           {renderComponent}
@@ -287,44 +335,55 @@ const TitleEliquid = (props) => {
 };
 
 const EliquidInfo = (props) => {
-  // const { } = props;
-  // const listInfo = [
-  //   {
-  //     text: address,
-  //     iconName: "map-marker",
-  //     iconType: "material-community",
-  //     action: null,
-  //   },
-  //   {
-  //     text: "añadir nº teléfono al form",
-  //     iconName: "phone",
-  //     iconType: "material-community",
-  //     action: null,
-  //   },
-  //   {
-  //     text: "añadir email al form",
-  //     iconName: "at",
-  //     iconType: "material-community",
-  //     action: null,
-  //   },
-  // ];
-  // return (
-  //   <View style={styles.viewInfoEliquidStyle}>
-  //     <Text style={styles.storeInfoTitleStyle}>Info sobre el E-liquid</Text>
-  //     {listInfo.map((item, index) => (
-  //       <ListItem
-  //         key={index}
-  //         title={item.text}
-  //         leftIcon={{
-  //           name: item.iconName,
-  //           type: item.iconType,
-  //           color: "#00a680",
-  //         }}
-  //         containerStyle={styles.containerListItemStyle}
-  //       />
-  //     ))}
-  //   </View>
-  // );
+  const {
+    brandName,
+    toastRef,
+    userIsAdmin,
+    renderComponent,
+    isVisibleModal,
+    setIsVisibleModal,
+    eliquid,
+    setUpdatedEliquid,
+    selectedComponent,
+  } = props;
+  const listInfo = [
+    {
+      name: "brand",
+      text: brandName,
+      iconName: "copyright",
+      iconType: "material-community",
+      action: null,
+    },
+  ];
+  return (
+    <View style={styles.viewInfoEliquidStyle}>
+      <Text style={styles.storeInfoTitleStyle}>Info sobre el E-liquid</Text>
+      {listInfo.map((item, index) => (
+        <ListItem
+          key={index}
+          title={item.text}
+          leftIcon={{
+            name: item.iconName,
+            type: item.iconType,
+            color: "#00a680",
+          }}
+          containerStyle={styles.containerListItemStyle}
+          onLongPress={
+            item.name === "brand"
+              ? () =>
+                  userIsAdmin &&
+                  selectedComponent(
+                    "displayModalChangeEliquidBrand",
+                    brandName,
+                    eliquid,
+                    setUpdatedEliquid
+                  )
+              : () => {}
+          }
+        />
+      ))}
+    </View>
+  );
 };
 const styles = StyleSheet.create({
   viewBodyStyle: {
@@ -365,5 +424,10 @@ const styles = StyleSheet.create({
   containerListItemStyle: {
     borderBottomColor: "#d8d8d8",
     borderBottomWidth: 1,
+  },
+  storeInfoTitleStyle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
   },
 });

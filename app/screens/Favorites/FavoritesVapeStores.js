@@ -193,7 +193,7 @@ const Store = (props) => {
               setIsVisibleLoading(false);
               setReloadStores(true);
               toastRef.current.show("Eliminado de Favoritos");
-              navigation.navigate("VapeStores");
+              navigation.navigate("FavoritesVapeStores");
             })
             .catch(() => {
               toastRef.current.show(

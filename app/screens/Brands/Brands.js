@@ -60,6 +60,7 @@ export default Brands = (props) => {
     (async () => {
       const resultBrands = [];
 
+      debugger;
       const listBrands = db
         .collection("brands")
         .orderBy("createAt", "desc")

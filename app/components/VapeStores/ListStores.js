@@ -58,7 +58,6 @@ export default ListStores = (props) => {
 
   //useEffect encargado de actualizar el elemento de la lista justo después de sufrir un cambio (update)
   useEffect(() => {
-    debugger;
     if (isReloadStore) {
       setIsReloadStore(false);
       navigation.navigate("VapeStore", {

@@ -33,7 +33,6 @@ import StarRating from "react-native-star-rating";
 import CarouselImages from "../../components/Global/CarouselImages";
 import { GeneralTypeEnum } from "../../utils/Enumerations";
 import Toast from "react-native-easy-toast";
-import { NavigationEvents } from "@react-navigation/compat";
 
 import Modal from "../../components/Global/Modal";
 import ChangeBrandNameForm from "./ChangeBrandNameForm";
@@ -50,7 +49,7 @@ const wait = (timeout) => {
 };
 
 export default Brand = (props) => {
-  const { navigation, route } = props;
+  const { route } = props;
   const {
     brand,
     userIsAdmin,
@@ -73,6 +72,7 @@ export default Brand = (props) => {
   });
 
   const onRefresh = useCallback(() => {
+    debugger;
     setRefreshing(true);
     wait(2000).then(() => {
       setRefreshing(false);
@@ -95,7 +95,7 @@ export default Brand = (props) => {
       );
       setImagesBrand(arrayImagesUrls);
     })();
-  }, []);
+  }, [refreshing]);
 
   const selectedComponent = (key, text, brand, setUpdatedBrand) => {
     switch (key) {
@@ -125,7 +125,6 @@ export default Brand = (props) => {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
     >
-      <NavigationEvents onWillFocus={() => setRefreshing(true)} />
       <CarouselImages images={imagesBrand} width={screesWidth} height={200} />
 
       <TitleBrand

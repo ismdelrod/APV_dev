@@ -33,7 +33,6 @@ export default ChangeStorePhoneForm = (props) => {
           phoneNumber: "El Teléfono introducido no tiene un formato válido",
         });
       } else {
-        debugger;
         setIsLoading(true);
         db.collection("stores")
           .doc(store.id)

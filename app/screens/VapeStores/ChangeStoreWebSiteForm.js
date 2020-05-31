@@ -33,7 +33,6 @@ export default ChangeStoreWebSiteForm = (props) => {
           webSite: "La Dirección Web introducida no tiene un formato válido",
         });
       } else {
-        debugger;
         setIsLoading(true);
         db.collection("stores")
           .doc(store.id)

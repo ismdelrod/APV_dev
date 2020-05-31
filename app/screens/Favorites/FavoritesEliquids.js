@@ -146,6 +146,7 @@ const Eliquid = (props) => {
   const [updatedEliquid, setUpdatedEliquid] = useState(null);
   const [isReloadEliquids, setIsReloadEliquids] = useState(false);
   const [isReloadEliquid, setIsReloadEliquid] = useState(false);
+  
   useEffect(() => {
     const image = images[0];
     firebase
@@ -155,7 +156,7 @@ const Eliquid = (props) => {
       .then((response) => {
         setImageEliquid(response);
       });
-  }, []);
+  }, [images]);
 
   const confirmRemoveFavorite = () => {
     Alert.alert(
@@ -189,10 +190,11 @@ const Eliquid = (props) => {
             .doc(idFavorite)
             .delete()
             .then(() => {
+              debugger;
               setIsVisibleLoading(false);
               setReloadEliquids(true);
               toastRef.current.show("Eliminado de Favoritos");
-              navigation.navigate("Eliquids");
+              navigation.navigate("FavoritesEliquids");
             })
             .catch(() => {
               toastRef.current.show(

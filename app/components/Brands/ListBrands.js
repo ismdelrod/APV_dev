@@ -55,10 +55,9 @@ export default ListBrands = (props) => {
 
   //useEffect encargado de actualizar el elemento de la lista justo después de sufrir un cambio (update)
   useEffect(() => {
-    debugger;
     if (isReloadBrand) {
       setIsReloadBrand(false);
-      navigation.navigate("VapeBrand", {
+      navigation.navigate("Brand", {
         brand: updatedBrand,
         userIsAdmin: userIsAdmin,
         setIsReloadBrands: setIsReloadBrands,

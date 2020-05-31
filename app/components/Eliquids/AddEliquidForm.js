@@ -10,7 +10,7 @@ console.warn = (message) => {
 };
 //********************************************************** */
 
-import React, { useState } from "react"; // useState, useEffect son Hooks
+import React, { useState, useEffect  } from "react"; // useState, useEffect son Hooks
 import {
   StyleSheet,
   View,
@@ -35,12 +35,28 @@ export default AddEliquidForm = (props) => {
   const [brandId, setBrandId] = useState("");
   const [eliquidName, setEliquidName] = useState("");
   const [eliquidDescription, setEliquidDescription] = useState("");
+  const [brands, setBrands] = useState([]);
 
-  const brands = [
-    { id: "4fdsafvcsdddf", name: "Vampire Vape" },
-    { id: "5dfgvdsgffcds", name: "King Crest" },
-    { id: "6fdsfvsfdsffd", name: "Five Powns" },
-  ];
+  useEffect(() => {
+    (async () => {
+      const resultBrands = [];
+
+      const listBrands = db
+        .collection("brands")
+        .orderBy("name", "desc");
+
+      await listBrands.get().then((response) => {
+
+        response.forEach((doc) => {
+          let brand = doc.data();
+          brand.id = doc.id;
+          resultBrands.push({ brand: brand });
+        });
+        setBrands(resultBrands);
+        console.log(brands);
+      });
+    })();
+  }, []);
 
   const addEliquid = () => {
     if (!eliquidName || !eliquidDescription) {
@@ -57,7 +73,7 @@ export default AddEliquidForm = (props) => {
             images: arrayImages,
             rating: 0,
             ratingTotal: 0,
-                        quantityVoting: 0,
+            quantityVoting: 0,
             createAt: new Date(),
             createBy: firebase.auth().currentUser.uid,
             isActive: true,
@@ -223,7 +239,7 @@ const FormAdd = (props) => {
         }}
       >
         {brands.map((brnd, index) => (
-          <Picker.Item key={index} label={brnd.name} value={brnd.id} />
+          <Picker.Item key={index} label={brnd.brand.name} value={brnd.brand.id} />
         ))}
       </Picker>
     </View>
