@@ -190,7 +190,6 @@ const Eliquid = (props) => {
             .doc(idFavorite)
             .delete()
             .then(() => {
-              debugger;
               setIsVisibleLoading(false);
               setReloadEliquids(true);
               toastRef.current.show("Eliminado de Favoritos");

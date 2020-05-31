@@ -53,7 +53,6 @@ export default AddEliquidForm = (props) => {
           resultBrands.push({ brand: brand });
         });
         setBrands(resultBrands);
-        console.log(brands);
       });
     })();
   }, []);

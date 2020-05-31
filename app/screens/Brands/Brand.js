@@ -72,7 +72,6 @@ export default Brand = (props) => {
   });
 
   const onRefresh = useCallback(() => {
-    debugger;
     setRefreshing(true);
     wait(2000).then(() => {
       setRefreshing(false);

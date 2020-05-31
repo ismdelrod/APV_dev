@@ -59,7 +59,6 @@ export default ListEliquids = (props) => {
   //useEffect encargado de actualizar el elemento de la lista justo después de sufrir un cambio (update)
   useEffect(() => {
     if (isReloadEliquid) {
-      debugger;
       setIsReloadEliquid(false);
       navigation.navigate("Eliquid", {
         eliquid: updatedEliquid,

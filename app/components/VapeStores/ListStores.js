@@ -62,7 +62,6 @@ export default ListStores = (props) => {
   //useEffect encargado de actualizar el elemento de la lista justo después de sufrir un cambio (update)
   useEffect(() => {
     if (isReloadStore) {
-      debugger;
       setIsReloadStore(false);
       navigation.navigate("VapeStore", {
         store: updatedStore,
@@ -201,7 +200,6 @@ const Store = (props) => {
     // if (imagesArray.length > 0) {
 
     //   imagesArray.forEach(async (image) => {
-    //   debugger;
     //   const response = await fetch(image);
     //   const blob = await response.blob();
     //   const ref = firebase.storage().ref("stores-images").child(`avatar/${nameImage}`);;
