@@ -151,12 +151,12 @@ const Brand = (props) => {
     );
   };
 
-  const removeBrand = () => {
+  const removeBrand = async() => {
     let brandId = brand.item.brand.id;
     let imagesArray = brand.item.brand.images;
     setIsLoading(true);
     //Elimina el Marca
-    db.collection("brands")
+    await db.collection("brands")
       .doc(brandId)
       .delete()
       .then(() => {
@@ -170,7 +170,7 @@ const Brand = (props) => {
         );
       });
     //Elimina los Favoritos asociados el Marca
-    db.collection("favorites")
+    await db.collection("favorites")
       .where("idFavorite", "==", brandId)
       .get()
       .then((response) => {
@@ -180,12 +180,7 @@ const Brand = (props) => {
             db.collection("favorites")
               .doc(idFavorite)
               .delete()
-              .then(() => {
-                toastRef.current.show(
-                  "Eliminados los Favoritos asociados la Marca: " +
-                    brandName
-                );
-              })
+              .then(() => {})
               .catch(() => {});
           });
         }

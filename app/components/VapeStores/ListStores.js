@@ -155,12 +155,12 @@ const Store = (props) => {
     );
   };
 
-  const removeStore = () => {
+  const removeStore = async () => {
     let storeId = store.item.store.id;
     let imagesArray = store.item.store.images;
     setIsLoading(true);
     //Elimina la Tienda
-    db.collection("stores")
+    await db.collection("stores")
       .doc(storeId)
       .delete()
       .then(() => {
@@ -174,7 +174,7 @@ const Store = (props) => {
         );
       });
     //Elimina los Favoritos asociados a la Tienda
-    db.collection("favorites")
+    await db.collection("favorites")
       .where("idFavorite", "==", storeId)
       .get()
       .then((response) => {
@@ -184,11 +184,7 @@ const Store = (props) => {
             db.collection("favorites")
               .doc(idFavorite)
               .delete()
-              .then(() => {
-                toastRef.current.show(
-                  "Eliminados los Favoritos asociados a la Tienda: " + storeName
-                );
-              })
+              .then(() => {})
               .catch(() => {});
           });
         }

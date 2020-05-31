@@ -151,12 +151,12 @@ const Eliquid = (props) => {
     );
   };
 
-  const removeEliquid = () => {
+  const removeEliquid = async() => {
     let eliquidId = eliquid.item.eliquid.id;
     let imagesArray = eliquid.item.eliquid.images;
     setIsLoading(true);
     //Elimina el E-liquid
-    db.collection("eliquids")
+    await db.collection("eliquids")
       .doc(eliquidId)
       .delete()
       .then(() => {
@@ -170,7 +170,7 @@ const Eliquid = (props) => {
         );
       });
     //Elimina los Favoritos asociados el E-liquid
-    db.collection("favorites")
+    await db.collection("favorites")
       .where("idFavorite", "==", eliquidId)
       .get()
       .then((response) => {
@@ -180,12 +180,7 @@ const Eliquid = (props) => {
             db.collection("favorites")
               .doc(idFavorite)
               .delete()
-              .then(() => {
-                toastRef.current.show(
-                  "Eliminados los Favoritos asociados el E-liquid: " +
-                    eliquidName
-                );
-              })
+              .then(() => {})
               .catch(() => {});
           });
         }
