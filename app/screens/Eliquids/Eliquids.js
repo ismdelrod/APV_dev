@@ -39,6 +39,9 @@ export default Eliquids = (props) => {
   const [isReloadEliquid, setIsReloadEliquid] = useState(false);
   const limitEliquids = 8;
   const toastRef = useRef();
+  const signOut = () => {
+    firebase.auth().signOut();
+  };
   //useEffectInfoUsuario
   useEffect(() => {
     firebase.auth().onAuthStateChanged((userInfo) => {
@@ -54,9 +57,8 @@ export default Eliquids = (props) => {
         setTotalEliquids(snap.size);
       });
 
-    (async () => {
+    const updateList = (async () => {
       const resultEliquids = [];
-
       const listEliquids = db
         .collection("eliquids")
         .orderBy("createAt", "desc")
@@ -71,9 +73,13 @@ export default Eliquids = (props) => {
           resultEliquids.push({ eliquid: eliquid });
         });
         setEliquids(resultEliquids);
+        setIsReloadEliquids(false);
       });
     })();
-    setIsReloadEliquids(false);
+
+    return () => {
+      updateList;
+    };
   }, [isReloadEliquids]);
 
   const handleLoadMore = async () => {

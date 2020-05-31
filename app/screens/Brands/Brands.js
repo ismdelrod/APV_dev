@@ -1,10 +1,10 @@
 // TO DO: Soluciona problema al cargar imagenes en ciertas versiones de firebase
-import {decode, encode} from 'base-64'
+import { decode, encode } from "base-64";
 if (!global.btoa) {
-    global.btoa = encode;
+  global.btoa = encode;
 }
 if (!global.atob) {
-    global.atob = decode;
+  global.atob = decode;
 }
 //****************************************************************************** */
 // TO DO: Para Evitar los Warnings sobre el componente ActionButton
@@ -28,7 +28,6 @@ import Loading from "../../components/Global/Loading";
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
 
-
 export default Brands = (props) => {
   const { navigation } = props;
   const [user, setUser] = useState(null);
@@ -50,8 +49,6 @@ export default Brands = (props) => {
     });
   }, []);
 
-
-
   //useEffectGetBrands
   useEffect(() => {
     db.collection("brands")
@@ -60,7 +57,7 @@ export default Brands = (props) => {
         setTotalBrands(snap.size);
       });
 
-    (async () => {
+    const updateList = (async () => {
       const resultBrands = [];
       const listBrands = db
         .collection("brands")
@@ -76,13 +73,16 @@ export default Brands = (props) => {
           resultBrands.push({ brand: brand });
         });
         setBrands(resultBrands);
+        setIsReloadBrands(false);
       });
     })();
-    setIsReloadBrands(false);
+
+    return () => {
+      updateList;
+    };
   }, [isReloadBrands]);
 
-
-  const validateAdmin = (user)=> {
+  const validateAdmin = (user) => {
     if (user) {
       const resultUsers = [];
       const idUser = user.uid;
@@ -90,8 +90,7 @@ export default Brands = (props) => {
         .where("uid", "==", idUser)
         .get()
         .then((response) => {
-
-          if(response.docs.length > 0){
+          if (response.docs.length > 0) {
             response.forEach((doc) => {
               let user_role = doc.data();
               resultUsers.push({ user_role });
@@ -142,11 +141,16 @@ export default Brands = (props) => {
         navigation={navigation}
         setIsReloadBrands={setIsReloadBrands}
         setIsReloadBrand={setIsReloadBrand}
-        isReloadBrand = {isReloadBrand}
+        isReloadBrand={isReloadBrand}
       />
       <Toast ref={toastRef} position="center" opacity={1} />
       <Loading text="Cargando" isVisible={isLoading} />
-      {(user && userIsAdmin) && <AddBrandButton navigation={navigation} setIsReloadBrands={setIsReloadBrands} />}
+      {user && userIsAdmin && (
+        <AddBrandButton
+          navigation={navigation}
+          setIsReloadBrands={setIsReloadBrands}
+        />
+      )}
     </View>
   );
 };
@@ -156,7 +160,7 @@ AddBrandButton = (props) => {
   return (
     <ActionButton
       buttonColor="#00a680"
-      onPress={() => navigation.navigate("AddBrand",{setIsReloadBrands})}
+      onPress={() => navigation.navigate("AddBrand", { setIsReloadBrands })}
     />
   );
 };

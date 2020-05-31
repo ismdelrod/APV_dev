@@ -1,10 +1,10 @@
 // TO DO: Soluciona problema al cargar imagenes en ciertas versiones de firebase
-import {decode, encode} from 'base-64'
+import { decode, encode } from "base-64";
 if (!global.btoa) {
-    global.btoa = encode;
+  global.btoa = encode;
 }
 if (!global.atob) {
-    global.atob = decode;
+  global.atob = decode;
 }
 //****************************************************************************** */
 // TO DO: Para Evitar los Warnings sobre el componente ActionButton
@@ -27,7 +27,6 @@ import Toast from "react-native-easy-toast";
 import Loading from "../../components/Global/Loading";
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
-
 
 export default VapeStores = (props) => {
   const { navigation } = props;
@@ -56,7 +55,7 @@ export default VapeStores = (props) => {
         setTotalStores(snap.size);
       });
 
-    (async () => {
+    const updateList = (async () => {
       const resultStores = [];
 
       const listStores = db
@@ -73,9 +72,13 @@ export default VapeStores = (props) => {
           resultStores.push({ store });
         });
         setStores(resultStores);
+        setIsReloadStores(false);
       });
     })();
-    setIsReloadStores(false);
+
+    return () => {
+      updateList;
+    };
   }, [isReloadStores]);
 
   const handleLoadMore = async () => {
@@ -115,11 +118,16 @@ export default VapeStores = (props) => {
         navigation={navigation}
         setIsReloadStores={setIsReloadStores}
         setIsReloadStore={setIsReloadStore}
-        isReloadStore = {isReloadStore}
+        isReloadStore={isReloadStore}
       />
       <Toast ref={toastRef} position="center" opacity={1} />
       <Loading text="Cargando" isVisible={isLoading} />
-      {user && <AddVapeStoreButton navigation={navigation} setIsReloadStores={setIsReloadStores} />}
+      {user && (
+        <AddVapeStoreButton
+          navigation={navigation}
+          setIsReloadStores={setIsReloadStores}
+        />
+      )}
     </View>
   );
 };
@@ -129,7 +137,7 @@ AddVapeStoreButton = (props) => {
   return (
     <ActionButton
       buttonColor="#00a680"
-      onPress={() => navigation.navigate("AddVapeStore",{setIsReloadStores})}
+      onPress={() => navigation.navigate("AddVapeStore", { setIsReloadStores })}
     />
   );
 };
