@@ -12,12 +12,14 @@ export default TopVapeStores = (props) => {
   const [reloadTop, setReloadTop] = useState(false);
   const toastRef = useRef();
 
-  useEffect(() => {
+  useEffect( () => {
+    setStores([]);
     db.collection("stores")
     .orderBy("rating", "desc")
     .limit(5)
     .get()
     .then((response) => {
+
       const storesArray = [];
       response.forEach((doc) => {
         let store = doc.data();

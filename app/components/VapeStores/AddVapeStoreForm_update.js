@@ -1,4 +1,4 @@
-// TO DO:  Para Evitar los Warnings sobre el componente ActionButton
+// TO DELETE:  Para Evitar los Warnings sobre el componente ActionButton
 import { YellowBox } from "react-native";
 import _ from "lodash";
 YellowBox.ignoreWarnings(["Setting a timer"]);

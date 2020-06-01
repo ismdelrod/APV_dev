@@ -13,6 +13,7 @@ export default TopEliquids = (props) => {
   const toastRef = useRef();
 
   useEffect(() => {
+    setEliquids([]);
     db.collection("eliquids")
     .orderBy("rating", "desc")
     .limit(5)

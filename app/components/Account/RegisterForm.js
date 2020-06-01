@@ -31,7 +31,7 @@ RegisterForm = (props) => {
   const [isVisibleLoading, setIsVisibleLoading] = useState(false);
 
   //Eventos botones
-  // TO DO: Añadir validación para email ya registrado y habilitar deshabilitar campos según se complete el anterior
+  // TO DO: Añadir validación para email ya registrado
   const btnRegisterOnPress = async () => {
     const resultEmailValidation = validateEmail(email);
     const resultPasswordValidation = validatePassword(password);

@@ -52,7 +52,6 @@ export default ListTopEliquids = (props) => {
     />
   );
 };
-//TO DO: Al añadir nuevos votos en una Tienda, se actualizan los textos del Ranking pero no lo hacen las imagenes
 const Eliquids = (props) => {
   const { eliquid, navigation, userIsAdmin } = props;
   const { name, description, images, rating } = eliquid.item;

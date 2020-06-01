@@ -51,11 +51,9 @@ export default ListTopVapeStores = (props) => {
     />
   );
 };
-//TO DO: Al añadir nuevos votos en una Tienda, se actualizan los textos del Ranking pero no lo hacen las imagenes
 const Stores = (props) => {
   const { store, navigation, userIsAdmin } = props;
   const { name, description, images, rating } = store.item;
-
   const [imageStore, setImageStore] = useState(null);
   const [iconColor, setIconColor] = useState("#000");
 

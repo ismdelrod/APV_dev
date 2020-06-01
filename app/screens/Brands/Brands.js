@@ -1,4 +1,4 @@
-// TO DO: Soluciona problema al cargar imagenes en ciertas versiones de firebase
+// TO DELETE: Soluciona problema al cargar imagenes en ciertas versiones de firebase
 import { decode, encode } from "base-64";
 if (!global.btoa) {
   global.btoa = encode;
@@ -7,7 +7,7 @@ if (!global.atob) {
   global.atob = decode;
 }
 //****************************************************************************** */
-// TO DO: Para Evitar los Warnings sobre el componente ActionButton
+// TO DELETE: Para Evitar los Warnings sobre el componente ActionButton
 import { YellowBox, RefreshControl, View, StyleSheet, ScrollView } from "react-native";
 import _ from "lodash";
 YellowBox.ignoreWarnings(["componentWillReceiveProps"]);
@@ -64,6 +64,7 @@ export default Brands = (props) => {
 
   //useEffectGetBrands
   useEffect(() => {
+    setBrands([]);
     setIsReloadBrands(false);
     db.collection("brands")
       .get()
@@ -90,7 +91,6 @@ export default Brands = (props) => {
     })();
     
     return () => {
-      debugger;
       updateList;
     };
   }, [isReloadBrands]);

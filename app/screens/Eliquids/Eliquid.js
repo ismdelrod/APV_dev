@@ -1,5 +1,5 @@
 //****************************************************************************** */
-// TO DO: Para Evitar los Warnings
+// TO DELETE: Para Evitar los Warnings
 import { YellowBox } from "react-native";
 import _ from "lodash";
 
@@ -51,7 +51,6 @@ const wait = (timeout) => {
 };
 
 export default Eliquid = (props) => {
-  // TO DO: Falta refrescar la Eliquid cuando se elimina de favoritos(desde favoritos).
 
   const { navigation, route } = props;
   const {
@@ -113,6 +112,8 @@ export default Eliquid = (props) => {
         .then((response) => {
           if (response.docs.length === 1) {
             setIsFavorite(true);
+          }else{
+            setIsFavorite(false);
           }
         });
     }
@@ -233,7 +234,7 @@ export default Eliquid = (props) => {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
     >
-      <NavigationEvents onWillFocus={() => setRefreshing(true)} />
+      <NavigationEvents onWillFocus={onRefresh} />
       <View style={styles.viewFavoriteStyle}>
         <Icon
           type="material-community"

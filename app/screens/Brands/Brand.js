@@ -1,5 +1,5 @@
 //****************************************************************************** */
-// TO DO: Para Evitar los Warnings
+// TO DELETE: Para Evitar los Warnings
 import { YellowBox } from "react-native";
 import _ from "lodash";
 

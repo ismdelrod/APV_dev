@@ -1,4 +1,4 @@
-// TO DO: Soluciona problema al cargar imagenes en ciertas versiones de firebase
+// TO DELETE: Soluciona problema al cargar imagenes en ciertas versiones de firebase
 import { decode, encode } from "base-64";
 if (!global.btoa) {
   global.btoa = encode;
@@ -7,7 +7,7 @@ if (!global.atob) {
   global.atob = decode;
 }
 //****************************************************************************** */
-// TO DO: Para Evitar los Warnings sobre el componente ActionButton
+// TO DELETE: Para Evitar los Warnings sobre el componente ActionButton
 import {
   YellowBox,
   RefreshControl,
@@ -67,13 +67,15 @@ export default Eliquids = (props) => {
 
   //useEffectGetEliquids
   useEffect(() => {
+    setEliquids([]);
     setIsReloadEliquids(false);
     db.collection("eliquids")
       .get()
       .then((snap) => {
         setTotalEliquids(snap.size);
       });
-    const updateList = (async () => {
+    
+      const updateList = (async () => {
       const resultEliquids = [];
       const listEliquids = db
         .collection("eliquids")

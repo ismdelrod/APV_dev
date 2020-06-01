@@ -20,7 +20,7 @@ LoginForm = (props) => {
   const [isVisibleLoading, setIsVisibleLoading] = useState(false);
 
   //Eventos botones
-  // TO DO: Añadir validación para email ya registrado y validar la seguridad del password
+  // TO DO: Añadir validación para email ya registrado
   const btnLoginOnPress = async () => {
 
     setIsVisibleLoading(true);

@@ -13,7 +13,7 @@ export default ChangeEmailForm = props => {
   const [error, setError] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
-  // TO DO: Añadir validación para email ya registrado  y validar la seguridad del password
+  // TO DO: Añadir validación para email ya registrado
   const updateEmail = () => {
     setError({});
 

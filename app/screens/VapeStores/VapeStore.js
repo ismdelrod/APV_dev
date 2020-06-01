@@ -1,5 +1,5 @@
 //****************************************************************************** */
-// TO DO: Para Evitar los Warnings
+// TO DELETE: Para Evitar los Warnings
 import { YellowBox } from "react-native";
 import _ from "lodash";
 
@@ -57,7 +57,6 @@ const wait = (timeout) => {
 };
 
 export default VapeStore = (props) => {
-  // TO DO: Falta refrescar la VapeStore cuando se elimina de favoritos(desde favoritos).
 
   const { navigation, route } = props;
   const {
@@ -117,6 +116,8 @@ export default VapeStore = (props) => {
         .then((response) => {
           if (response.docs.length === 1) {
             setIsFavorite(true);
+          }else{
+            setIsFavorite(false);
           }
         });
     }
@@ -256,7 +257,7 @@ export default VapeStore = (props) => {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
     >
-      <NavigationEvents onWillFocus={() => setRefreshing(true)} />
+      <NavigationEvents onWillFocus={onRefresh} />
       <View style={styles.viewFavoriteStyle}>
         <Icon
           type="material-community"
@@ -483,7 +484,6 @@ const StoreInfo = (props) => {
   );
 };
 
-//TO DO: Comprobar si es necesario otorgar permisos para abrir aplicación de llamadas o Navegador o App de Correo
 const openAppCall = (phone, toastRef) => {
   if (typeof phone !== "undefined" && phone.trim() !== "") {
     let phoneNumber = phone;

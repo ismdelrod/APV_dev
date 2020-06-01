@@ -5,10 +5,10 @@ import * as firebase from "firebase";
 import { reauthenticate } from "../../utils/Api";
 import {
   validatePassword,
-  validatePasswordConfirmationIsOK
+  validatePasswordConfirmationIsOK,
 } from "../../utils/Validation";
 
-export default ChangePasswordForm = props => {
+export default ChangePasswordForm = (props) => {
   const { setIsVisibleModal, toastRef } = props;
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -19,7 +19,6 @@ export default ChangePasswordForm = props => {
   const [hideNewPassword, setHideNewPassword] = useState(true);
   const [hideNewPasswordRepeat, setHideNewPasswordRepeat] = useState(true);
 
-  // TO DO: Validar la seguridad del password
   const updatePassword = () => {
     setError({});
 
@@ -32,34 +31,47 @@ export default ChangePasswordForm = props => {
 
       setError(objError);
     } else {
-      if (!validatePasswordConfirmationIsOK(newPassword, newPasswordRepeat)) {
+      if (!validatePassword(newPassword)) {
         setError({
-          newPassword: "Las nuevas Contraseñas deben ser idénticas.",
-          newPasswordRepeat: "Las nuevas Contraseñas deben ser idénticas."
+          newPassword:
+            "Mínimo 6 caracteres, máximo 15. Al menos una mayúscula, una minúscula, un dígito, un caracter especial y sin espacios en blanco",
         });
       } else {
-        setIsLoading(true);
-
-        reauthenticate(password)
-          .then(() => {
-            firebase
-              .auth()
-              .currentUser.updatePassword(newPassword)
-              .then(() => {
-                setIsLoading(false);
-                toastRef.current.show("Contraseña actualizada correctamente.");
-                setIsVisibleModal(false);
-                // firebase.auth().signOut();
-              })
-              .catch(() => {
-                setError({ general: "Error al intentar actualizar Contraseña." });
-                setIsLoading(false);
-              });
-          })
-          .catch(() => {
-            setError({ password: "La Contraseña introducida no es correcta." });
-            setIsLoading(false);
+        if (!validatePasswordConfirmationIsOK(newPassword, newPasswordRepeat)) {
+          setError({
+            newPassword: "Las nuevas Contraseñas deben ser idénticas.",
+            newPasswordRepeat: "Las nuevas Contraseñas deben ser idénticas.",
           });
+        } else {
+          setIsLoading(true);
+
+          reauthenticate(password)
+            .then(() => {
+              firebase
+                .auth()
+                .currentUser.updatePassword(newPassword)
+                .then(() => {
+                  setIsLoading(false);
+                  toastRef.current.show(
+                    "Contraseña actualizada correctamente."
+                  );
+                  setIsVisibleModal(false);
+                  firebase.auth().signOut();
+                })
+                .catch(() => {
+                  setError({
+                    general: "Error al intentar actualizar Contraseña.",
+                  });
+                  setIsLoading(false);
+                });
+            })
+            .catch(() => {
+              setError({
+                password: "La Contraseña introducida no es correcta.",
+              });
+              setIsLoading(false);
+            });
+        }
       }
     }
   };
@@ -71,12 +83,12 @@ export default ChangePasswordForm = props => {
         containerStyle={styles.inputContainerStyle}
         passwordRules={true}
         secureTextEntry={hidePassword}
-        onChange={e => setPassword(e.nativeEvent.text)}
+        onChange={(e) => setPassword(e.nativeEvent.text)}
         rightIcon={{
           type: "material-community",
           name: hidePassword ? "eye-outline" : "eye-off-outline",
           color: "#c2c2c2",
-          onPress: () => setHidePassword(!hidePassword)
+          onPress: () => setHidePassword(!hidePassword),
         }}
         errorMessage={error.password}
       />
@@ -86,12 +98,12 @@ export default ChangePasswordForm = props => {
         containerStyle={styles.inputContainerStyle}
         passwordRules={true}
         secureTextEntry={hideNewPassword}
-        onChange={e => setNewPassword(e.nativeEvent.text)}
+        onChange={(e) => setNewPassword(e.nativeEvent.text)}
         rightIcon={{
           type: "material-community",
           name: hideNewPassword ? "eye-outline" : "eye-off-outline",
           color: "#c2c2c2",
-          onPress: () => setHideNewPassword(!hideNewPassword)
+          onPress: () => setHideNewPassword(!hideNewPassword),
         }}
         errorMessage={error.newPassword}
       />
@@ -101,12 +113,12 @@ export default ChangePasswordForm = props => {
         containerStyle={styles.inputContainerStyle}
         passwordRules={true}
         secureTextEntry={hideNewPasswordRepeat}
-        onChange={e => setNewPasswordRepeat(e.nativeEvent.text)}
+        onChange={(e) => setNewPasswordRepeat(e.nativeEvent.text)}
         rightIcon={{
           type: "material-community",
           name: hideNewPasswordRepeat ? "eye-outline" : "eye-off-outline",
           color: "#c2c2c2",
-          onPress: () => setHideNewPasswordRepeat(!hideNewPasswordRepeat)
+          onPress: () => setHideNewPasswordRepeat(!hideNewPasswordRepeat),
         }}
         errorMessage={error.newPasswordRepeat}
       />
@@ -127,16 +139,16 @@ const styles = StyleSheet.create({
   viewStyle: {
     alignItems: "center",
     paddingTop: 10,
-    paddingBottom: 10
+    paddingBottom: 10,
   },
   inputContainerStyle: {
-    marginBottom: 10
+    marginBottom: 10,
   },
   btnContainerStyle: {
     marginTop: 20,
-    width: "95%"
+    width: "95%",
   },
   btnStyle: {
-    backgroundColor: "#00a680"
-  }
+    backgroundColor: "#00a680",
+  },
 });
