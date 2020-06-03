@@ -67,15 +67,16 @@ export default VapeStores = (props) => {
 
   //useEffectGetStores
   useEffect(() => {
-    setStores([]);
-    setIsReloadStores(false);
-    db.collection("stores")
-      .get()
-      .then((snap) => {
-        setTotalStores(snap.size);
-      });
-    
-      const updateList = (async () => {
+    let mounted = true;
+    const updateList = (async () => {
+      mounted && setStores([]);
+      mounted && setIsReloadStores(false);
+      await db.collection("stores")
+        .get()
+        .then((snap) => {
+          mounted && setTotalStores(snap.size);
+        });
+
       const resultStores = [];
       const listStores = db
         .collection("stores")
@@ -83,19 +84,20 @@ export default VapeStores = (props) => {
         .limit(limitStores);
 
       await listStores.get().then((response) => {
-        setStartStores(response.docs[response.docs.length - 1]);
+        mounted && setStartStores(response.docs[response.docs.length - 1]);
 
         response.forEach((doc) => {
           let store = doc.data();
           store.id = doc.id;
           resultStores.push({ store });
         });
-        setStores(resultStores);
+        mounted && setStores(resultStores);
       });
     })();
 
-    return () => {
+    return function cleanup() {
       updateList;
+      mounted = false;
     };
   }, [isReloadStores]);
 

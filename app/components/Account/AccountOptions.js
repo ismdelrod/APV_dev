@@ -6,7 +6,7 @@ import ChangeDisplayNameForm from "./ChangeDisplayNameForm";
 import ChangeEmailForm from "./ChangeEmailForm";
 import ChangePasswordForm from "./ChangePasswordForm";
 
-export default AccountOptions = props => {
+export default AccountOptions = (props) => {
   const { userInfo, setReloadData, toastRef } = props;
   const [isVisibleModal, setIsVisibleModal] = useState(false);
   const [renderComponent, setRenderComponent] = useState(null);
@@ -19,7 +19,7 @@ export default AccountOptions = props => {
       iconColorLeft: "#ccc",
       iconNameRight: "chevron-right",
       iconColorRight: "#ccc",
-      onLongPress: () => selectedComponent("displayModalChangeName")
+      onPress: () => selectedComponent("displayModalChangeName"),
     },
     {
       title: "Cambiar Email",
@@ -28,7 +28,7 @@ export default AccountOptions = props => {
       iconColorLeft: "#ccc",
       iconNameRight: "chevron-right",
       iconColorRight: "#ccc",
-      onPress: () => selectedComponent("displayModalChangeEmail")
+      onPress: () => selectedComponent("displayModalChangeEmail"),
     },
     {
       title: "Cambiar Contraseña",
@@ -37,11 +37,11 @@ export default AccountOptions = props => {
       iconColorLeft: "#ccc",
       iconNameRight: "chevron-right",
       iconColorRight: "#ccc",
-      onPress: () => selectedComponent("displayModalChangePassword")
-    }
+      onPress: () => selectedComponent("displayModalChangePassword"),
+    },
   ];
 
-  const selectedComponent = key => {
+  const selectedComponent = (key) => {
     switch (key) {
       case "displayModalChangeName":
         setRenderComponent(
@@ -89,12 +89,12 @@ export default AccountOptions = props => {
           leftIcon={{
             type: menu.iconType,
             name: menu.iconNameLeft,
-            color: menu.iconColorLeft
+            color: menu.iconColorLeft,
           }}
           rightIcon={{
             type: menu.iconType,
             name: menu.iconNameRight,
-            color: menu.iconColorRight
+            color: menu.iconColorRight,
           }}
           onPress={menu.onPress}
           containerStyle={styles.menuItem}
@@ -113,6 +113,6 @@ export default AccountOptions = props => {
 const styles = StyleSheet.create({
   menuItem: {
     borderBottomWidth: 1,
-    borderBottomColor: "#e3e3e3"
-  }
+    borderBottomColor: "#e3e3e3",
+  },
 });

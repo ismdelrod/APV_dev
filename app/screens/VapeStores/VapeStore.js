@@ -89,8 +89,9 @@ export default VapeStore = (props) => {
   }, [refreshing]);
 
   useEffect(() => {
+    let mounted = true;
     const arrayImagesUrls = [];
-    (async () => {
+    const updateImages = (async () => {
       await Promise.all(
         store.images.map(async (idImage) => {
           await firebase
@@ -102,9 +103,13 @@ export default VapeStore = (props) => {
             });
         })
       );
-      setImagesStore(arrayImagesUrls);
-      setIsReloadStores(true);
+      mounted && setImagesStore(arrayImagesUrls);
+      mounted && setIsReloadStores(true);
     })();
+    return function cleanup() {
+      updateImages;
+      mounted = false;
+    };
   }, [isFavorite, refreshing]);
 
   useEffect(() => {

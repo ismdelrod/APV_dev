@@ -13,24 +13,33 @@ export default TopEliquids = (props) => {
   const toastRef = useRef();
 
   useEffect(() => {
-    setEliquids([]);
-    db.collection("eliquids")
-    .orderBy("rating", "desc")
-    .limit(5)
-    .get()
-    .then((response) => {
-      const eliquidsArray = [];
-      response.forEach((doc) => {
-        let eliquid = doc.data();
-        eliquid.id = doc.id;
-        eliquidsArray.push(eliquid);
-      });
-      setEliquids(eliquidsArray);
-    })
-    .catch(() => {
-      toastRef.current.show("Error al recuperar el Ranking", 3000);
-    });
-    setReloadTop(false);
+    let mounted = true;
+
+    const updateList = (async () => {
+      mounted && setEliquids([]);
+      await db
+        .collection("eliquids")
+        .orderBy("rating", "desc")
+        .limit(5)
+        .get()
+        .then((response) => {
+          const eliquidsArray = [];
+          response.forEach((doc) => {
+            let eliquid = doc.data();
+            eliquid.id = doc.id;
+            eliquidsArray.push(eliquid);
+          });
+          mounted && setEliquids(eliquidsArray);
+        })
+        .catch(() => {
+          toastRef.current.show("Error al recuperar el Ranking", 3000);
+        });
+      mounted && setReloadTop(false);
+    })();
+    return function cleanup() {
+      updateList;
+      mounted = false;
+    };
   }, [reloadTop]);
 
   return (

@@ -8,7 +8,13 @@ if (!global.atob) {
 }
 //****************************************************************************** */
 // TO DELETE: Para Evitar los Warnings sobre el componente ActionButton
-import { YellowBox, RefreshControl, View, StyleSheet, ScrollView } from "react-native";
+import {
+  YellowBox,
+  RefreshControl,
+  View,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
 import _ from "lodash";
 YellowBox.ignoreWarnings(["componentWillReceiveProps"]);
 const _console = _.clone(console);
@@ -64,15 +70,16 @@ export default Brands = (props) => {
 
   //useEffectGetBrands
   useEffect(() => {
-    setBrands([]);
-    setIsReloadBrands(false);
-    db.collection("brands")
-      .get()
-      .then((snap) => {
-        setTotalBrands(snap.size);
-      });
-
+    let mounted = true;
     const updateList = (async () => {
+      mounted && setBrands([]);
+      mounted && setIsReloadBrands(false);
+      await db.collection("brands")
+        .get()
+        .then((snap) => {
+          mounted && setTotalBrands(snap.size);
+        });
+
       const resultBrands = [];
       const listBrands = db
         .collection("brands")
@@ -80,18 +87,19 @@ export default Brands = (props) => {
         .limit(limitBrands);
 
       await listBrands.get().then((response) => {
-        setStartBrands(response.docs[response.docs.length - 1]);
+        mounted && setStartBrands(response.docs[response.docs.length - 1]);
         response.forEach((doc) => {
           let brand = doc.data();
           brand.id = doc.id;
           resultBrands.push({ brand: brand });
         });
-        setBrands(resultBrands);
+        mounted && setBrands(resultBrands);
       });
     })();
-    
-    return () => {
+
+    return function cleanup() {
       updateList;
+      mounted = false;
     };
   }, [isReloadBrands]);
 

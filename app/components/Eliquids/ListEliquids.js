@@ -122,7 +122,7 @@ const Eliquid = (props) => {
   const [remove, setRemove] = useState(false);
 
   useEffect(() => {
-
+    let mounted = true
     let image = images[0];
     const updateImages = (async () => {
       await firebase
@@ -130,11 +130,12 @@ const Eliquid = (props) => {
         .ref(`eliquids-images/${image}`)
         .getDownloadURL()
         .then((resultUrlImage) => {
-          setImageEliquid(resultUrlImage);
+          mounted && setImageEliquid(resultUrlImage);
         });
     })();
-    return () => {
+    return function cleanup() {
       updateImages;
+      mounted = false;
     };
   }),
     [];

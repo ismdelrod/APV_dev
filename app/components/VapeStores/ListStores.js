@@ -108,6 +108,7 @@ export default ListStores = (props) => {
 };
 
 const Store = (props) => {
+  
   const {
     store,
     setIsLoading,
@@ -124,6 +125,7 @@ const Store = (props) => {
   const [imageStore, setImageStore] = useState(null);
   
   useEffect(() => {
+    let mounted = true
     let image = images[0];
     const updateImages = (async () => {
       firebase
@@ -131,11 +133,12 @@ const Store = (props) => {
         .ref(`stores-images/${image}`)
         .getDownloadURL()
         .then((resultUrlImage) => {
-          setImageStore(resultUrlImage);
+          mounted && setImageStore(resultUrlImage);
         });
     })();
-    return () => {
+    return function cleanup() {
       updateImages;
+      mounted = false;
     };
   }),
     [];

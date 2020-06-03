@@ -120,6 +120,7 @@ const Brand = (props) => {
   const [imageBrand, setImageBrand] = useState(null);
 
   useEffect(() => {
+    let mounted = true;
     let image = images[0];
     const updateImages = (async () => {
       await firebase
@@ -127,11 +128,12 @@ const Brand = (props) => {
         .ref(`brands-images/${image}`)
         .getDownloadURL()
         .then((resultUrlImage) => {
-          setImageBrand(resultUrlImage);
+          mounted && setImageBrand(resultUrlImage);
         });
     })();
-    return () => {
+    return function cleanup() {
       updateImages;
+      mounted = false;
     };
   }),
     [];

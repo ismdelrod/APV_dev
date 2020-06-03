@@ -62,14 +62,21 @@ const Stores = (props) => {
   const [isReloadStore, setIsReloadStore] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
     const image = images[0];
-    firebase
-      .storage()
-      .ref(`stores-images/${image}`)
-      .getDownloadURL()
-      .then((response) => {
-        setImageStore(response);
-      });
+    const updateImages = (async () => {
+      await firebase
+        .storage()
+        .ref(`stores-images/${image}`)
+        .getDownloadURL()
+        .then((response) => {
+          mounted && setImageStore(response);
+        });
+    })();
+    return function cleanup() {
+      updateImages;
+      mounted = false;
+    };
   }, []);
 
   useEffect(() => {

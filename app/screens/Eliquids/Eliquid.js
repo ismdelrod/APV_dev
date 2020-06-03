@@ -51,7 +51,6 @@ const wait = (timeout) => {
 };
 
 export default Eliquid = (props) => {
-
   const { navigation, route } = props;
   const {
     eliquid,
@@ -85,8 +84,9 @@ export default Eliquid = (props) => {
   }, [refreshing]);
 
   useEffect(() => {
+    let mounted = true;
     const arrayImagesUrls = [];
-    (async () => {
+    const updateImages = (async () => {
       await Promise.all(
         eliquid.images.map(async (idImage) => {
           await firebase
@@ -98,9 +98,13 @@ export default Eliquid = (props) => {
             });
         })
       );
-      setImagesEliquid(arrayImagesUrls);
-      setIsReloadEliquids(true);
+      mounted && setImagesEliquid(arrayImagesUrls);
+      mounted && setIsReloadEliquids(true);
     })();
+    return function cleanup() {
+      updateImages;
+      mounted = false;
+    };
   }, [isFavorite, refreshing]);
 
   useEffect(() => {
@@ -112,7 +116,7 @@ export default Eliquid = (props) => {
         .then((response) => {
           if (response.docs.length === 1) {
             setIsFavorite(true);
-          }else{
+          } else {
             setIsFavorite(false);
           }
         });
@@ -208,7 +212,7 @@ export default Eliquid = (props) => {
         setIsVisibleModal(true);
         break;
 
-        case "displayModalChangeEliquidBrand":
+      case "displayModalChangeEliquidBrand":
         setRenderComponent(
           <ChangeEliquidBrandForm
             setIsVisibleModal={setIsVisibleModal}
@@ -217,7 +221,7 @@ export default Eliquid = (props) => {
             toastRef={toastRef}
             eliquid={eliquid}
             setUpdatedEliquid={setUpdatedEliquid}
-            setReloadBrand = {setReloadBrand}
+            setReloadBrand={setReloadBrand}
           />
         );
         setIsVisibleModal(true);

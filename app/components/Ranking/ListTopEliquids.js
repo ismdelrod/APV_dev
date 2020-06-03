@@ -64,14 +64,21 @@ const Eliquids = (props) => {
   const [isReloadEliquid, setIsReloadEliquid] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
     const image = images[0];
-    firebase
-      .storage()
-      .ref(`eliquids-images/${image}`)
-      .getDownloadURL()
-      .then((response) => {
-        setImageEliquid(response);
-      });
+    const updateImages = (async () => {
+      await firebase
+        .storage()
+        .ref(`eliquids-images/${image}`)
+        .getDownloadURL()
+        .then((response) => {
+          mounted && setImageEliquid(response);
+        });
+    })();
+    return function cleanup() {
+      updateImages;
+      mounted = false;
+    };
   }, []);
 
   useEffect(() => {

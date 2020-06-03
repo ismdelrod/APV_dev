@@ -67,35 +67,38 @@ export default Eliquids = (props) => {
 
   //useEffectGetEliquids
   useEffect(() => {
-    setEliquids([]);
-    setIsReloadEliquids(false);
-    db.collection("eliquids")
-      .get()
-      .then((snap) => {
-        setTotalEliquids(snap.size);
-      });
+    let mounted = true;
     
-      const updateList = (async () => {
+    const updateList = (async () => {
+      mounted && setEliquids([]);
+      mounted && setIsReloadEliquids(false);
+      await db.collection("eliquids")
+        .get()
+        .then((snap) => {
+          mounted && setTotalEliquids(snap.size);
+        });
+
       const resultEliquids = [];
-      const listEliquids = db
+      const listEliquids = await db
         .collection("eliquids")
         .orderBy("createAt", "desc")
         .limit(limitEliquids);
 
       await listEliquids.get().then((response) => {
-        setStartEliquids(response.docs[response.docs.length - 1]);
+        mounted && setStartEliquids(response.docs[response.docs.length - 1]);
 
         response.forEach((doc) => {
           let eliquid = doc.data();
           eliquid.id = doc.id;
           resultEliquids.push({ eliquid: eliquid });
         });
-        setEliquids(resultEliquids);
+        mounted && setEliquids(resultEliquids);
       });
     })();
 
-    return () => {
+    return function cleanup() {
       updateList;
+      mounted = false;
     };
   }, [isReloadEliquids]);
 
