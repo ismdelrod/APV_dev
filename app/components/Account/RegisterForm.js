@@ -40,7 +40,12 @@ RegisterForm = (props) => {
       passwordConfirmation
     );
 
-    const addUserRole = (uid, email) => {
+    const addUserRole = (newUser, email) => {
+      debugger;
+
+      let uid = newUser.user.uid;
+      let emailVerified = newUser.user.emailVerified;
+
       db.collection("users_roles")
         .add({
           uid: uid,
@@ -52,35 +57,66 @@ RegisterForm = (props) => {
         .catch(() => {});
     };
 
-    setIsVisibleLoading(true);
+    const sendEmailVerification = () => {
+      let OK = false;
+      firebase
+        .auth()
+        .currentUser.sendEmailVerification()
+        .then(() => {
+          firebase.auth().signOut();
+          OK = true;
+        });
+      return OK;
+    };
 
+    setIsVisibleLoading(true);
+    debugger;
     if (!email || !password || !passwordConfirmation) {
+      debugger;
       toastRef.current.show("Todos los campos son obligatorios");
     } else {
       if (!validateEmail(email)) {
+        debugger;
         toastRef.current.show("Email Incorrecto");
+      } else if (!validatePassword(password)) {
+        toastRef.current.show(
+          "Mínimo 6 caracteres, máximo 15. Al menos una mayúscula, una minúscula, un dígito, un caracter especial y sin espacios en blanco"
+        );
+      } else if (
+        !validatePasswordConfirmationIsOK(password, passwordConfirmation)
+      ) {
+        toastRef.current.show("Las contraseñas no son iguales");
       } else {
-        if (!validatePasswordConfirmationIsOK(password, passwordConfirmation)) {
-          toastRef.current.show("Las contraseñas no son iguales");
-        } else {
-          await firebase
-            .auth()
-            .createUserWithEmailAndPassword(email, password)
-            .then((newUser) => {
-              
-              let uid = newUser.user.uid;
-              
-              addUserRole(uid, email);
-              
-              navigation.navigate("Account");
-              
-            })
-            .catch(() => {
+        await firebase
+          .auth()
+          .createUserWithEmailAndPassword(email, password)
+          .then((newUser) => {
+            addUserRole(newUser, email);
+
+            if (sendEmailVerification()) {
+              firebase.auth().signOut();
+
               toastRef.current.show(
-                "Error al crear la cuenta. Inténtelo más tarde"
+                "Se ha enviado un email de confirmación a " +
+                  email +
+                  "\nPara poder entrar en la Aplicación, antes deberá confirmar el email proporcionado.",
+                4000
               );
-            });
-        }
+            } else {
+              toastRef.current.show(
+                "Ha habido un error en el envío del email de confirmación"
+              );
+              // TO DO Borrar usuario creado y su user_role
+            }
+
+            navigation.navigate("Account");
+          })
+          .catch(() => {
+            debugger;
+            toastRef.current.show(
+              "Error al crear la cuenta. Inténtelo más tarde"
+            );
+          });
       }
     }
 

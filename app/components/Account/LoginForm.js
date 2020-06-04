@@ -37,7 +37,17 @@ LoginForm = (props) => {
           .auth()
           .signInWithEmailAndPassword(email, password)
           .then(() => {
+            if(firebase.auth().currentUser.emailVerified){
             navigation.navigate("Account");
+            }
+            else{
+              toastRef.current.show(
+                "Se ha enviado un email de confirmación a " +
+                  email +
+                  "\nPara poder entrar en la Aplicación, antes deberá confirmar el email proporcionado.",
+                4000
+              );
+            }
           })
           .catch(() => {
             toastRef.current.show(
