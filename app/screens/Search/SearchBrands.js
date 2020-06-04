@@ -45,7 +45,8 @@ export default SearchBrands = (props) => {
   }, [search]);
 
   const [onSearch] = useDebouncedCallback(() => {
-    if (search) {
+    if(search === ""){setBrands([]);}
+    else if (search) {
       fSQL
         .query(`SELECT * FROM brands WHERE name LIKE '${search}%'`)
         .then((response) => {
@@ -99,7 +100,7 @@ const Brands = (props) => {
       .then((response) => {
         setImageBrand(response);
       });
-  }, []);
+  }, [brand]);
 
   return (
     <ListItem

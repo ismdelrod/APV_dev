@@ -45,7 +45,8 @@ export default SearchVapeStores = (props) => {
   }, [search]);
 
   const [onSearch] = useDebouncedCallback(() => {
-    if (search) {
+    if(search === ""){setStores([]);}
+    else if (search) {
       fSQL
         .query(`SELECT * FROM stores WHERE name LIKE '${search}%'`)
         .then((response) => {
@@ -99,7 +100,7 @@ const Stores = (props) => {
       .then((response) => {
         setImageStore(response);
       });
-  }, []);
+  }, [store]);
 
   return (
     <ListItem

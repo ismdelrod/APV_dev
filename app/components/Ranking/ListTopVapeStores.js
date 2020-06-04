@@ -77,7 +77,7 @@ const Stores = (props) => {
       updateImages;
       mounted = false;
     };
-  }, []);
+  }, [store]);
 
   useEffect(() => {
     if (store.index === 0) {

@@ -108,7 +108,6 @@ export default ListStores = (props) => {
 };
 
 const Store = (props) => {
-  
   const {
     store,
     setIsLoading,
@@ -123,9 +122,9 @@ const Store = (props) => {
 
   const { name, address, description, images } = store.item.store;
   const [imageStore, setImageStore] = useState(null);
-  
+
   useEffect(() => {
-    let mounted = true
+    let mounted = true;
     let image = images[0];
     const updateImages = (async () => {
       firebase
@@ -140,8 +139,7 @@ const Store = (props) => {
       updateImages;
       mounted = false;
     };
-  }),
-    [];
+  }, [store]);
 
   const confirmRemoveStore = () => {
     let storeName = store.item.store.name;

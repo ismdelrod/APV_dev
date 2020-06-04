@@ -135,8 +135,7 @@ const Brand = (props) => {
       updateImages;
       mounted = false;
     };
-  }),
-    [];
+  },[brand]);
 
   const confirmRemoveBrand = () => {
     let brandName = brand.item.brand.name;

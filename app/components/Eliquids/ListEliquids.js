@@ -122,7 +122,7 @@ const Eliquid = (props) => {
   const [remove, setRemove] = useState(false);
 
   useEffect(() => {
-    let mounted = true
+    let mounted = true;
     let image = images[0];
     const updateImages = (async () => {
       await firebase
@@ -137,8 +137,7 @@ const Eliquid = (props) => {
       updateImages;
       mounted = false;
     };
-  }),
-    [];
+  }, [eliquid]);
 
   const confirmRemoveEliquid = () => {
     let eliquidName = eliquid.item.eliquid.name;

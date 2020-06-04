@@ -72,7 +72,6 @@ export default Brands = (props) => {
   useEffect(() => {
     let mounted = true;
     const updateList = (async () => {
-      mounted && setBrands([]);
       mounted && setIsReloadBrands(false);
       await db.collection("brands")
         .get()

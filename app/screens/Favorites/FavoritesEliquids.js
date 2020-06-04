@@ -156,7 +156,7 @@ const Eliquid = (props) => {
       .then((response) => {
         setImageEliquid(response);
       });
-  }, [images]);
+  }, [eliquid]);
 
   const confirmRemoveFavorite = () => {
     Alert.alert(

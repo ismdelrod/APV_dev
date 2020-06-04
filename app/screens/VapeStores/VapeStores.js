@@ -69,7 +69,6 @@ export default VapeStores = (props) => {
   useEffect(() => {
     let mounted = true;
     const updateList = (async () => {
-      mounted && setStores([]);
       mounted && setIsReloadStores(false);
       await db.collection("stores")
         .get()

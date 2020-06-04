@@ -79,7 +79,7 @@ const Eliquids = (props) => {
       updateImages;
       mounted = false;
     };
-  }, []);
+  }, [eliquid]);
 
   useEffect(() => {
     if (eliquid.index === 0) {

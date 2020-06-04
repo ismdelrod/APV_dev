@@ -45,7 +45,8 @@ export default SearchEliquids = (props) => {
   }, [search]);
 
   const [onSearch] = useDebouncedCallback(() => {
-    if (search) {
+    if(search === ""){setEliquids([]);}
+    else if (search) {
       fSQL
         .query(`SELECT * FROM eliquids WHERE name LIKE '${search}%'`)
         .then((response) => {
@@ -99,7 +100,7 @@ const Eliquids = (props) => {
       .then((response) => {
         setImageEliquid(response);
       });
-  }, []);
+  }, [eliquid]);
 
   return (
     <ListItem

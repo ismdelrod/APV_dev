@@ -156,7 +156,7 @@ const Store = (props) => {
       .then((response) => {
         setImageStore(response);
       });
-  }, [images]);
+  }, [store]);
 
   const confirmRemoveFavorite = () => {
     Alert.alert(

@@ -68,9 +68,7 @@ export default Eliquids = (props) => {
   //useEffectGetEliquids
   useEffect(() => {
     let mounted = true;
-    
     const updateList = (async () => {
-      mounted && setEliquids([]);
       mounted && setIsReloadEliquids(false);
       await db.collection("eliquids")
         .get()

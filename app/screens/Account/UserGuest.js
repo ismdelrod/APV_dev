@@ -16,8 +16,7 @@ UserGuest = (props) => {
       />
       <Text style={styles.tittle}>Consulta tu perfil de APV</Text>
       <Text style={styles.description}>
-        ¿Como describirías tu tienda preferida? Busca de una forma rápida y
-        sencilla tu tienda favorita. Comenta que tal te ha ido en la búsqueda.
+        Accede a tu perfil y configura tu usuario de APV.
       </Text>
 
       <View style={styles.viewBtn}>

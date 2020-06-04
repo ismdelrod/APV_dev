@@ -13,7 +13,7 @@ export default TopVapeStores = (props) => {
   const toastRef = useRef();
 
   useEffect( () => {
-    setStores([]);
+    // setStores([]);
     db.collection("stores")
     .orderBy("rating", "desc")
     .limit(5)

@@ -16,7 +16,6 @@ export default TopEliquids = (props) => {
     let mounted = true;
 
     const updateList = (async () => {
-      mounted && setEliquids([]);
       await db
         .collection("eliquids")
         .orderBy("rating", "desc")
