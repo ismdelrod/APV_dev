@@ -7,7 +7,8 @@ import HooksChat from "../../components/Chat//HooksChat";
 import firebase from "../../utils/Firebase";
 const db = firebase.firestore(firebase);
 
-export default Chat = () => {
+export default Chat = (props) => {
+  const {navigation} = props;
   const [user, setUser] = useState(firebase.auth().currentUser);
   const [logMessages, setLogMessages] = useState([]);
   const logout = useCallback(() => firebase.auth().signOut(), []);
@@ -37,7 +38,8 @@ export default Chat = () => {
       setLogMessages(fetchMessages);
     } else {
       debugger;
-      Alert.alert("Something went wrong");
+      Alert.alert("Inicia Sesión para entrar al Chat");
+      navigation.navigate("VapeStores");
       return;
     }
   }, []);
