@@ -94,7 +94,7 @@ export default Brand = (props) => {
       );
       setImagesBrand(arrayImagesUrls);
     })();
-  }, [refreshing]);
+  }, [refreshing, brand]);
 
   const selectedComponent = (key, text, brand, setUpdatedBrand) => {
     switch (key) {
@@ -174,23 +174,7 @@ const TitleBrand = (props) => {
         >
           {name}
         </Text>
-        <StarRating
-          starSize={20}
-          disabled={true}
-          emptyStar={"ios-star-outline"}
-          fullStar={"ios-star"}
-          halfStar={"ios-star-half"}
-          iconSet={"Ionicons"}
-          maxStars={5}
-          rating={parseFloat(rating)}
-          fullStarColor={
-            parseFloat(rating) <= 2
-              ? "#C80000"
-              : parseFloat(rating) > 2 && parseFloat(rating) < 4
-              ? "#FFBD00"
-              : "#03B900"
-          }
-        />
+       
       </View>
       <Text style={styles.descriptionBrandStyle}>{description}</Text>
     </View>

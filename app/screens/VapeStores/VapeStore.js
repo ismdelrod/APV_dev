@@ -110,7 +110,7 @@ export default VapeStore = (props) => {
       updateImages;
       mounted = false;
     };
-  }, [isFavorite, refreshing]);
+  }, [isFavorite, refreshing, store]);
 
   useEffect(() => {
     if (userLogged) {

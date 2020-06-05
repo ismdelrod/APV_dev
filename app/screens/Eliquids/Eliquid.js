@@ -105,7 +105,7 @@ export default Eliquid = (props) => {
       updateImages;
       mounted = false;
     };
-  }, [isFavorite, refreshing]);
+  }, [isFavorite, refreshing, eliquid]);
 
   useEffect(() => {
     if (userLogged) {
