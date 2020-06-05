@@ -4,11 +4,7 @@
     "slug": "APV_dev",
     "privacy": "public",
     "sdkVersion": "36.0.0",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
+    "platforms": ["ios", "android", "web"],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -20,22 +16,29 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.ismdelrod.appAPV",
-      "buildNumber": "1.0.0"
+      "bundleIdentifier": "com.ismdelrod.appAPV"
     },
     "android": {
+      "package": "com.ismdelrod.appAPV",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCJPy6Xr_JsyO8OdrviTuC60JVm0Kcs5cQ"
+        }
+      },
       "permissions": [
         "CAMERA_ROLL",
-        "LOCATION"
-      ],
-      "package": "com.ismdelrod.appAPV",
-      "versionCode": 1
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ]
     },
     "description": ""
   }
 }
+
+

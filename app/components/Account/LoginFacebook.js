@@ -49,7 +49,7 @@ export default LoginFacebook = props => {
         title="Iniciar Sesión con Facebook"
         button
         type="facebook"
-        onPress={login}
+        // onPress={login}
       />
       <Loading isVisible={isLoading} text="Iniciando Sesión" />
     </>
